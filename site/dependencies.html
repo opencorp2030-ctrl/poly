@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dependencies · Poly</title>
+<meta name="description" content="Search every ecosystem poly can install from at once: pip, npm, crates.io, Homebrew, and the Poly community registry." />
+<style>
+  :root {
+    --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
+    --danger: #e0664a; --ok: #6fbf8b;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --container: 1080px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
+
+  header.top { border-bottom: 1px solid var(--border); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+
+  .lang-toggle { display: flex; gap: 0.2rem; border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem; }
+  .lang-btn { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.3rem 0.65rem; border-radius: 999px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
+
+  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+  .eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 0 0 0.9rem; }
+  h1 { font-family: var(--mono); font-weight: 700; font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.02em; margin: 0 0 0.6rem; text-wrap: balance; }
+  .lede { color: var(--text-dim); max-width: 68ch; margin: 0 0 2rem; font-size: 1.05rem; }
+
+  .search-box {
+    display: flex; align-items: center; gap: 0.75rem;
+    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.9rem 1.1rem; margin-bottom: 0.75rem;
+  }
+  .search-box input {
+    flex: 1; border: none; background: none; outline: none;
+    color: var(--text); font-family: var(--sans); font-size: 1rem;
+  }
+  .search-box svg { color: var(--text-dim); flex-shrink: 0; }
+  .search-hint { font-size: 0.8rem; color: var(--text-dim); margin: 0 0 2.5rem; }
+  .search-hint code { font-family: var(--mono); background: var(--ink-raised); padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+  .source-lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+  .lane { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .lane-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 1rem; background: var(--ink-raised); border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim);
+  }
+  .lane-head .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .lane-head.found .dot { background: var(--ok); }
+  .lane-body { padding: 1rem; min-height: 88px; display: flex; align-items: center; }
+  .lane-empty { color: var(--text-dim); font-size: 0.85rem; }
+  .lane-idle { color: var(--text-dim); font-size: 0.85rem; opacity: 0.6; }
+  .result { width: 100%; }
+  .result .rname { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .result .rversion { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); }
+  .result .rsummary { font-size: 0.82rem; color: var(--text-dim); margin: 0.4rem 0 0.6rem; line-height: 1.4; }
+  .result .rinstall {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: var(--mono); font-size: 0.78rem; background: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.4rem 0.6rem; cursor: pointer; width: fit-content; max-width: 100%; overflow-x: auto;
+  }
+  .result .rinstall:hover { border-color: var(--accent); }
+  .result .rby { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.4rem; }
+
+  .cta-row { margin-top: 3rem; text-align: center; }
+  .cta-row p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.75rem; }
+  .btn { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; padding: 0.65rem 1.2rem; border: 1px solid var(--border); border-radius: 6px; background: var(--accent); color: var(--accent-ink); }
+  .btn:hover { opacity: 0.92; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links">
+      <a href="dependencies.html" class="current" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs.html" data-i18n="nav_docs">docs</a>
+      <a href="community.html" data-i18n="nav_community">community</a>
+      <a href="account.html" data-i18n="nav_account">account</a>
+      <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
+    </nav>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <p class="eyebrow" data-i18n="eyebrow">Dependencies</p>
+    <h1 data-i18n="title">Search every ecosystem at once</h1>
+    <p class="lede" data-i18n="lede">One box, five sources: pip, npm, crates.io, Homebrew, and packages the Poly community has published. Real-time, live against each registry's own API — nothing cached or made up.</p>
+
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" autofocus />
+    </div>
+    <p class="search-hint" data-i18n="search_hint">pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either) — try the exact package name. The community lane matches partial names.</p>
+
+    <div class="source-lanes">
+      <div class="lane" data-lane="tap">
+        <div class="lane-head"><span data-i18n="lane_tap">tap (built-in)</span><span class="dot"></span></div>
+        <div class="lane-body"><span class="lane-idle" data-i18n="lane_idle">Type to search…</span></div>
+      </div>
+      <div class="lane" data-lane="brew">
+        <div class="lane-head"><span>brew</span><span class="dot"></span></div>
+        <div class="lane-body"><span class="lane-idle" data-i18n="lane_idle">Type to search…</span></div>
+      </div>
+      <div class="lane" data-lane="pip">
+        <div class="lane-head"><span>pip</span><span class="dot"></span></div>
+        <div class="lane-body"><span class="lane-idle" data-i18n="lane_idle">Type to search…</span></div>
+      </div>
+      <div class="lane" data-lane="npm">
+        <div class="lane-head"><span>npm</span><span class="dot"></span></div>
+        <div class="lane-body"><span class="lane-idle" data-i18n="lane_idle">Type to search…</span></div>
+      </div>
+      <div class="lane" data-lane="cargo">
+        <div class="lane-head"><span>cargo</span><span class="dot"></span></div>
+        <div class="lane-body"><span class="lane-idle" data-i18n="lane_idle">Type to search…</span></div>
+      </div>
+      <div class="lane" data-lane="community">
+        <div class="lane-head"><span data-i18n="lane_community">community</span><span class="dot"></span></div>
+        <div class="lane-body"><span class="lane-idle" data-i18n="lane_idle">Type to search…</span></div>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <p data-i18n="cta_p">Published something of your own? Ship it to the community lane.</p>
+      <a class="btn" href="docs.html#autoupdate" data-i18n="cta_btn">poly send name version path →</a>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account", nav_github: "github",
+      eyebrow: "Dependencies", title: "Search every ecosystem at once",
+      lede: "One box, five sources: pip, npm, crates.io, Homebrew, and packages the Poly community has published. Real-time, live against each registry's own API — nothing cached or made up.",
+      search_placeholder: "requests, lodash, ripgrep, serde…",
+      search_hint: "pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either) — try the exact package name. The community lane matches partial names.",
+      lane_tap: "tap (built-in)", lane_community: "community", lane_idle: "Type to search…",
+      lane_not_found: "Not found.", lane_error: "Lookup failed.",
+      cta_p: "Published something of your own? Ship it to the community lane.",
+      cta_btn: "poly send name version path →",
+      by: "published by"
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      eyebrow: "Dépendances", title: "Cherche dans tous les écosystèmes d'un coup",
+      lede: "Une seule barre, cinq sources : pip, npm, crates.io, Homebrew, et les paquets publiés par la communauté Poly. En direct, contre l'API réelle de chaque registre — rien n'est mis en cache ou inventé.",
+      search_placeholder: "requests, lodash, ripgrep, serde…",
+      search_hint: "pip/npm/crates.io/Homebrew sont des recherches par nom exact (ils n'offrent pas non plus de recherche floue publique) — essaie le nom exact du paquet. La colonne communauté accepte les noms partiels.",
+      lane_tap: "tap (intégré)", lane_community: "communauté", lane_idle: "Tape pour chercher…",
+      lane_not_found: "Introuvable.", lane_error: "Échec de la recherche.",
+      cta_p: "Tu as publié quelque chose ? Envoie-le dans la colonne communauté.",
+      cta_btn: "poly send nom version chemin →",
+      by: "publié par"
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+      const key = node.getAttribute('data-i18n-placeholder');
+      if (I18N[l][key] !== undefined) node.placeholder = I18N[l][key];
+    });
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+  }
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => { applyLanguage(btn.getAttribute('data-lang')); runSearch(currentQuery); });
+  });
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+
+  function setLane(source, state, html) {
+    const lane = document.querySelector('.lane[data-lane="' + source + '"]');
+    if (!lane) return;
+    lane.querySelector('.lane-head').classList.toggle('found', state === 'found');
+    lane.querySelector('.lane-body').innerHTML = html;
+  }
+
+  function renderResult(source, name, version, summary, installSpec, byline) {
+    const html = `
+      <div class="result">
+        <div class="rname">${escapeHtml(name)}</div>
+        <div class="rversion">${escapeHtml(version || '')}</div>
+        ${summary ? `<div class="rsummary">${escapeHtml(summary)}</div>` : ''}
+        <div class="rinstall" data-copy="${escapeHtml(installSpec)}">poly install ${escapeHtml(installSpec)}</div>
+        ${byline ? `<div class="rby">${escapeHtml(byline)}</div>` : ''}
+      </div>`;
+    setLane(source, 'found', html);
+  }
+
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('.rinstall');
+    if (!el) return;
+    const text = 'poly install ' + el.getAttribute('data-copy');
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        const original = el.textContent;
+        el.textContent = 'copied ✓';
+        setTimeout(() => { el.textContent = original; }, 1200);
+      }).catch(() => {});
+    }
+  });
+
+  async function searchPip(q) {
+    try {
+      const resp = await fetch('https://pypi.org/pypi/' + encodeURIComponent(q) + '/json');
+      if (resp.status === 404) { setLane('pip', 'empty', `<span class="lane-empty">${t('lane_not_found')}</span>`); return; }
+      if (!resp.ok) throw new Error();
+      const data = await resp.json();
+      renderResult('pip', q, data.info.version, data.info.summary, 'pip:' + q);
+    } catch { setLane('pip', 'empty', `<span class="lane-empty">${t('lane_error')}</span>`); }
+  }
+
+  async function searchNpm(q) {
+    try {
+      const resp = await fetch('https://registry.npmjs.org/' + encodeURIComponent(q) + '/latest');
+      if (resp.status === 404) { setLane('npm', 'empty', `<span class="lane-empty">${t('lane_not_found')}</span>`); return; }
+      if (!resp.ok) throw new Error();
+      const data = await resp.json();
+      renderResult('npm', q, data.version, data.description, 'npm:' + q);
+    } catch { setLane('npm', 'empty', `<span class="lane-empty">${t('lane_error')}</span>`); }
+  }
+
+  async function searchCargo(q) {
+    try {
+      const resp = await fetch('https://crates.io/api/v1/crates/' + encodeURIComponent(q));
+      if (resp.status === 404) { setLane('cargo', 'empty', `<span class="lane-empty">${t('lane_not_found')}</span>`); return; }
+      if (!resp.ok) throw new Error();
+      const data = await resp.json();
+      renderResult('cargo', q, data.crate.newest_version, data.crate.description, 'cargo:' + q);
+    } catch { setLane('cargo', 'empty', `<span class="lane-empty">${t('lane_error')}</span>`); }
+  }
+
+  async function searchBrew(q) {
+    try {
+      const resp = await fetch('https://formulae.brew.sh/api/formula/' + encodeURIComponent(q) + '.json');
+      if (resp.status === 404) { setLane('brew', 'empty', `<span class="lane-empty">${t('lane_not_found')}</span>`); return; }
+      if (!resp.ok) throw new Error();
+      const data = await resp.json();
+      renderResult('brew', q, data.versions && data.versions.stable, data.desc, 'brew:' + q);
+    } catch { setLane('brew', 'empty', `<span class="lane-empty">${t('lane_error')}</span>`); }
+  }
+
+  // The built-in tap catalog is small and known ahead of time -- no
+  // network call needed, just a local exact-name check.
+  const BUILTIN_TAPS = {
+    ripgrep: { version: '15.1.0', desc: 'Line-oriented search tool that recursively searches directories for a regex pattern' },
+    fd: { version: '10.4.2', desc: 'A simple, fast and user-friendly alternative to find' },
+    jq: { version: '1.8.2', desc: 'Lightweight and flexible command-line JSON processor' }
+  };
+  function searchTap(q) {
+    const hit = BUILTIN_TAPS[q];
+    if (!hit) { setLane('tap', 'empty', `<span class="lane-empty">${t('lane_not_found')}</span>`); return; }
+    renderResult('tap', q, hit.version, hit.desc, 'tap:' + q);
+  }
+
+  async function searchCommunity(q) {
+    const { data, error } = await supabase
+      .from('community_packages_public')
+      .select('name, version, description, uploader_username')
+      .ilike('name', `%${q}%`)
+      .limit(5);
+    if (error || !data || data.length === 0) {
+      setLane('community', 'empty', `<span class="lane-empty">${t('lane_not_found')}</span>`);
+      return;
+    }
+    const html = data.map((p) => `
+      <div class="result" style="margin-bottom:0.75rem">
+        <div class="rname">${escapeHtml(p.name)}</div>
+        <div class="rversion">${escapeHtml(p.version)}</div>
+        ${p.description ? `<div class="rsummary">${escapeHtml(p.description)}</div>` : ''}
+        <div class="rinstall" data-copy="community:${escapeHtml(p.name)}">poly install community:${escapeHtml(p.name)}</div>
+        ${p.uploader_username ? `<div class="rby">${t('by')} @${escapeHtml(p.uploader_username)}</div>` : ''}
+      </div>
+    `).join('');
+    setLane('community', 'found', html);
+  }
+
+  let currentQuery = '';
+  let debounce = null;
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    clearTimeout(debounce);
+    currentQuery = e.target.value.trim();
+    debounce = setTimeout(() => runSearch(currentQuery), 350);
+  });
+
+  function resetLanes() {
+    document.querySelectorAll('.lane').forEach((lane) => {
+      lane.querySelector('.lane-head').classList.remove('found');
+      lane.querySelector('.lane-body').innerHTML = `<span class="lane-idle">${t('lane_idle')}</span>`;
+    });
+  }
+
+  function runSearch(q) {
+    if (!q) { resetLanes(); return; }
+    searchTap(q);
+    searchBrew(q);
+    searchPip(q);
+    searchNpm(q);
+    searchCargo(q);
+    searchCommunity(q);
+  }
+
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+</script>
+
+</body>
+</html>

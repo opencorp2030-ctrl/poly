@@ -5,6 +5,7 @@
 package account
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const (
@@ -130,6 +132,100 @@ func Load() (*Credentials, error) {
 	return &c, nil
 }
 
+// LoadFresh is like Load, but transparently refreshes the session via the
+// stored refresh token if the access token is expired or about to expire.
+// CLI sessions can sit around for hours between commands, so every
+// authenticated call should go through this rather than Load directly.
+func LoadFresh() (*Credentials, error) {
+	creds, err := Load()
+	if err != nil || creds == nil {
+		return creds, err
+	}
+
+	if exp, err := jwtExpiry(creds.AccessToken); err == nil && time.Until(exp) > 30*time.Second {
+		return creds, nil
+	}
+
+	refreshed, err := refreshSession(creds)
+	if err != nil {
+		// Fail open: hand back the stale credentials so the caller's
+		// request fails on its own with a clear "unauthorized" error,
+		// rather than this function erroring on something that might
+		// still turn out fine (e.g. clock skew).
+		return creds, nil
+	}
+	return refreshed, nil
+}
+
+func jwtExpiry(token string) (time.Time, error) {
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return time.Time{}, fmt.Errorf("malformed access token")
+	}
+	payload, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return time.Time{}, err
+	}
+	var claims struct {
+		Exp int64 `json:"exp"`
+	}
+	if err := json.Unmarshal(payload, &claims); err != nil {
+		return time.Time{}, err
+	}
+	return time.Unix(claims.Exp, 0), nil
+}
+
+func refreshSession(creds *Credentials) (*Credentials, error) {
+	body, err := json.Marshal(map[string]string{"refresh_token": creds.RefreshToken})
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", supabaseURL+"/auth/v1/token?grant_type=refresh_token", strings.NewReader(string(body)))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("apikey", supabaseAnonKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("refreshing session: %s: %s", resp.Status, data)
+	}
+
+	var payload struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+		User         struct {
+			ID    string `json:"id"`
+			Email string `json:"email"`
+		} `json:"user"`
+	}
+	if err := json.Unmarshal(data, &payload); err != nil {
+		return nil, err
+	}
+
+	refreshed := &Credentials{
+		UserID:       payload.User.ID,
+		Email:        payload.User.Email,
+		AccessToken:  payload.AccessToken,
+		RefreshToken: payload.RefreshToken,
+	}
+	if err := save(refreshed); err != nil {
+		return nil, err
+	}
+	return refreshed, nil
+}
+
 func save(c *Credentials) error {
 	path, err := credentialsPath()
 	if err != nil {
@@ -150,7 +246,7 @@ func save(c *Credentials) error {
 // session, ...), it fails open to false -- Pro perks silently fall back
 // to free behavior rather than erroring the install.
 func IsPro() bool {
-	creds, err := Load()
+	creds, err := LoadFresh()
 	if err != nil || creds == nil {
 		return false
 	}
@@ -204,7 +300,7 @@ type Profile struct {
 // GetProfile fetches the signed-in user's profile row. Returns an error
 // if nobody is signed in or the request fails.
 func GetProfile() (*Profile, error) {
-	creds, err := Load()
+	creds, err := LoadFresh()
 	if err != nil {
 		return nil, err
 	}

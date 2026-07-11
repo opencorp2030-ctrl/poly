@@ -20,8 +20,8 @@ type Adapter interface {
 	Search(name string) (SearchResult, error)
 }
 
-// All returns every adapter poly knows about, in the order they should be
-// tried when auto-detecting which backend owns a package name.
+// All returns every auto-detected adapter, in the order they're tried
+// when resolving a bare package name with no prefix.
 func All() []Adapter {
 	return []Adapter{
 		Tap{},
@@ -33,9 +33,23 @@ func All() []Adapter {
 	}
 }
 
-// ByName looks up an adapter by its explicit prefix name (pip, npm, brew, cargo, go, tap).
+// explicitOnly lists adapters reachable only via an explicit prefix,
+// never auto-detected -- see Community's doc comment for why.
+func explicitOnly() []Adapter {
+	return []Adapter{
+		Community{},
+	}
+}
+
+// ByName looks up an adapter by its explicit prefix name (pip, npm,
+// brew, cargo, go, tap, community).
 func ByName(name string) (Adapter, bool) {
 	for _, a := range All() {
+		if a.Name() == name {
+			return a, true
+		}
+	}
+	for _, a := range explicitOnly() {
 		if a.Name() == name {
 			return a, true
 		}

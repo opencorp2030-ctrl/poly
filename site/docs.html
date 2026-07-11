@@ -99,6 +99,7 @@
   <div class="wrap">
     <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links">
+      <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs.html" class="current" data-i18n="nav_docs">docs</a>
       <a href="index.html#pro" data-i18n="nav_pro">pro</a>
       <a href="community.html" data-i18n="nav_community">community</a>
@@ -121,7 +122,9 @@
     <a href="#lockfile" data-i18n="toc_lockfile">poly.json</a>
     <a href="#taps" data-i18n="toc_taps">Tap formulas</a>
     <a href="#autoupdate" data-i18n="toc_autoupdate">Auto-update</a>
+    <a href="#registry" data-i18n="toc_registry">Publishing</a>
     <a href="#pro" data-i18n="toc_pro">Pro</a>
+    <a href="dependencies.html" data-i18n="toc_deps">Search dependencies</a>
     <a href="llms.txt" data-i18n="toc_llms">llms.txt</a>
   </nav>
 
@@ -146,6 +149,7 @@
             <tr><td><code>poly self-update</code></td><td data-i18n="cmd_selfupdate">Check GitHub releases for a newer poly version; download, verify (SHA-256), and atomically replace the running binary.</td></tr>
             <tr><td><code>poly login</code> / <code>logout</code></td><td data-i18n="cmd_login">Sign in/out of your Poly account. Credentials live in <code>~/.poly/credentials.json</code> (mode 0600).</td></tr>
             <tr><td><code>poly account</code></td><td data-i18n="cmd_account">Print your signed-in email, username, bio, and plan.</td></tr>
+            <tr><td><code>poly send name version path</code></td><td data-i18n="cmd_send">Publish a file or directory to the community registry under your account. Requires <code>poly login</code>.</td></tr>
             <tr><td><code>poly version</code></td><td data-i18n="cmd_version">Print the poly build version, and your account/plan if signed in.</td></tr>
           </tbody>
         </table>
@@ -220,6 +224,17 @@ artifacts:
       <p data-i18n="au_p">Both log to <code>~/.poly/auto-update.log</code> so you can see what happened. Throttle state lives in <code>~/.poly/last-selfupdate-check</code> and <code>~/.poly/last-autoupgrade-check</code>.</p>
     </section>
 
+    <section class="doc-section" id="registry">
+      <h2 data-i18n="registry_h">Publishing your own package</h2>
+      <p data-i18n="registry_p"><code>poly send name version path</code> uploads a file or directory (auto-archived) to Poly's community registry under your account. <code>path</code> must contain (or be) a file named exactly <code>name</code> — that's what gets installed.</p>
+      <div class="code-block">poly login
+poly send hello-world 1.0.0 ./dist/hello-world --description "a demo tool"
+<span class="comment"># anyone can now run:</span>
+poly install community:hello-world</div>
+      <p data-i18n="registry_p2">Names are first-come-first-served, like npm — only the account that first published a name can push a new version over it. Community packages are <strong>never auto-detected</strong>: they're only found via the explicit <code>community:</code> prefix, in <code>poly search</code>, <code>poly install</code>, and on the <a href="dependencies.html">dependencies page</a>. This is deliberate — without it, anyone could publish a package literally named <code>requests</code> or <code>ripgrep</code> and have it silently shadow the real one for someone who typed a plain <code>poly install requests</code>.</p>
+      <p class="note-box" data-i18n="registry_note">There is no malware scanning. The SHA-256 recorded at publish time is verified at install time — that protects against corruption or tampering in transit, not against a malicious uploader. Only install community packages you trust.</p>
+    </section>
+
     <section class="doc-section" id="pro">
       <h2 data-i18n="pro_h">Poly Pro</h2>
       <p data-i18n="pro_p">Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:</p>
@@ -237,7 +252,8 @@ artifacts:
     en: {
       nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
       toc_title: "On this page", toc_commands: "Commands", toc_adapters: "Adapters", toc_resolution: "Resolution order",
-      toc_lockfile: "poly.json", toc_taps: "Tap formulas", toc_autoupdate: "Auto-update", toc_pro: "Pro", toc_llms: "llms.txt",
+      toc_lockfile: "poly.json", toc_taps: "Tap formulas", toc_autoupdate: "Auto-update", toc_registry: "Publishing", toc_pro: "Pro", toc_deps: "Search dependencies", toc_llms: "llms.txt",
+      nav_dependencies: "dependencies",
       eyebrow: "Documentation", title: "Everything poly does",
       lede: 'The full reference. For the pitch, see the <a href="index.html">homepage</a>.',
       commands_h: "Commands", th_command: "Command", th_does: "Does",
@@ -251,6 +267,7 @@ artifacts:
       cmd_selfupdate: 'Check GitHub releases for a newer poly version; download, verify (SHA-256), and atomically replace the running binary.',
       cmd_login: 'Sign in/out of your Poly account. Credentials live in <code>~/.poly/credentials.json</code> (mode 0600).',
       cmd_account: "Print your signed-in email, username, bio, and plan.",
+      cmd_send: 'Publish a file or directory to the community registry under your account. Requires <code>poly login</code>.',
       cmd_version: "Print the poly build version, and your account/plan if signed in.",
       commands_note: 'State lives in <code>~/.poly/manifest.json</code>. Tap binaries land in <code>~/.poly/bin</code> — make sure it\'s on your <code>PATH</code>.',
       adapters_h: "Adapters", th_adapter: "Adapter", th_installs_via: "Installs via", th_search_via: "Search via",
@@ -276,6 +293,10 @@ artifacts:
       au_li1: "<strong>poly self-update</strong> — free, for everyone. On every command, throttled to about once a day, poly checks GitHub releases in the background (a detached process, so it never blocks whatever you're doing) and updates itself if there's a newer version.",
       au_li2: '<strong>poly upgrade</strong> — additionally automatic for Pro accounts, same throttling and background behavior. On the free tier it only runs when you type <code>poly upgrade</code> yourself.',
       au_p: 'Both log to <code>~/.poly/auto-update.log</code> so you can see what happened. Throttle state lives in <code>~/.poly/last-selfupdate-check</code> and <code>~/.poly/last-autoupgrade-check</code>.',
+      registry_h: "Publishing your own package",
+      registry_p: '<code>poly send name version path</code> uploads a file or directory (auto-archived) to Poly\'s community registry under your account. <code>path</code> must contain (or be) a file named exactly <code>name</code> — that\'s what gets installed.',
+      registry_p2: 'Names are first-come-first-served, like npm — only the account that first published a name can push a new version over it. Community packages are <strong>never auto-detected</strong>: they\'re only found via the explicit <code>community:</code> prefix, in <code>poly search</code>, <code>poly install</code>, and on the <a href="dependencies.html">dependencies page</a>. This is deliberate — without it, anyone could publish a package literally named <code>requests</code> or <code>ripgrep</code> and have it silently shadow the real one for someone who typed a plain <code>poly install requests</code>.',
+      registry_note: 'There is no malware scanning. The SHA-256 recorded at publish time is verified at install time — that protects against corruption or tampering in transit, not against a malicious uploader. Only install community packages you trust.',
       pro_h: "Poly Pro",
       pro_p: 'Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:',
       pro_li1: "Concurrent installs when you name more than one package at once.",
@@ -284,7 +305,8 @@ artifacts:
     fr: {
       nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
       toc_title: "Sur cette page", toc_commands: "Commandes", toc_adapters: "Adapters", toc_resolution: "Ordre de résolution",
-      toc_lockfile: "poly.json", toc_taps: "Formules tap", toc_autoupdate: "Auto-update", toc_pro: "Pro", toc_llms: "llms.txt",
+      toc_lockfile: "poly.json", toc_taps: "Formules tap", toc_autoupdate: "Auto-update", toc_registry: "Publier", toc_pro: "Pro", toc_deps: "Chercher des dépendances", toc_llms: "llms.txt",
+      nav_dependencies: "dépendances",
       eyebrow: "Documentation", title: "Tout ce que fait poly",
       lede: 'La référence complète. Pour le pitch, voir la <a href="index.html">page d\'accueil</a>.',
       commands_h: "Commandes", th_command: "Commande", th_does: "Fait",
@@ -298,6 +320,7 @@ artifacts:
       cmd_selfupdate: 'Vérifie les releases GitHub pour une version plus récente de poly ; télécharge, vérifie (SHA-256), et remplace le binaire en cours d\'exécution de façon atomique.',
       cmd_login: 'Connexion/déconnexion de ton compte Poly. Les identifiants vivent dans <code>~/.poly/credentials.json</code> (mode 0600).',
       cmd_account: "Affiche ton e-mail, username, bio et formule connectés.",
+      cmd_send: 'Publie un fichier ou un dossier dans le registre communautaire sous ton compte. Nécessite <code>poly login</code>.',
       cmd_version: "Affiche la version buildée de poly, et ton compte/formule si connecté.",
       commands_note: 'L\'état vit dans <code>~/.poly/manifest.json</code>. Les binaires tap atterrissent dans <code>~/.poly/bin</code> — ajoute-le à ton <code>PATH</code>.',
       adapters_h: "Adapters", th_adapter: "Adapter", th_installs_via: "Installe via", th_search_via: "Recherche via",
@@ -323,6 +346,10 @@ artifacts:
       au_li1: "<strong>poly self-update</strong> — gratuit, pour tout le monde. À chaque commande, throttlé à environ 1×/jour, poly vérifie les releases GitHub en arrière-plan (un processus détaché, qui ne bloque jamais ce que tu fais) et se met à jour s'il y a une version plus récente.",
       au_li2: '<strong>poly upgrade</strong> — automatique en plus pour les comptes Pro, même throttling et comportement en arrière-plan. En gratuit, il ne tourne que si tu tapes <code>poly upgrade</code> toi-même.',
       au_p: 'Les deux logguent dans <code>~/.poly/auto-update.log</code> pour que tu voies ce qui s\'est passé. L\'état du throttle vit dans <code>~/.poly/last-selfupdate-check</code> et <code>~/.poly/last-autoupgrade-check</code>.',
+      registry_h: "Publier ton propre paquet",
+      registry_p: '<code>poly send nom version chemin</code> envoie un fichier ou un dossier (auto-archivé) vers le registre communautaire de Poly, sous ton compte. <code>chemin</code> doit contenir (ou être) un fichier nommé exactement <code>nom</code> — c\'est ce qui sera installé.',
+      registry_p2: 'Les noms sont premier arrivé premier servi, comme npm — seul le compte qui a publié un nom en premier peut y pousser une nouvelle version. Les paquets communautaires ne sont <strong>jamais détectés automatiquement</strong> : on ne les trouve que via le préfixe explicite <code>community:</code>, dans <code>poly search</code>, <code>poly install</code>, et sur la <a href="dependencies.html">page dépendances</a>. C\'est volontaire — sans ça, n\'importe qui pourrait publier un paquet nommé littéralement <code>requests</code> ou <code>ripgrep</code> et masquer silencieusement le vrai pour quelqu\'un qui tape un simple <code>poly install requests</code>.',
+      registry_note: 'Il n\'y a pas de scan anti-malware. Le SHA-256 enregistré à la publication est vérifié à l\'installation — ça protège contre la corruption ou l\'altération en transit, pas contre un uploader malveillant. N\'installe que des paquets communautaires en qui tu as confiance.',
       pro_h: "Poly Pro",
       pro_p: 'Poly est et reste 100% gratuit et open source — le catalogue tap intégré est entièrement gratuit aussi. Pro (0,99 € en une fois, via Stripe Checkout depuis <a href="account.html">ta page de compte</a>) débloque :',
       pro_li1: "Les installs en parallèle quand tu nommes plusieurs paquets d'un coup.",
