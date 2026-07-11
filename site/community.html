@@ -146,7 +146,8 @@
     text-decoration: none; color: var(--text);
   }
   .member-card:hover { text-decoration: none; border-color: var(--accent); }
-  .mini-badge.official { background: none; color: var(--ok); padding: 0; font-size: 0.9rem; }
+  .mini-badge.official { background: none; padding: 0; display: inline-flex; vertical-align: middle; }
+  .mini-badge.official svg { width: 0.85rem; height: 0.85rem; display: block; }
   .avatar-img {
     width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
     background: var(--ink); border: 1px solid var(--border);
@@ -250,7 +251,8 @@
       search_placeholder: "Search by username…",
       signin_prompt_html: '<a href="account.html">Sign in</a> to search and browse the community.',
       empty_note: "No one found.",
-      browse_note: "Recent members"
+      browse_note: "Recent members",
+      official_dev: "Official developer", official_app: "Official app"
     },
     fr: {
       nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
@@ -262,9 +264,20 @@
       search_placeholder: "Chercher par nom d'utilisateur…",
       signin_prompt_html: '<a href="account.html">Connecte-toi</a> pour chercher et parcourir la communauté.',
       empty_note: "Personne trouvé.",
-      browse_note: "Membres récents"
+      browse_note: "Membres récents",
+      official_dev: "Développeur officiel", official_app: "App officielle"
     }
   };
+
+  const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
+  function officialBadge(kind, extraClass) {
+    return `<span class="${extraClass} official" data-badge-kind="${kind}" title="${t(kind === 'dev' ? 'official_dev' : 'official_app')}">${OFFICIAL_BADGE_SVG}</span>`;
+  }
+  function refreshBadgeTitles() {
+    document.querySelectorAll('[data-badge-kind]').forEach((el) => {
+      el.title = t(el.dataset.badgeKind === 'dev' ? 'official_dev' : 'official_app');
+    });
+  }
 
   function lang() { return document.documentElement.lang || 'en'; }
   function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
@@ -287,6 +300,7 @@
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
     });
+    refreshBadgeTitles();
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
   }
 
@@ -361,7 +375,7 @@
       <a class="member-card" href="profile.html?u=${encodeURIComponent(u.username)}">
         <div class="avatar-img">${avatarHTML(u.avatar_url, u.username)}</div>
         <div class="member-info">
-          <div class="member-uname">@${escapeHtml(u.username)} ${u.is_official ? '<span class="mini-badge official" title="official">✓</span>' : ''} ${u.plan === 'pro' ? '<span class="mini-badge">pro</span>' : ''}</div>
+          <div class="member-uname">@${escapeHtml(u.username)} ${u.is_official ? officialBadge('dev', 'mini-badge') : ''} ${u.plan === 'pro' ? '<span class="mini-badge">pro</span>' : ''}</div>
           ${u.bio ? `<div class="member-bio">${escapeHtml(u.bio)}</div>` : ''}
         </div>
       </a>

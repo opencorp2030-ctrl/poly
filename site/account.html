@@ -132,7 +132,8 @@
   .pkg-row:last-of-type { border-bottom: none; }
   .pkg-row .pname { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
   .pkg-row .pmeta { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; font-family: var(--mono); }
-  .official-badge { color: var(--ok); font-size: 0.8rem; }
+  .official-badge { display: inline-flex; vertical-align: middle; }
+  .official-badge svg { width: 0.95rem; height: 0.95rem; display: block; }
 
   .cli-card .eyebrow { margin-bottom: 1.25rem; }
   .cli-tip {
@@ -308,7 +309,7 @@
           <div class="avatar-row">
             <div class="avatar-img" id="avatar-preview">—</div>
             <div class="avatar-meta">
-              <span class="username-display" id="profile-username">—</span><span class="official-badge" id="official-badge" style="display:none" title="official">✓</span>
+              <span class="username-display" id="profile-username">—</span><span class="official-badge" id="official-badge" data-badge-kind="dev" style="display:none"></span>
               <label class="avatar-upload">
                 <span data-i18n="avatar_change">Change photo</span>
                 <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/webp,image/gif" />
@@ -440,7 +441,8 @@
       packages_empty: "Nothing published yet — see the docs for poly send.",
       downloads_label: "downloads",
       err_generic: "Something went wrong. Try again.",
-      ok_check_email: "Check your email to confirm your account, then sign in."
+      ok_check_email: "Check your email to confirm your account, then sign in.",
+      official_dev: "Official developer", official_app: "Official app"
     },
     fr: {
       nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
@@ -477,9 +479,20 @@
       packages_empty: "Rien publié pour l'instant — voir la doc pour poly send.",
       downloads_label: "téléchargements",
       err_generic: "Un problème est survenu. Réessaie.",
-      ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi."
+      ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi.",
+      official_dev: "Développeur officiel", official_app: "App officielle"
     }
   };
+
+  const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
+  function officialBadge(kind) {
+    return `<span class="official-badge" data-badge-kind="${kind}" title="${t(kind === 'dev' ? 'official_dev' : 'official_app')}">${OFFICIAL_BADGE_SVG}</span>`;
+  }
+  function refreshBadgeTitles() {
+    document.querySelectorAll('.official-badge[data-badge-kind]').forEach((el) => {
+      el.title = t(el.dataset.badgeKind === 'dev' ? 'official_dev' : 'official_app');
+    });
+  }
 
   function lang() { return document.documentElement.lang || 'en'; }
   function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
@@ -502,6 +515,7 @@
     document.getElementById('submit-btn').textContent = mode === 'signup' ? t('btn_signup') : t('btn_signin');
     document.getElementById('switch-text').textContent = mode === 'signup' ? t('switch_to_signin_prompt') : t('switch_to_signup_prompt');
     document.getElementById('switch-link').textContent = mode === 'signup' ? t('switch_to_signin_link') : t('switch_to_signup_link');
+    refreshBadgeTitles();
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
   }
 
@@ -625,7 +639,7 @@
 
     list.innerHTML = data.map((p) => `
       <div class="pkg-row">
-        <div class="pname">${escapeHtml(p.name)} ${p.is_official ? '<span class="official-badge" title="official">✓</span>' : ''}</div>
+        <div class="pname">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''}</div>
         <div class="pmeta">v${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
       </div>
     `).join('');
@@ -649,7 +663,10 @@
     document.getElementById('profile-email').textContent = email;
     document.getElementById('profile-since').textContent = since;
     document.getElementById('profile-username').textContent = username ? '@' + username : '—';
-    document.getElementById('official-badge').style.display = data && data.is_official ? 'inline' : 'none';
+    const ownBadge = document.getElementById('official-badge');
+    ownBadge.innerHTML = OFFICIAL_BADGE_SVG;
+    ownBadge.title = t('official_dev');
+    ownBadge.style.display = data && data.is_official ? 'inline-flex' : 'none';
     document.getElementById('username-input').value = username;
     document.getElementById('bio-input').value = bio;
     document.getElementById('bio-count').textContent = bio.length;

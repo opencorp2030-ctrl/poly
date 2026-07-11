@@ -90,7 +90,8 @@
   }
   .result .rinstall:hover { border-color: var(--accent); }
   .result .rby { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.4rem; }
-  .official-badge { color: var(--ok); font-size: 0.85rem; }
+  .official-badge { display: inline-flex; vertical-align: middle; }
+  .official-badge svg { width: 0.85rem; height: 0.85rem; display: block; }
 
   .cta-row { margin-top: 3rem; text-align: center; }
   .cta-row p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.75rem; }
@@ -180,7 +181,8 @@
       lane_not_found: "Not found.", lane_error: "Lookup failed.",
       cta_p: "Published something of your own? Ship it to the community lane.",
       cta_btn: "poly send name version path →",
-      by: "published by", downloads_label: "downloads"
+      by: "published by", downloads_label: "downloads",
+      official_dev: "Official developer", official_app: "Official app"
     },
     fr: {
       nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
@@ -192,9 +194,20 @@
       lane_not_found: "Introuvable.", lane_error: "Échec de la recherche.",
       cta_p: "Tu as publié quelque chose ? Envoie-le dans la colonne communauté.",
       cta_btn: "poly send nom version chemin →",
-      by: "publié par", downloads_label: "téléchargements"
+      by: "publié par", downloads_label: "téléchargements",
+      official_dev: "Développeur officiel", official_app: "App officielle"
     }
   };
+
+  const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
+  function officialBadge(kind) {
+    return `<span class="official-badge" data-badge-kind="${kind}" title="${t(kind === 'dev' ? 'official_dev' : 'official_app')}">${OFFICIAL_BADGE_SVG}</span>`;
+  }
+  function refreshBadgeTitles() {
+    document.querySelectorAll('.official-badge[data-badge-kind]').forEach((el) => {
+      el.title = t(el.dataset.badgeKind === 'dev' ? 'official_dev' : 'official_app');
+    });
+  }
 
   function lang() { return document.documentElement.lang || 'en'; }
   function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
@@ -213,6 +226,7 @@
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
     });
+    refreshBadgeTitles();
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
   }
   document.querySelectorAll('.lang-btn').forEach((btn) => {
@@ -322,7 +336,7 @@
     }
     const html = data.map((p) => `
       <div class="result" style="margin-bottom:0.75rem">
-        <a class="rname" style="display:block" href="package.html?name=${encodeURIComponent(p.name)}">${escapeHtml(p.name)} ${p.is_official ? '<span class="official-badge" title="official">✓</span>' : ''}</a>
+        <a class="rname" style="display:block" href="package.html?name=${encodeURIComponent(p.name)}">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''}</a>
         <div class="rversion">${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
         ${p.description ? `<div class="rsummary">${escapeHtml(p.description)}</div>` : ''}
         <div class="rinstall" data-copy="community:${escapeHtml(p.name)}">poly install community:${escapeHtml(p.name)}</div>

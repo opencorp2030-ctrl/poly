@@ -59,7 +59,8 @@
     font-family: var(--mono); font-size: 1.8rem; color: var(--text-dim);
   }
   .uname { font-family: var(--mono); font-weight: 700; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
-  .official-badge { color: var(--ok); font-size: 1.2rem; }
+  .official-badge { display: inline-flex; vertical-align: middle; }
+  .official-badge svg { width: 1.1rem; height: 1.1rem; display: block; }
   .plan-badge {
     font-family: var(--mono); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
     text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 999px; margin-top: 0.4rem; display: inline-block;
@@ -120,7 +121,7 @@
       <div class="profile-head">
         <div class="avatar-img" id="avatar">—</div>
         <div>
-          <div class="uname"><span id="uname-text">—</span><span class="official-badge" id="official-badge" style="display:none" title="official">✓</span></div>
+          <div class="uname"><span id="uname-text">—</span><span class="official-badge" id="official-badge" data-badge-kind="dev" style="display:none"></span></div>
           <span class="plan-badge free" id="plan-badge">free</span>
         </div>
       </div>
@@ -147,7 +148,8 @@
       signin_prompt_html: '<a href="account.html">Sign in</a> to view community profiles.',
       not_found: "No one with that username.",
       apps_label: "Published apps", no_apps: "Nothing published yet.",
-      downloads_label: "downloads", member_since: "Member since"
+      downloads_label: "downloads", member_since: "Member since",
+      official_dev: "Official developer", official_app: "Official app"
     },
     fr: {
       nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
@@ -155,9 +157,20 @@
       signin_prompt_html: '<a href="account.html">Connecte-toi</a> pour voir les profils de la communauté.',
       not_found: "Personne avec ce nom d'utilisateur.",
       apps_label: "Applications publiées", no_apps: "Rien publié pour l'instant.",
-      downloads_label: "téléchargements", member_since: "Membre depuis"
+      downloads_label: "téléchargements", member_since: "Membre depuis",
+      official_dev: "Développeur officiel", official_app: "App officielle"
     }
   };
+
+  const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
+  function officialBadge(kind) {
+    return `<span class="official-badge" data-badge-kind="${kind}" title="${t(kind === 'dev' ? 'official_dev' : 'official_app')}">${OFFICIAL_BADGE_SVG}</span>`;
+  }
+  function refreshBadgeTitles() {
+    document.querySelectorAll('.official-badge[data-badge-kind]').forEach((el) => {
+      el.title = t(el.dataset.badgeKind === 'dev' ? 'official_dev' : 'official_app');
+    });
+  }
 
   function lang() { return document.documentElement.lang || 'en'; }
   function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
@@ -176,6 +189,7 @@
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
     });
+    refreshBadgeTitles();
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
   }
   document.querySelectorAll('.lang-btn').forEach((btn) => {
@@ -212,7 +226,10 @@
 
     document.getElementById('avatar').innerHTML = avatarHTML(p.avatar_url, p.username);
     document.getElementById('uname-text').textContent = '@' + p.username;
-    document.getElementById('official-badge').style.display = p.is_official ? 'inline' : 'none';
+    const ownedBadge = document.getElementById('official-badge');
+    ownedBadge.innerHTML = OFFICIAL_BADGE_SVG;
+    ownedBadge.title = t('official_dev');
+    ownedBadge.style.display = p.is_official ? 'inline-flex' : 'none';
     const badge = document.getElementById('plan-badge');
     badge.textContent = p.plan;
     badge.className = 'plan-badge ' + p.plan;
@@ -234,7 +251,7 @@
       empty.style.display = 'none';
       list.innerHTML = pkgs.map((pkg) => `
         <a class="pkg-card" style="display:block" href="package.html?name=${encodeURIComponent(pkg.name)}">
-          <div class="pname">${escapeHtml(pkg.name)} ${pkg.is_official ? '<span class="official-badge" title="official">✓</span>' : ''}</div>
+          <div class="pname">${escapeHtml(pkg.name)} ${pkg.is_official ? officialBadge('app') : ''}</div>
           <div class="pmeta">v${escapeHtml(pkg.version)} · ${pkg.download_count} ${escapeHtml(t('downloads_label'))}</div>
           ${pkg.description ? `<div class="pdesc">${escapeHtml(pkg.description)}</div>` : ''}
         </a>

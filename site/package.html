@@ -51,7 +51,8 @@
   .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; display: inline-block; }
 
   .pname { font-family: var(--mono); font-weight: 700; font-size: 1.8rem; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.3rem; }
-  .official-badge { color: var(--ok); font-size: 1.3rem; }
+  .official-badge { display: inline-flex; vertical-align: middle; }
+  .official-badge svg { width: 1.2rem; height: 1.2rem; display: block; }
   .pdesc { color: var(--text-dim); max-width: 62ch; margin: 0.75rem 0 2rem; font-size: 1.05rem; }
 
   .stats-row {
@@ -114,7 +115,7 @@
     </div>
 
     <div data-view="package">
-      <div class="pname"><span id="pname-text">—</span><span class="official-badge" id="official-badge" style="display:none" title="official">✓</span></div>
+      <div class="pname"><span id="pname-text">—</span><span class="official-badge" id="official-badge" data-badge-kind="app" style="display:none"></span></div>
       <p class="pdesc" id="pdesc"></p>
 
       <div class="stats-row">
@@ -155,7 +156,8 @@
       stat_version: "Version", stat_downloads: "Downloads", stat_size: "Size", stat_updated: "Updated",
       published_by: "Published by",
       safety_note: "Community packages aren't scanned for malware. The SHA-256 recorded at publish time is checked at install time — that protects against corruption or tampering in transit, not against a malicious publisher. Only install packages you trust.",
-      copied: "copied ✓"
+      copied: "copied ✓",
+      official_dev: "Official developer", official_app: "Official app"
     },
     fr: {
       nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
@@ -164,9 +166,17 @@
       stat_version: "Version", stat_downloads: "Téléchargements", stat_size: "Taille", stat_updated: "Mis à jour",
       published_by: "Publié par",
       safety_note: "Les paquets communautaires ne sont pas scannés pour détecter les malwares. Le SHA-256 enregistré à la publication est vérifié à l'installation — ça protège contre la corruption ou l'altération en transit, pas contre un publieur malveillant. N'installe que des paquets en qui tu as confiance.",
-      copied: "copié ✓"
+      copied: "copié ✓",
+      official_dev: "Développeur officiel", official_app: "App officielle"
     }
   };
+
+  const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
+  function refreshBadgeTitles() {
+    document.querySelectorAll('.official-badge[data-badge-kind]').forEach((el) => {
+      el.title = t(el.dataset.badgeKind === 'dev' ? 'official_dev' : 'official_app');
+    });
+  }
 
   function lang() { return document.documentElement.lang || 'en'; }
   function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
@@ -181,6 +191,7 @@
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
     });
+    refreshBadgeTitles();
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
   }
   document.querySelectorAll('.lang-btn').forEach((btn) => {
@@ -218,7 +229,10 @@
     const p = rows[0];
 
     document.getElementById('pname-text').textContent = p.name;
-    document.getElementById('official-badge').style.display = p.is_official ? 'inline' : 'none';
+    const pkgBadge = document.getElementById('official-badge');
+    pkgBadge.innerHTML = OFFICIAL_BADGE_SVG;
+    pkgBadge.title = t('official_app');
+    pkgBadge.style.display = p.is_official ? 'inline-flex' : 'none';
     document.getElementById('pdesc').textContent = p.description || '';
     document.getElementById('stat-version').textContent = p.version;
     document.getElementById('stat-downloads').textContent = p.download_count;
