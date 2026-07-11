@@ -339,13 +339,19 @@ function base64url(bytes: ArrayBuffer): string {
 // Every request self-registers as a client; there is no per-client
 // state worth tracking (public client, PKCE handles verification), so
 // this just mints an opaque id rather than persisting anything.
-function handleRegister(): Response {
+async function handleRegister(req: Request): Promise<Response> {
+  // RFC 7591 clients commonly expect their submitted metadata (redirect_uris
+  // above all) echoed back in the response, since that's what tells them
+  // which values the server considers registered for this client_id.
+  const submitted = await req.json().catch(() => ({} as Record<string, unknown>));
   const body = {
     client_id: "poly-mcp-" + randomId(8),
     client_id_issued_at: Math.floor(Date.now() / 1000),
     token_endpoint_auth_method: "none",
     grant_types: ["authorization_code"],
     response_types: ["code"],
+    redirect_uris: submitted.redirect_uris ?? [],
+    client_name: submitted.client_name ?? "Poly",
   };
   return new Response(JSON.stringify(body), { status: 201, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
 }
@@ -520,8 +526,15 @@ Deno.serve(async (req: Request) => {
   const baseUrl = "https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp";
 
   if (path.endsWith("/.well-known/oauth-authorization-server")) return handleAuthMetadata(baseUrl);
+  // Some MCP clients (observed: Claude.ai) probe OpenID Connect
+  // Discovery instead of (or before) plain OAuth AS metadata. The
+  // response shape is a superset-compatible document either way, so
+  // serve the same metadata here rather than leaving it 404/405 and
+  // stalling the whole discovery chain before it ever reaches
+  // /register or /authorize.
+  if (path.endsWith("/.well-known/openid-configuration")) return handleAuthMetadata(baseUrl);
   if (path.endsWith("/.well-known/oauth-protected-resource")) return handleResourceMetadata(baseUrl);
-  if (path.endsWith("/register") && req.method === "POST") return handleRegister();
+  if (path.endsWith("/register") && req.method === "POST") return handleRegister(req);
   if (path.endsWith("/authorize") && req.method === "GET") return handleAuthorizeGet(req);
   if (path.endsWith("/authorize") && req.method === "POST") return handleAuthorizePost(req);
   if (path.endsWith("/token") && req.method === "POST") return handleToken(req);
