@@ -17,6 +17,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"poly/internal/account"
 	"poly/internal/registry/embedded"
 )
 
@@ -35,12 +36,21 @@ type formulaArtifact struct {
 }
 
 type formula struct {
-	Name        string                     `yaml:"name"`
-	Description string                     `yaml:"description"`
-	Homepage    string                     `yaml:"homepage"`
-	Version     string                     `yaml:"version"`
-	Binary      string                     `yaml:"binary"`
-	Artifacts   map[string]formulaArtifact `yaml:"artifacts"`
+	Name        string `yaml:"name"`
+	Description string `yaml:"description"`
+	Homepage    string `yaml:"homepage"`
+	Version     string `yaml:"version"`
+	Binary      string `yaml:"binary"`
+	// Tier is "free" (default, if omitted) or "pro". Pro formulas are
+	// part of poly's expanded formula catalog and require an active
+	// Pro plan to install -- they still show up in search results so
+	// free users can see what they're missing.
+	Tier      string                     `yaml:"tier"`
+	Artifacts map[string]formulaArtifact `yaml:"artifacts"`
+}
+
+func (f formula) isPro() bool {
+	return strings.EqualFold(f.Tier, "pro")
 }
 
 func userTapsDir() (string, error) {
@@ -91,6 +101,9 @@ func (t Tap) Install(name, version string) (installedVersion string, err error) 
 	if !found {
 		return "", fmt.Errorf("no tap formula for %s", name)
 	}
+	if f.isPro() && !account.IsPro() {
+		return "", fmt.Errorf("%s is part of poly's Pro formula catalog — run `poly login` with an active Pro plan to install it", name)
+	}
 	if version != "" && version != f.Version {
 		return "", fmt.Errorf("tap %s only offers version %s (requested %s)", name, f.Version, version)
 	}
@@ -117,14 +130,15 @@ func (t Tap) Install(name, version string) (installedVersion string, err error) 
 	}
 	defer os.RemoveAll(extractDir)
 
-	if err := extractArchive(archivePath, artifact.URL, extractDir); err != nil {
-		return "", fmt.Errorf("extracting %s: %w", name, err)
-	}
-
 	binName := f.Binary
 	if runtime.GOOS == "windows" {
 		binName += ".exe"
 	}
+
+	if err := extractArchive(archivePath, artifact.URL, extractDir, binName); err != nil {
+		return "", fmt.Errorf("extracting %s: %w", name, err)
+	}
+
 	srcPath, err := findFile(extractDir, binName)
 	if err != nil {
 		return "", fmt.Errorf("could not find %s inside downloaded archive: %w", binName, err)
@@ -178,7 +192,11 @@ func (t Tap) Search(name string) (SearchResult, error) {
 	if !found {
 		return SearchResult{Found: false}, nil
 	}
-	return SearchResult{Found: true, Version: f.Version, Summary: f.Description}, nil
+	summary := f.Description
+	if f.isPro() {
+		summary += " [pro]"
+	}
+	return SearchResult{Found: true, Version: f.Version, Summary: summary}, nil
 }
 
 // BinDir exposes ~/.poly/bin so the CLI layer can tell the user to add it
@@ -229,15 +247,17 @@ func verifySHA256(path, expected string) error {
 	return nil
 }
 
-func extractArchive(archivePath, sourceURL, destDir string) error {
+func extractArchive(archivePath, sourceURL, destDir, binName string) error {
 	switch {
 	case strings.HasSuffix(sourceURL, ".tar.gz") || strings.HasSuffix(sourceURL, ".tgz"):
 		return extractTarGz(archivePath, destDir)
 	case strings.HasSuffix(sourceURL, ".zip"):
 		return extractZip(archivePath, destDir)
 	default:
-		// Raw binary, no archive.
-		return copyFile(archivePath, filepath.Join(destDir, filepath.Base(sourceURL)), 0o755)
+		// Raw binary, no archive -- write it directly under the expected
+		// binary name rather than the download's own filename (release
+		// assets are often named e.g. "jq-macos-arm64", not "jq").
+		return copyFile(archivePath, filepath.Join(destDir, binName), 0o755)
 	}
 }
 

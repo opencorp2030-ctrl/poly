@@ -9,7 +9,7 @@ type SearchResult struct {
 }
 
 // Adapter is implemented by every backend poly can install packages through
-// (pip, npm, tap/binary downloads, ...).
+// (pip, npm, brew, tap/binary downloads, ...).
 type Adapter interface {
 	Name() string
 	// Install installs name. version is "" for "latest".
@@ -24,12 +24,13 @@ type Adapter interface {
 func All() []Adapter {
 	return []Adapter{
 		Tap{},
+		Brew{},
 		Pip{},
 		Npm{},
 	}
 }
 
-// ByName looks up an adapter by its explicit prefix name (pip, npm, tap).
+// ByName looks up an adapter by its explicit prefix name (pip, npm, brew, tap).
 func ByName(name string) (Adapter, bool) {
 	for _, a := range All() {
 		if a.Name() == name {

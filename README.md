@@ -2,9 +2,9 @@
 
 **[English](README.md)** · [Français](README.fr.md)
 
-One command, every package manager. `poly` installs from pip, npm, and
-checksum-verified binary releases behind a single unified command, on
-macOS, Linux, and Windows.
+One command, every package manager. `poly` installs from pip, npm,
+Homebrew, and checksum-verified binary releases behind a single unified
+command, on macOS, Linux, and Windows.
 
 ```
 $ poly install ripgrep
@@ -18,9 +18,13 @@ installed requests 2.31.0 (via pip)
 $ poly install npm:cowsay
 installed cowsay 1.6.0 (via npm)
 
+$ poly install brew:jq
+installed jq 1.8.2 (via brew)
+
 $ poly list
 NAME      VERSION  ADAPTER  INSTALLED
 cowsay    1.6.0    npm      2026-07-11 15:52
+jq        1.8.2    brew     2026-07-11 17:30
 requests  2.31.0   pip      2026-07-11 15:52
 ripgrep   15.1.0   tap      2026-07-11 15:52
 ```
@@ -51,13 +55,14 @@ amd64/arm64) into `dist/`.
 ## How package resolution works
 
 `poly install <name>` tries each adapter's `Search` in order — **tap →
-pip → npm** — and installs through the first one that reports the
+brew → pip → npm** — and installs through the first one that reports the
 package exists. Force a specific backend with a prefix:
 
 | Command | Resolves to |
 |---|---|
-| `poly install ripgrep` | first match: tap → pip → npm |
+| `poly install ripgrep` | first match: tap → brew → pip → npm |
 | `poly install tap:ripgrep` | forced binary download from the tap formula |
+| `poly install brew:wget` | forced `brew install wget` |
 | `poly install pip:requests` | forced `pip install requests` |
 | `poly install npm:lodash` | forced `npm install -g lodash` |
 
@@ -82,14 +87,20 @@ State lives in `~/.poly/manifest.json`. Tap binaries land in `~/.poly/bin`
 
 ## Poly Pro
 
-Poly is and stays 100% free and open source. `poly install a b c` (multiple
-packages in one command) installs them **sequentially** on the free tier.
-Signed in with an active Pro plan (`poly login`), the same command installs
-them **concurrently** — a real, measurable speedup, not an artificial delay
-on the free tier. Manage your account (sign up, check your plan) at
-`site/account.html`, backed by Supabase Auth — see
-`internal/account/account.go` for the client-side logic and
-`internal/registry` / the `public.profiles` table for where plan status
+Poly is and stays 100% free and open source. Two real perks for Pro:
+
+- `poly install a b c` (multiple packages in one command) installs them
+  **sequentially** on the free tier; signed in with an active Pro plan
+  (`poly login`), the same command installs them **concurrently** — a
+  real, measurable speedup, not an artificial delay on the free tier.
+- The tap catalog has Pro-only formulas (currently `fd`, `jq`) alongside
+  the free ones (currently `ripgrep`) — `poly search` shows them either
+  way, marked `[pro]`, but `poly install` on one blocks with a clear
+  message if you're not signed in as Pro.
+
+Manage your account (sign up, check your plan) at `site/account.html`,
+backed by Supabase Auth — see `internal/account/account.go` for the
+client-side logic and the `public.profiles` table for where plan status
 lives.
 
 ## Adapters
@@ -100,10 +111,15 @@ lives.
   public free-text search API anymore.
 - **npm** — shells out to `npm install -g`, same live-streamed output.
   Search hits `registry.npmjs.org/<name>/latest`.
+- **brew** — shells out to a local `brew install`/`brew uninstall`, same
+  live-streamed output. Search hits the public
+  `formulae.brew.sh/api/formula/<name>.json`, so it works even without
+  brew installed (only actually installing needs it).
 - **tap** — installs prebuilt binaries directly from a pinned URL, with a
   live byte-progress bar during download, verified against a SHA-256
   checksum, then extracted (`.tar.gz`/`.zip`) or copied into
-  `~/.poly/bin`. No Python or Node runtime needed.
+  `~/.poly/bin`. No Python, Node, or Homebrew needed. Formulas can be
+  marked `tier: pro` — see below.
 
 ## Adding a tap formula
 
@@ -117,6 +133,7 @@ description: "Line-oriented search tool that recursively searches directories fo
 homepage: "https://github.com/BurntSushi/ripgrep"
 version: "15.1.0"
 binary: rg
+tier: free   # omit for free, or "pro" to gate it behind an active Pro plan
 artifacts:
   darwin_arm64:
     url: "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-aarch64-apple-darwin.tar.gz"
@@ -128,7 +145,8 @@ artifacts:
 ```
 
 The artifact key is `<GOOS>_<GOARCH>`. `poly install <name>` picks the
-entry matching the machine it's running on.
+entry matching the machine it's running on. Built-in formulas today:
+`ripgrep` (free), `fd` and `jq` (pro — see `internal/registry/embedded/taps`).
 
 ## Project layout
 

@@ -545,7 +545,7 @@
       <a class="btn" href="#how" data-i18n="cta_secondary">See how routing works →</a>
     </div>
 
-    <div class="term" role="img" aria-label="Terminal transcript of a poly session installing ripgrep, requests, and cowsay">
+    <div class="term" role="img" aria-label="Terminal transcript of a poly session installing ripgrep, requests, cowsay, and jq">
       <div class="term-bar">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         <span class="label">zsh — poly</span>
@@ -565,9 +565,13 @@ downloading ripgrep  [############################] 100%  1.7MiB/1.7MiB
 <span class="prompt">$</span> <span class="cmd">poly install npm:cowsay</span>
 <span class="ok">installed cowsay 1.6.0 (via npm)</span>
 
+<span class="prompt">$</span> <span class="cmd">poly install brew:jq</span>
+<span class="ok">installed jq 1.8.2 (via brew)</span>
+
 <span class="prompt">$</span> <span class="cmd">poly list</span>
 NAME      VERSION  ADAPTER  INSTALLED
 cowsay    1.6.0    npm      2026-07-11 15:52
+jq        1.8.2    brew     2026-07-11 17:30
 requests  2.31.0   pip      2026-07-11 15:52
 ripgrep   15.1.0   tap      2026-07-11 15:52
 <span class="prompt">$</span> <span class="cursor"></span></pre>
@@ -609,6 +613,8 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
     <div class="flow">
       <span class="step">tap</span>
       <span class="arrow">→</span>
+      <span class="step">brew</span>
+      <span class="arrow">→</span>
       <span class="step">pip</span>
       <span class="arrow">→</span>
       <span class="step">npm</span>
@@ -619,8 +625,9 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
       <table>
         <thead><tr><th data-i18n="how_th_command">Command</th><th data-i18n="how_th_resolves">Resolves to</th></tr></thead>
         <tbody>
-          <tr><td><code>poly install ripgrep</code></td><td data-i18n="how_row1">first match: tap → pip → npm</td></tr>
+          <tr><td><code>poly install ripgrep</code></td><td data-i18n="how_row1">first match: tap → brew → pip → npm</td></tr>
           <tr><td><code>poly install tap:ripgrep</code></td><td data-i18n="how_row2">forced binary download from the tap formula</td></tr>
+          <tr><td><code>poly install brew:wget</code></td><td data-i18n="how_row_brew">forced <code>brew install wget</code></td></tr>
           <tr><td><code>poly install pip:requests</code></td><td data-i18n="how_row3">forced <code>pip install requests</code></td></tr>
           <tr><td><code>poly install npm:lodash</code></td><td data-i18n="how_row4">forced <code>npm install -g lodash</code></td></tr>
         </tbody>
@@ -722,10 +729,10 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cta_primary_label: "$ copy install steps",
       cta_secondary: "See how routing works →",
       why_eyebrow: "Why poly",
-      why_title: "Three ecosystems, one manifest",
+      why_title: "Four ecosystems, one manifest",
       why_lede: "Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.",
       feat1_tag: "01 · Auto-routed",
-      feat1_p: "Poly checks its binary tap, then PyPI, then the npm registry, and installs from the first place the package actually exists. No need to remember if a tool ships as a Python package, an npm package, or a standalone binary.",
+      feat1_p: "Poly checks its binary tap, then Homebrew, then PyPI, then the npm registry, and installs from the first place the package actually exists. No need to remember if a tool ships as a Python package, an npm package, a brew formula, or a standalone binary.",
       feat2_tag: "02 · Verified",
       feat2_h: "Checksummed binaries",
       feat2_p: "Tap installs download a release asset over HTTPS, hash it with SHA-256, and compare against a pinned checksum in the formula before anything is extracted or placed on disk.",
@@ -738,7 +745,8 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       how_prefix_lede: "You can also force a specific backend with a prefix:",
       how_th_command: "Command",
       how_th_resolves: "Resolves to",
-      how_row1: "first match: tap → pip → npm",
+      how_row1: "first match: tap → brew → pip → npm",
+      how_row_brew: "forced <code>brew install wget</code>",
       how_row2: "forced binary download from the tap formula",
       how_row3: "forced <code>pip install requests</code>",
       how_row4: "forced <code>npm install -g lodash</code>",
@@ -768,7 +776,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       pro1_p: "Free installs packages one at a time. Pro runs <code>poly install a b c</code> concurrently, so multi-package installs actually finish faster — a measurable gain, not a fake one.",
       pro2_tag: "More taps",
       pro2_h: "Expanded formula catalog",
-      pro2_p: "Access to a larger, curated set of tap formulas beyond the small free built-in list — more binaries installable with zero setup.",
+      pro2_p: "Access to a larger, curated set of tap formulas beyond the small free built-in list (like <code>fd</code> and <code>jq</code>) — more binaries installable with zero setup.",
       pro3_tag: "Thanks",
       pro3_h: "You fund development",
       pro3_p: "A supporter badge next to your name in <code>poly version</code> and <code>poly list</code> — and you're directly paying for the next feature to get built.",
@@ -790,10 +798,10 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cta_primary_label: "$ copier les étapes d'install",
       cta_secondary: "Voir comment le routage fonctionne →",
       why_eyebrow: "Pourquoi poly",
-      why_title: "Trois écosystèmes, un seul manifeste",
+      why_title: "Quatre écosystèmes, un seul manifeste",
       why_lede: "Poly ne réimplémente ni pip ni npm — il route vers eux, et vers des binaires bruts, tout en gardant un seul registre de ce qui est installé et d'où ça vient.",
       feat1_tag: "01 · Routage automatique",
-      feat1_p: "Poly vérifie d'abord son tap binaire, puis PyPI, puis le registre npm, et installe depuis le premier endroit où le paquet existe réellement. Plus besoin de savoir si un outil est un paquet Python, un paquet npm, ou un binaire autonome.",
+      feat1_p: "Poly vérifie d'abord son tap binaire, puis Homebrew, puis PyPI, puis le registre npm, et installe depuis le premier endroit où le paquet existe réellement. Plus besoin de savoir si un outil est un paquet Python, un paquet npm, une formule brew, ou un binaire autonome.",
       feat2_tag: "02 · Vérifié",
       feat2_h: "Binaires vérifiés par checksum",
       feat2_p: "Les installations tap téléchargent un binaire de release en HTTPS, le hashent en SHA-256, et comparent le résultat au checksum fixé dans la formule avant toute extraction ou écriture sur disque.",
@@ -806,7 +814,8 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       how_prefix_lede: "Tu peux aussi forcer un backend précis avec un préfixe :",
       how_th_command: "Commande",
       how_th_resolves: "Résout vers",
-      how_row1: "première correspondance : tap → pip → npm",
+      how_row1: "première correspondance : tap → brew → pip → npm",
+      how_row_brew: "<code>brew install wget</code> forcé",
       how_row2: "téléchargement binaire forcé depuis la formule tap",
       how_row3: "<code>pip install requests</code> forcé",
       how_row4: "<code>npm install -g lodash</code> forcé",
@@ -834,7 +843,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       pro1_p: "La version gratuite installe les paquets un par un. Pro fait tourner <code>poly install a b c</code> en parallèle, donc les installs multiples finissent vraiment plus vite — un gain mesurable, pas inventé.",
       pro2_tag: "Plus de taps",
       pro2_h: "Catalogue de formules élargi",
-      pro2_p: "Accès à un ensemble plus large de formules tap curées, au-delà du petit set gratuit intégré — plus de binaires installables sans rien configurer.",
+      pro2_p: "Accès à un ensemble plus large de formules tap curées (comme <code>fd</code> et <code>jq</code>), au-delà du petit set gratuit intégré — plus de binaires installables sans rien configurer.",
       pro3_tag: "Merci",
       pro3_h: "Tu finances le développement",
       pro3_p: "Un badge de soutien à côté de ton nom dans <code>poly version</code> et <code>poly list</code> — et tu paies directement pour la prochaine fonctionnalité.",
