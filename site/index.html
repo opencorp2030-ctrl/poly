@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Poly — one command, every package manager</title>
+<meta name="description" content="Poly installs from pip, npm, and verified binary releases behind a single unified command, on macOS, Linux, and Windows." />
+<style>
+  :root {
+    --ink: #14171d;
+    --ink-raised: #1b1f27;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8;
+    --text-dim: #9c9686;
+    --accent: #f0a93e;
+    --accent-ink: #14171d;
+    --danger: #e0664a;
+    --ok: #6fbf8b;
+
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --container: 920px;
+    color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --ink: #eff1f4;
+    --ink-raised: #ffffff;
+    --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24;
+    --text-dim: #5b6270;
+    --accent: #a8660a;
+    --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4;
+      --ink-raised: #ffffff;
+      --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24;
+      --text-dim: #5b6270;
+      --accent: #a8660a;
+      --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding-left: clamp(1.25rem, 4vw, 2rem);
+    padding-right: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  header.top {
+    border-bottom: 1px solid var(--border);
+  }
+  header.top .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .wordmark {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .wordmark span { color: var(--accent); }
+  nav.top-links {
+    display: flex;
+    gap: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover { color: var(--accent); }
+
+  section { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(3rem, 7vw, 5.5rem); }
+  section + section { border-top: 1px solid var(--border); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 0.9rem;
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 5vw, 3.4rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.1rem;
+    text-wrap: balance;
+    max-width: 16ch;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .lede {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 52ch;
+    margin: 0 0 2rem;
+  }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 3rem; }
+  .btn {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.65rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary:hover { opacity: 0.92; }
+
+  .term {
+    background: var(--ink-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .term-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .term-bar .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+  .term-bar .label {
+    margin-left: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+  .term pre {
+    margin: 0;
+    padding: 1.25rem 1.4rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: var(--text-dim);
+  }
+  .term .prompt { color: var(--accent); }
+  .term .cmd { color: var(--text); }
+  .term .ok { color: var(--ok); }
+  .term .note { color: var(--text-dim); font-style: italic; }
+  .term .cursor {
+    display: inline-block;
+    width: 0.55em;
+    height: 1em;
+    background: var(--accent);
+    vertical-align: text-bottom;
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .term .cursor { animation: none; }
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  h2 {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+  .section-lede {
+    color: var(--text-dim);
+    max-width: 62ch;
+    margin: 0 0 2.5rem;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.75rem;
+  }
+  .feature .tag {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin: 0 0 0.6rem;
+  }
+  .feature h3 {
+    font-family: var(--sans);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  .feature p { color: var(--text-dim); margin: 0; font-size: 0.95rem; }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    margin: 0 0 2rem;
+  }
+  .flow .step {
+    border: 1px solid var(--border);
+    background: var(--ink-raised);
+    border-radius: 4px;
+    padding: 0.5rem 0.85rem;
+  }
+  .flow .arrow { color: var(--text-dim); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
+  th, td {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--ink-raised);
+  }
+  td code, .prefix-table td code {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    background: var(--ink-raised);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; }
+
+  .code-block {
+    background: var(--ink-raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0 0 1rem;
+  }
+  .code-block .comment { color: var(--text-dim); }
+
+  .note-box {
+    border-left: 3px solid var(--accent);
+    padding: 0.4rem 0 0.4rem 1rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin: 1.5rem 0 0;
+  }
+
+  footer {
+    padding: 2.5rem 0 3.5rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer code { font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="wordmark">poly<span>&gt;</span></div>
+    <nav class="top-links">
+      <a href="#install">install</a>
+      <a href="#how">how it works</a>
+      <a href="#commands">commands</a>
+      <a href="https://github.com/opencorp2030-ctrl/poly">github</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Package manager · macOS · Linux · Windows</p>
+    <h1>One command.<br>Every <em>package manager</em>.</h1>
+    <p class="lede">Poly installs from pip, npm, and checksum-verified binary releases behind a single unified command. No more remembering which tool owns which package.</p>
+    <div class="cta-row">
+      <button class="btn primary" id="copy-install" type="button">$ copy install steps</button>
+      <a class="btn" href="#how">See how routing works →</a>
+    </div>
+
+    <div class="term" role="img" aria-label="Terminal transcript of a poly session installing ripgrep, requests, and cowsay">
+      <div class="term-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="label">zsh — poly</span>
+      </div>
+      <pre><span class="prompt">$</span> <span class="cmd">poly search ripgrep</span>
+ripgrep 15.1.0 (tap)
+  Line-oriented search tool that recursively searches directories for a regex pattern
+
+<span class="prompt">$</span> <span class="cmd">poly install ripgrep</span>
+<span class="ok">installed ripgrep 15.1.0 (via tap)</span>
+<span class="note">note: tap binaries are installed to ~/.poly/bin — make sure it's on your PATH</span>
+
+<span class="prompt">$</span> <span class="cmd">poly install requests@2.31.0</span>
+<span class="ok">installed requests 2.31.0 (via pip)</span>
+
+<span class="prompt">$</span> <span class="cmd">poly install npm:cowsay</span>
+<span class="ok">installed cowsay 1.6.0 (via npm)</span>
+
+<span class="prompt">$</span> <span class="cmd">poly list</span>
+NAME      VERSION  ADAPTER  INSTALLED
+cowsay    1.6.0    npm      2026-07-11 15:52
+requests  2.31.0   pip      2026-07-11 15:52
+ripgrep   15.1.0   tap      2026-07-11 15:52
+<span class="prompt">$</span> <span class="cursor"></span></pre>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <p class="eyebrow">Why poly</p>
+    <h2>Three ecosystems, one manifest</h2>
+    <p class="section-lede">Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.</p>
+    <div class="grid-3">
+      <div class="feature">
+        <p class="tag">01 · Auto-routed</p>
+        <h3>poly install &lt;name&gt;</h3>
+        <p>Poly checks its binary tap, then PyPI, then the npm registry, and installs from the first place the package actually exists. No need to remember if a tool ships as a Python package, an npm package, or a standalone binary.</p>
+      </div>
+      <div class="feature">
+        <p class="tag">02 · Verified</p>
+        <h3>Checksummed binaries</h3>
+        <p>Tap installs download a release asset over HTTPS, hash it with SHA-256, and compare against a pinned checksum in the formula before anything is extracted or placed on disk.</p>
+      </div>
+      <div class="feature">
+        <p class="tag">03 · Pinnable</p>
+        <h3>name@version, anywhere</h3>
+        <p>Append <code>@version</code> to any install — <code>poly install requests@2.31.0</code> — and it's honored by the pip and npm adapters directly. One syntax, regardless of backend.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <p class="eyebrow">Mechanics</p>
+    <h2>How a name resolves to an adapter</h2>
+    <p class="section-lede">When you don't specify a backend, poly tries each adapter's <code>Search</code> in this order and installs through the first one that reports the package exists.</p>
+
+    <div class="flow">
+      <span class="step">tap</span>
+      <span class="arrow">→</span>
+      <span class="step">pip</span>
+      <span class="arrow">→</span>
+      <span class="step">npm</span>
+    </div>
+
+    <p class="section-lede" style="margin-bottom:1rem">You can also force a specific backend with a prefix:</p>
+    <div class="table-wrap prefix-table">
+      <table>
+        <thead><tr><th>Command</th><th>Resolves to</th></tr></thead>
+        <tbody>
+          <tr><td><code>poly install ripgrep</code></td><td>first match: tap → pip → npm</td></tr>
+          <tr><td><code>poly install tap:ripgrep</code></td><td>forced binary download from the tap formula</td></tr>
+          <tr><td><code>poly install pip:requests</code></td><td>forced <code>pip install requests</code></td></tr>
+          <tr><td><code>poly install npm:lodash</code></td><td>forced <code>npm install -g lodash</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note-box">Tap formulas are plain YAML — a small set ship embedded in the poly binary, and you can drop more into <code>~/.poly/taps/&lt;name&gt;.yaml</code> to override or extend them.</p>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <p class="eyebrow">Install</p>
+    <h2>Build from source</h2>
+    <p class="section-lede">Poly is early — there's no hosted installer yet. Building it takes one Go toolchain and a few seconds.</p>
+    <div class="code-block"><span class="comment"># macOS / Linux / Windows (with Go installed)</span>
+git clone https://github.com/opencorp2030-ctrl/poly.git
+cd poly
+go build -o poly .
+./poly version</div>
+    <p class="section-lede" style="margin-bottom:0">Cross-compiling for another OS/architecture only needs <code>GOOS</code> and <code>GOARCH</code>:</p>
+    <div class="code-block"><span class="comment"># from any machine, targeting Windows on amd64</span>
+GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
+  </div>
+</section>
+
+<section id="commands">
+  <div class="wrap">
+    <p class="eyebrow">Reference</p>
+    <h2>Commands</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Command</th><th>Does</th></tr></thead>
+        <tbody>
+          <tr><td><code>poly install [adapter:]name[@version]</code></td><td>install, auto-routed or forced</td></tr>
+          <tr><td><code>poly remove name</code></td><td>uninstall, via whichever adapter installed it</td></tr>
+          <tr><td><code>poly list</code></td><td>show everything poly has installed, and through what</td></tr>
+          <tr><td><code>poly search [adapter:]name</code></td><td>check existence and latest version across adapters</td></tr>
+          <tr><td><code>poly version</code></td><td>print the poly build version</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>poly is open source on <a href="https://github.com/opencorp2030-ctrl/poly">GitHub</a>. <code>~/.poly/manifest.json</code> tracks every install.</span>
+    <span>License: TBD</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy-install');
+    if (!btn) return;
+    var original = btn.textContent;
+    btn.addEventListener('click', function () {
+      var text = 'git clone https://github.com/opencorp2030-ctrl/poly.git && cd poly && go build -o poly .';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          btn.textContent = 'copied ✓';
+          setTimeout(function () { btn.textContent = original; }, 1600);
+        }).catch(function () {});
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>
