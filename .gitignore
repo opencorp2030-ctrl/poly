@@ -1,3 +1,5 @@
 /poly
 /dist
 .DS_Store
+installers/macos/*.pkg
+installers/windows/*.exe

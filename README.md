@@ -33,8 +33,20 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
 
 ## Install
 
-Requires Go 1.21+. There's no hosted installer yet, so build it from source
-and put the binary somewhere on your `PATH`:
+**macOS** — download [`poly-macos-0.5.0.pkg`](https://github.com/opencorp2030-ctrl/poly/releases/latest),
+open it, click through the installer. Installs a universal
+(Intel + Apple Silicon) binary to `/usr/local/bin/poly`. It's
+unsigned/unnotarized (no Apple Developer account yet), so Gatekeeper
+will warn on first open — right-click → Open, or
+`System Settings → Privacy & Security → Open Anyway`.
+
+**Windows** — download [`poly-setup-0.5.0.exe`](https://github.com/opencorp2030-ctrl/poly/releases/latest),
+run it. Installs to `%LOCALAPPDATA%\Poly` and adds it to your user
+`PATH` (no admin rights needed). It's unsigned, so SmartScreen will
+warn — "More info" → "Run anyway". *(Built cross-platform via NSIS;
+not yet verified on a real Windows machine — please report issues.)*
+
+**From source** (any OS, needs Go 1.21+):
 
 ```
 git clone https://github.com/opencorp2030-ctrl/poly.git
@@ -49,6 +61,9 @@ cp poly /opt/homebrew/bin/poly   # macOS (Homebrew's bin, no sudo needed)
 
 poly version              # now works from anywhere
 ```
+
+Rebuild the installers yourself with `VERSION=x.y.z installers/build.sh`
+(needs `makensis` for the Windows one: `brew install makensis`).
 
 Cross-compile for another OS/arch with `GOOS`/`GOARCH`, or run
 `scripts/build-all.sh` to build all five targets (darwin/linux/windows ×

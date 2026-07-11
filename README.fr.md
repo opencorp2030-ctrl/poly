@@ -33,9 +33,21 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
 
 ## Installation
 
-Nécessite Go 1.21+. Il n'y a pas encore d'installeur hébergé, donc il
-faut compiler depuis les sources et mettre le binaire quelque part sur
-ton `PATH` :
+**macOS** — télécharge [`poly-macos-0.5.0.pkg`](https://github.com/opencorp2030-ctrl/poly/releases/latest),
+ouvre-le, suis l'installeur. Installe un binaire universel
+(Intel + Apple Silicon) dans `/usr/local/bin/poly`. Non signé/non
+notarié (pas encore de compte Apple Developer), donc Gatekeeper va
+avertir à la première ouverture — clic droit → Ouvrir, ou
+`Réglages Système → Confidentialité et sécurité → Ouvrir quand même`.
+
+**Windows** — télécharge [`poly-setup-0.5.0.exe`](https://github.com/opencorp2030-ctrl/poly/releases/latest),
+lance-le. Installe dans `%LOCALAPPDATA%\Poly` et l'ajoute au `PATH` de
+ton utilisateur (pas besoin des droits admin). Non signé, donc
+SmartScreen va avertir — "Plus d'infos" → "Exécuter quand même".
+*(Construit en cross-plateforme via NSIS ; pas encore vérifié sur une
+vraie machine Windows — remonte les problèmes si tu en rencontres.)*
+
+**Depuis les sources** (tout OS, Go 1.21+ nécessaire) :
 
 ```
 git clone https://github.com/opencorp2030-ctrl/poly.git
@@ -50,6 +62,9 @@ cp poly /opt/homebrew/bin/poly   # macOS (bin de Homebrew, pas besoin de sudo)
 
 poly version              # marche maintenant depuis n'importe où
 ```
+
+Recompile les installeurs toi-même avec `VERSION=x.y.z installers/build.sh`
+(nécessite `makensis` pour celui de Windows : `brew install makensis`).
 
 Cross-compile pour un autre OS/architecture avec `GOOS`/`GOARCH`, ou
 lance `scripts/build-all.sh` pour builder les cinq cibles
