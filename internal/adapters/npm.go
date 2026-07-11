@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 )
 
@@ -34,8 +35,10 @@ func (n Npm) Install(name, version string) (installedVersion string, err error) 
 	}
 
 	install := exec.Command(bin, "install", "-g", spec)
-	if out, err := install.CombinedOutput(); err != nil {
-		return "", fmt.Errorf("npm install -g %s failed: %w\n%s", spec, err, out)
+	install.Stdout = os.Stdout
+	install.Stderr = os.Stderr
+	if err := install.Run(); err != nil {
+		return "", fmt.Errorf("npm install -g %s failed: %w", spec, err)
 	}
 
 	list := exec.Command(bin, "ls", "-g", name, "--depth=0", "--json")
@@ -61,8 +64,10 @@ func (n Npm) Remove(name string) error {
 		return err
 	}
 	uninstall := exec.Command(bin, "uninstall", "-g", name)
-	if out, err := uninstall.CombinedOutput(); err != nil {
-		return fmt.Errorf("npm uninstall -g %s failed: %w\n%s", name, err, out)
+	uninstall.Stdout = os.Stdout
+	uninstall.Stderr = os.Stderr
+	if err := uninstall.Run(); err != nil {
+		return fmt.Errorf("npm uninstall -g %s failed: %w", name, err)
 	}
 	return nil
 }

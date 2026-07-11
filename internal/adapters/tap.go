@@ -101,7 +101,7 @@ func (t Tap) Install(name, version string) (installedVersion string, err error) 
 		return "", fmt.Errorf("%s has no prebuilt binary for %s", name, key)
 	}
 
-	archivePath, err := downloadToTemp(artifact.URL)
+	archivePath, err := downloadToTemp(artifact.URL, name)
 	if err != nil {
 		return "", fmt.Errorf("downloading %s: %w", name, err)
 	}
@@ -187,7 +187,7 @@ func BinDir() (string, error) {
 	return polyBinDir()
 }
 
-func downloadToTemp(url string) (string, error) {
+func downloadToTemp(url, label string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
@@ -204,7 +204,7 @@ func downloadToTemp(url string) (string, error) {
 	}
 	defer tmp.Close()
 
-	if _, err := io.Copy(tmp, resp.Body); err != nil {
+	if err := copyWithProgress(tmp, resp.Body, resp.ContentLength, "downloading "+label); err != nil {
 		os.Remove(tmp.Name())
 		return "", err
 	}

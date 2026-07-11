@@ -1,11 +1,14 @@
 # poly
 
+**[English](README.md)** · [Français](README.fr.md)
+
 One command, every package manager. `poly` installs from pip, npm, and
 checksum-verified binary releases behind a single unified command, on
 macOS, Linux, and Windows.
 
 ```
 $ poly install ripgrep
+downloading ripgrep  [############################] 100%  1.7MiB/1.7MiB
 installed ripgrep 15.1.0 (via tap)
 note: tap binaries are installed to ~/.poly/bin — make sure it's on your PATH
 
@@ -77,14 +80,16 @@ State lives in `~/.poly/manifest.json`. Tap binaries land in `~/.poly/bin`
 
 ## Adapters
 
-- **pip** — shells out to `pip3`/`pip`. Search hits the PyPI JSON API
+- **pip** — shells out to `pip3`/`pip`, streaming its output live so you
+  see pip's own download progress. Search hits the PyPI JSON API
   (`pypi.org/pypi/<name>/json`), an exact-name lookup — PyPI has no
   public free-text search API anymore.
-- **npm** — shells out to `npm install -g`. Search hits
-  `registry.npmjs.org/<name>/latest`.
-- **tap** — installs prebuilt binaries directly from a pinned URL,
-  verified against a SHA-256 checksum, then extracted (`.tar.gz`/`.zip`)
-  or copied into `~/.poly/bin`. No Python or Node runtime needed.
+- **npm** — shells out to `npm install -g`, same live-streamed output.
+  Search hits `registry.npmjs.org/<name>/latest`.
+- **tap** — installs prebuilt binaries directly from a pinned URL, with a
+  live byte-progress bar during download, verified against a SHA-256
+  checksum, then extracted (`.tar.gz`/`.zip`) or copied into
+  `~/.poly/bin`. No Python or Node runtime needed.
 
 ## Adding a tap formula
 

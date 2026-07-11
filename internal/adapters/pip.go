@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -37,8 +38,10 @@ func (p Pip) Install(name, version string) (installedVersion string, err error) 
 	}
 
 	install := exec.Command(bin, "install", spec)
-	if out, err := install.CombinedOutput(); err != nil {
-		return "", fmt.Errorf("pip install %s failed: %w\n%s", spec, err, out)
+	install.Stdout = os.Stdout
+	install.Stderr = os.Stderr
+	if err := install.Run(); err != nil {
+		return "", fmt.Errorf("pip install %s failed: %w", spec, err)
 	}
 
 	show := exec.Command(bin, "show", name)
@@ -55,8 +58,10 @@ func (p Pip) Remove(name string) error {
 		return err
 	}
 	uninstall := exec.Command(bin, "uninstall", "-y", name)
-	if out, err := uninstall.CombinedOutput(); err != nil {
-		return fmt.Errorf("pip uninstall %s failed: %w\n%s", name, err, out)
+	uninstall.Stdout = os.Stdout
+	uninstall.Stderr = os.Stderr
+	if err := uninstall.Run(); err != nil {
+		return fmt.Errorf("pip uninstall %s failed: %w", name, err)
 	}
 	return nil
 }

@@ -16,6 +16,7 @@
     --accent-ink: #14171d;
     --danger: #e0664a;
     --ok: #6fbf8b;
+    --ok-glow: rgba(111, 191, 139, 0.45);
 
     --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -87,7 +88,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 64px;
+    gap: 1rem;
+    flex-wrap: wrap;
+    min-height: 64px;
   }
   .wordmark {
     font-family: var(--mono);
@@ -99,12 +102,34 @@
   .wordmark span { color: var(--accent); }
   nav.top-links {
     display: flex;
+    align-items: center;
     gap: 1.5rem;
     font-family: var(--mono);
     font-size: 0.85rem;
   }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover { color: var(--accent); }
+
+  .lang-toggle {
+    display: flex;
+    gap: 0.2rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.2rem;
+  }
+  .lang-btn {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
 
   section { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(3rem, 7vw, 5.5rem); }
   section + section { border-top: 1px solid var(--border); }
@@ -118,19 +143,37 @@
     margin: 0 0 0.9rem;
   }
 
-  h1 {
+  .hero { position: relative; }
+  .hero.has-custom-cursor, .hero.has-custom-cursor * { cursor: none; }
+
+  h1.hero-title {
     font-family: var(--mono);
     font-weight: 700;
     font-size: clamp(2.1rem, 5vw, 3.4rem);
-    line-height: 1.08;
+    line-height: 1.1;
     letter-spacing: -0.02em;
     margin: 0 0 1.1rem;
     text-wrap: balance;
-    max-width: 16ch;
+    max-width: 22ch;
   }
-  h1 em {
-    font-style: normal;
-    color: var(--accent);
+  .hero-title .word-wrapper {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+  }
+  .hero-title .word-inner {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(105%);
+    filter: blur(16px);
+    animation: word-reveal 1s cubic-bezier(0.05, 0.9, 0.1, 1) forwards;
+  }
+  @keyframes word-reveal {
+    0% { opacity: 0; transform: translateY(105%); filter: blur(16px); }
+    30% { opacity: 1; }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
   }
 
   .lede {
@@ -140,7 +183,7 @@
     margin: 0 0 2rem;
   }
 
-  .cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 3rem; }
+  .cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 3rem; }
   .btn {
     font-family: var(--mono);
     font-size: 0.9rem;
@@ -151,10 +194,42 @@
     background: transparent;
     color: var(--text);
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
   }
   .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   .btn:hover { border-color: var(--accent); }
   .btn.primary:hover { opacity: 0.92; }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ok);
+    position: relative;
+    display: inline-block;
+    animation: dot-pulse 2s infinite ease-in-out;
+  }
+  .status-dot::after {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    background: var(--ok-glow);
+    border-radius: 50%;
+    animation: dot-wave 2s infinite ease-in-out;
+  }
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+  @keyframes dot-wave {
+    0% { transform: scale(0.6); opacity: 0.85; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot, .status-dot::after { animation: none; }
+  }
 
   .term {
     background: var(--ink-raised);
@@ -201,6 +276,45 @@
     .term .cursor { animation: none; }
   }
   @keyframes blink { 50% { opacity: 0; } }
+
+  .wordmark-giant-wrap {
+    margin-top: clamp(2.75rem, 7vw, 4.5rem);
+    overflow: hidden;
+  }
+  .wordmark-giant {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: clamp(4rem, 16vw, 9.5rem);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    opacity: 0.92;
+    margin: 0;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .wordmark-giant .letter-wrapper {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+  .wordmark-giant .letter-inner {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-105%);
+    filter: blur(20px);
+    animation: letter-reveal 1.1s cubic-bezier(0.05, 0.9, 0.1, 1) forwards;
+  }
+  @keyframes letter-reveal {
+    0% { opacity: 0; transform: translateX(-105%); filter: blur(20px); }
+    25% { opacity: 1; }
+    100% { opacity: 0.92; transform: translateX(0); filter: blur(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-title .word-inner, .wordmark-giant .letter-inner {
+      animation: none; opacity: 1; transform: none; filter: none;
+    }
+  }
 
   h2 {
     font-family: var(--mono);
@@ -279,7 +393,6 @@
     border-radius: 3px;
   }
   tr:last-child td { border-bottom: none; }
-  td.num { font-variant-numeric: tabular-nums; }
 
   .code-block {
     background: var(--ink-raised);
@@ -309,6 +422,57 @@
   }
   footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   footer code { font-family: var(--mono); }
+
+  /* custom cursor, active only over the hero section */
+  .cursor-ring-outline {
+    position: fixed;
+    top: 0; left: 0;
+    width: 42px; height: 42px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    z-index: 500;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  }
+  .cursor-ring-outline.active { opacity: 1; }
+  .cursor-ring-outline.expanded { border-color: var(--text); }
+
+  .glass-cursor-card {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 501;
+    pointer-events: none;
+    padding: 0.6rem 1.1rem;
+    background: rgba(127, 127, 127, 0.10);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    will-change: transform, opacity;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-cursor-card.active { opacity: 1; }
+  .cursor-card-text {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor-ring-outline, .glass-cursor-card { display: none; }
+  }
+  @media (hover: none) {
+    .cursor-ring-outline, .glass-cursor-card { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -317,22 +481,29 @@
   <div class="wrap">
     <div class="wordmark">poly<span>&gt;</span></div>
     <nav class="top-links">
-      <a href="#install">install</a>
-      <a href="#how">how it works</a>
-      <a href="#commands">commands</a>
-      <a href="https://github.com/opencorp2030-ctrl/poly">github</a>
+      <a href="#install" data-i18n="nav_install">install</a>
+      <a href="#how" data-i18n="nav_how">how it works</a>
+      <a href="#commands" data-i18n="nav_commands">commands</a>
+      <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    </div>
   </div>
 </header>
 
 <section class="hero">
   <div class="wrap">
-    <p class="eyebrow">Package manager · macOS · Linux · Windows</p>
-    <h1>One command.<br>Every <em>package manager</em>.</h1>
-    <p class="lede">Poly installs from pip, npm, and checksum-verified binary releases behind a single unified command. No more remembering which tool owns which package.</p>
+    <p class="eyebrow" data-i18n="hero_eyebrow">Package manager · macOS · Linux · Windows</p>
+    <h1 class="hero-title" data-i18n="hero_title">One command.<br>Every package manager.</h1>
+    <p class="lede" data-i18n="hero_lede">Poly installs from pip, npm, and checksum-verified binary releases behind a single unified command. No more remembering which tool owns which package.</p>
     <div class="cta-row">
-      <button class="btn primary" id="copy-install" type="button">$ copy install steps</button>
-      <a class="btn" href="#how">See how routing works →</a>
+      <button class="btn primary" id="copy-install" type="button">
+        <span data-i18n="cta_primary_label">$ copy install steps</span>
+        <span class="status-dot" aria-hidden="true"></span>
+      </button>
+      <a class="btn" href="#how" data-i18n="cta_secondary">See how routing works →</a>
     </div>
 
     <div class="term" role="img" aria-label="Terminal transcript of a poly session installing ripgrep, requests, and cowsay">
@@ -345,6 +516,7 @@ ripgrep 15.1.0 (tap)
   Line-oriented search tool that recursively searches directories for a regex pattern
 
 <span class="prompt">$</span> <span class="cmd">poly install ripgrep</span>
+downloading ripgrep  [############################] 100%  1.7MiB/1.7MiB
 <span class="ok">installed ripgrep 15.1.0 (via tap)</span>
 <span class="note">note: tap binaries are installed to ~/.poly/bin — make sure it's on your PATH</span>
 
@@ -361,29 +533,33 @@ requests  2.31.0   pip      2026-07-11 15:52
 ripgrep   15.1.0   tap      2026-07-11 15:52
 <span class="prompt">$</span> <span class="cursor"></span></pre>
     </div>
+
+    <div class="wordmark-giant-wrap">
+      <h2 class="wordmark-giant" aria-hidden="true">poly</h2>
+    </div>
   </div>
 </section>
 
 <section id="why">
   <div class="wrap">
-    <p class="eyebrow">Why poly</p>
-    <h2>Three ecosystems, one manifest</h2>
-    <p class="section-lede">Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.</p>
+    <p class="eyebrow" data-i18n="why_eyebrow">Why poly</p>
+    <h2 data-i18n="why_title">Three ecosystems, one manifest</h2>
+    <p class="section-lede" data-i18n="why_lede">Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.</p>
     <div class="grid-3">
       <div class="feature">
-        <p class="tag">01 · Auto-routed</p>
+        <p class="tag" data-i18n="feat1_tag">01 · Auto-routed</p>
         <h3>poly install &lt;name&gt;</h3>
-        <p>Poly checks its binary tap, then PyPI, then the npm registry, and installs from the first place the package actually exists. No need to remember if a tool ships as a Python package, an npm package, or a standalone binary.</p>
+        <p data-i18n="feat1_p">Poly checks its binary tap, then PyPI, then the npm registry, and installs from the first place the package actually exists. No need to remember if a tool ships as a Python package, an npm package, or a standalone binary.</p>
       </div>
       <div class="feature">
-        <p class="tag">02 · Verified</p>
-        <h3>Checksummed binaries</h3>
-        <p>Tap installs download a release asset over HTTPS, hash it with SHA-256, and compare against a pinned checksum in the formula before anything is extracted or placed on disk.</p>
+        <p class="tag" data-i18n="feat2_tag">02 · Verified</p>
+        <h3 data-i18n="feat2_h">Checksummed binaries</h3>
+        <p data-i18n="feat2_p">Tap installs download a release asset over HTTPS, hash it with SHA-256, and compare against a pinned checksum in the formula before anything is extracted or placed on disk.</p>
       </div>
       <div class="feature">
-        <p class="tag">03 · Pinnable</p>
-        <h3>name@version, anywhere</h3>
-        <p>Append <code>@version</code> to any install — <code>poly install requests@2.31.0</code> — and it's honored by the pip and npm adapters directly. One syntax, regardless of backend.</p>
+        <p class="tag" data-i18n="feat3_tag">03 · Pinnable</p>
+        <h3 data-i18n="feat3_h">name@version, anywhere</h3>
+        <p data-i18n="feat3_p">Append <code>@version</code> to any install — <code>poly install requests@2.31.0</code> — and it's honored by the pip and npm adapters directly. One syntax, regardless of backend.</p>
       </div>
     </div>
   </div>
@@ -391,9 +567,9 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
 
 <section id="how">
   <div class="wrap">
-    <p class="eyebrow">Mechanics</p>
-    <h2>How a name resolves to an adapter</h2>
-    <p class="section-lede">When you don't specify a backend, poly tries each adapter's <code>Search</code> in this order and installs through the first one that reports the package exists.</p>
+    <p class="eyebrow" data-i18n="how_eyebrow">Mechanics</p>
+    <h2 data-i18n="how_title">How a name resolves to an adapter</h2>
+    <p class="section-lede" data-i18n="how_lede">When you don't specify a backend, poly tries each adapter's <code>Search</code> in this order and installs through the first one that reports the package exists.</p>
 
     <div class="flow">
       <span class="step">tap</span>
@@ -403,51 +579,51 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
       <span class="step">npm</span>
     </div>
 
-    <p class="section-lede" style="margin-bottom:1rem">You can also force a specific backend with a prefix:</p>
+    <p class="section-lede" style="margin-bottom:1rem" data-i18n="how_prefix_lede">You can also force a specific backend with a prefix:</p>
     <div class="table-wrap prefix-table">
       <table>
-        <thead><tr><th>Command</th><th>Resolves to</th></tr></thead>
+        <thead><tr><th data-i18n="how_th_command">Command</th><th data-i18n="how_th_resolves">Resolves to</th></tr></thead>
         <tbody>
-          <tr><td><code>poly install ripgrep</code></td><td>first match: tap → pip → npm</td></tr>
-          <tr><td><code>poly install tap:ripgrep</code></td><td>forced binary download from the tap formula</td></tr>
-          <tr><td><code>poly install pip:requests</code></td><td>forced <code>pip install requests</code></td></tr>
-          <tr><td><code>poly install npm:lodash</code></td><td>forced <code>npm install -g lodash</code></td></tr>
+          <tr><td><code>poly install ripgrep</code></td><td data-i18n="how_row1">first match: tap → pip → npm</td></tr>
+          <tr><td><code>poly install tap:ripgrep</code></td><td data-i18n="how_row2">forced binary download from the tap formula</td></tr>
+          <tr><td><code>poly install pip:requests</code></td><td data-i18n="how_row3">forced <code>pip install requests</code></td></tr>
+          <tr><td><code>poly install npm:lodash</code></td><td data-i18n="how_row4">forced <code>npm install -g lodash</code></td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note-box">Tap formulas are plain YAML — a small set ship embedded in the poly binary, and you can drop more into <code>~/.poly/taps/&lt;name&gt;.yaml</code> to override or extend them.</p>
+    <p class="note-box" data-i18n="how_note">Tap formulas are plain YAML — a small set ship embedded in the poly binary, and you can drop more into <code>~/.poly/taps/&lt;name&gt;.yaml</code> to override or extend them.</p>
   </div>
 </section>
 
 <section id="install">
   <div class="wrap">
-    <p class="eyebrow">Install</p>
-    <h2>Build from source</h2>
-    <p class="section-lede">Poly is early — there's no hosted installer yet. Building it takes one Go toolchain and a few seconds.</p>
-    <div class="code-block"><span class="comment"># macOS / Linux / Windows (with Go installed)</span>
+    <p class="eyebrow" data-i18n="install_eyebrow">Install</p>
+    <h2 data-i18n="install_title">Build from source</h2>
+    <p class="section-lede" data-i18n="install_lede">Poly is early — there's no hosted installer yet. Building it takes one Go toolchain and a few seconds.</p>
+    <div class="code-block"><span class="comment" data-i18n="install_comment1"># macOS / Linux / Windows (with Go installed)</span>
 git clone https://github.com/opencorp2030-ctrl/poly.git
 cd poly
 go build -o poly .
 ./poly version</div>
-    <p class="section-lede" style="margin-bottom:0">Cross-compiling for another OS/architecture only needs <code>GOOS</code> and <code>GOARCH</code>:</p>
-    <div class="code-block"><span class="comment"># from any machine, targeting Windows on amd64</span>
+    <p class="section-lede" style="margin-bottom:0" data-i18n="install_lede2">Cross-compiling for another OS/architecture only needs <code>GOOS</code> and <code>GOARCH</code>:</p>
+    <div class="code-block"><span class="comment" data-i18n="install_comment2"># from any machine, targeting Windows on amd64</span>
 GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
   </div>
 </section>
 
 <section id="commands">
   <div class="wrap">
-    <p class="eyebrow">Reference</p>
-    <h2>Commands</h2>
+    <p class="eyebrow" data-i18n="commands_eyebrow">Reference</p>
+    <h2 data-i18n="commands_title">Commands</h2>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Command</th><th>Does</th></tr></thead>
+        <thead><tr><th data-i18n="commands_th_command">Command</th><th data-i18n="commands_th_does">Does</th></tr></thead>
         <tbody>
-          <tr><td><code>poly install [adapter:]name[@version]</code></td><td>install, auto-routed or forced</td></tr>
-          <tr><td><code>poly remove name</code></td><td>uninstall, via whichever adapter installed it</td></tr>
-          <tr><td><code>poly list</code></td><td>show everything poly has installed, and through what</td></tr>
-          <tr><td><code>poly search [adapter:]name</code></td><td>check existence and latest version across adapters</td></tr>
-          <tr><td><code>poly version</code></td><td>print the poly build version</td></tr>
+          <tr><td><code>poly install [adapter:]name[@version]</code></td><td data-i18n="cmd_row1">install, auto-routed or forced</td></tr>
+          <tr><td><code>poly remove name</code></td><td data-i18n="cmd_row2">uninstall, via whichever adapter installed it</td></tr>
+          <tr><td><code>poly list</code></td><td data-i18n="cmd_row3">show everything poly has installed, and through what</td></tr>
+          <tr><td><code>poly search [adapter:]name</code></td><td data-i18n="cmd_row4">check existence and latest version across adapters</td></tr>
+          <tr><td><code>poly version</code></td><td data-i18n="cmd_row5">print the poly build version</td></tr>
         </tbody>
       </table>
     </div>
@@ -456,26 +632,251 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
 
 <footer>
   <div class="wrap">
-    <span>poly is open source on <a href="https://github.com/opencorp2030-ctrl/poly">GitHub</a>. <code>~/.poly/manifest.json</code> tracks every install.</span>
-    <span>License: TBD</span>
+    <span data-i18n="footer_text">poly is open source on <a href="https://github.com/opencorp2030-ctrl/poly">GitHub</a>. <code>~/.poly/manifest.json</code> tracks every install.</span>
+    <span data-i18n="footer_license">License: TBD</span>
   </div>
 </footer>
 
+<div id="cursor-ring" class="cursor-ring-outline" aria-hidden="true"></div>
+<div id="glass-card" class="glass-cursor-card" aria-hidden="true">
+  <span class="cursor-card-text" data-i18n="cursor_pill">Try poly</span>
+</div>
+
 <script>
-  (function () {
-    var btn = document.getElementById('copy-install');
-    if (!btn) return;
-    var original = btn.textContent;
-    btn.addEventListener('click', function () {
-      var text = 'git clone https://github.com/opencorp2030-ctrl/poly.git && cd poly && go build -o poly .';
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          btn.textContent = 'copied ✓';
-          setTimeout(function () { btn.textContent = original; }, 1600);
-        }).catch(function () {});
-      }
+(function () {
+  var I18N = {
+    en: {
+      nav_install: "install",
+      nav_how: "how it works",
+      nav_commands: "commands",
+      nav_github: "github",
+      hero_eyebrow: "Package manager · macOS · Linux · Windows",
+      hero_title: "One command.<br>Every package manager.",
+      hero_lede: "Poly installs from pip, npm, and checksum-verified binary releases behind a single unified command. No more remembering which tool owns which package.",
+      cta_primary_label: "$ copy install steps",
+      cta_secondary: "See how routing works →",
+      why_eyebrow: "Why poly",
+      why_title: "Three ecosystems, one manifest",
+      why_lede: "Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.",
+      feat1_tag: "01 · Auto-routed",
+      feat1_p: "Poly checks its binary tap, then PyPI, then the npm registry, and installs from the first place the package actually exists. No need to remember if a tool ships as a Python package, an npm package, or a standalone binary.",
+      feat2_tag: "02 · Verified",
+      feat2_h: "Checksummed binaries",
+      feat2_p: "Tap installs download a release asset over HTTPS, hash it with SHA-256, and compare against a pinned checksum in the formula before anything is extracted or placed on disk.",
+      feat3_tag: "03 · Pinnable",
+      feat3_h: "name@version, anywhere",
+      feat3_p: "Append <code>@version</code> to any install — <code>poly install requests@2.31.0</code> — and it's honored by the pip and npm adapters directly. One syntax, regardless of backend.",
+      how_eyebrow: "Mechanics",
+      how_title: "How a name resolves to an adapter",
+      how_lede: "When you don't specify a backend, poly tries each adapter's <code>Search</code> in this order and installs through the first one that reports the package exists.",
+      how_prefix_lede: "You can also force a specific backend with a prefix:",
+      how_th_command: "Command",
+      how_th_resolves: "Resolves to",
+      how_row1: "first match: tap → pip → npm",
+      how_row2: "forced binary download from the tap formula",
+      how_row3: "forced <code>pip install requests</code>",
+      how_row4: "forced <code>npm install -g lodash</code>",
+      how_note: "Tap formulas are plain YAML — a small set ship embedded in the poly binary, and you can drop more into <code>~/.poly/taps/&lt;name&gt;.yaml</code> to override or extend them.",
+      install_eyebrow: "Install",
+      install_title: "Build from source",
+      install_lede: "Poly is early — there's no hosted installer yet. Building it takes one Go toolchain and a few seconds.",
+      install_comment1: "# macOS / Linux / Windows (with Go installed)",
+      install_lede2: "Cross-compiling for another OS/architecture only needs <code>GOOS</code> and <code>GOARCH</code>:",
+      install_comment2: "# from any machine, targeting Windows on amd64",
+      commands_eyebrow: "Reference",
+      commands_title: "Commands",
+      commands_th_command: "Command",
+      commands_th_does: "Does",
+      cmd_row1: "install, auto-routed or forced",
+      cmd_row2: "uninstall, via whichever adapter installed it",
+      cmd_row3: "show everything poly has installed, and through what",
+      cmd_row4: "check existence and latest version across adapters",
+      cmd_row5: "print the poly build version",
+      footer_text: "poly is open source on <a href=\"https://github.com/opencorp2030-ctrl/poly\">GitHub</a>. <code>~/.poly/manifest.json</code> tracks every install.",
+      footer_license: "License: TBD",
+      cursor_pill: "Try poly",
+      copied_label: "copied ✓"
+    },
+    fr: {
+      nav_install: "installer",
+      nav_how: "fonctionnement",
+      nav_commands: "commandes",
+      nav_github: "github",
+      hero_eyebrow: "Gestionnaire de paquets · macOS · Linux · Windows",
+      hero_title: "Une commande.<br>Tous les gestionnaires de paquets.",
+      hero_lede: "Poly installe depuis pip, npm et des binaires vérifiés par checksum, derrière une seule commande unifiée. Fini de retenir quel outil gère quel paquet.",
+      cta_primary_label: "$ copier les étapes d'install",
+      cta_secondary: "Voir comment le routage fonctionne →",
+      why_eyebrow: "Pourquoi poly",
+      why_title: "Trois écosystèmes, un seul manifeste",
+      why_lede: "Poly ne réimplémente ni pip ni npm — il route vers eux, et vers des binaires bruts, tout en gardant un seul registre de ce qui est installé et d'où ça vient.",
+      feat1_tag: "01 · Routage automatique",
+      feat1_p: "Poly vérifie d'abord son tap binaire, puis PyPI, puis le registre npm, et installe depuis le premier endroit où le paquet existe réellement. Plus besoin de savoir si un outil est un paquet Python, un paquet npm, ou un binaire autonome.",
+      feat2_tag: "02 · Vérifié",
+      feat2_h: "Binaires vérifiés par checksum",
+      feat2_p: "Les installations tap téléchargent un binaire de release en HTTPS, le hashent en SHA-256, et comparent le résultat au checksum fixé dans la formule avant toute extraction ou écriture sur disque.",
+      feat3_tag: "03 · Version figée",
+      feat3_h: "nom@version, partout",
+      feat3_p: "Ajoute <code>@version</code> à n'importe quelle installation — <code>poly install requests@2.31.0</code> — et c'est respecté directement par les adapters pip et npm. Une seule syntaxe, quel que soit le backend.",
+      how_eyebrow: "Mécanique",
+      how_title: "Comment un nom se résout vers un adapter",
+      how_lede: "Quand tu ne précises pas de backend, poly essaie la recherche de chaque adapter dans cet ordre et installe via le premier qui signale que le paquet existe.",
+      how_prefix_lede: "Tu peux aussi forcer un backend précis avec un préfixe :",
+      how_th_command: "Commande",
+      how_th_resolves: "Résout vers",
+      how_row1: "première correspondance : tap → pip → npm",
+      how_row2: "téléchargement binaire forcé depuis la formule tap",
+      how_row3: "<code>pip install requests</code> forcé",
+      how_row4: "<code>npm install -g lodash</code> forcé",
+      how_note: "Les formules tap sont du YAML simple — un petit ensemble est intégré au binaire poly, et tu peux en ajouter d'autres dans <code>~/.poly/taps/&lt;name&gt;.yaml</code> pour les surcharger ou les étendre.",
+      install_eyebrow: "Installation",
+      install_title: "Compiler depuis les sources",
+      install_lede: "Poly est encore jeune — il n'y a pas encore d'installeur hébergé. La compilation ne prend qu'une toolchain Go et quelques secondes.",
+      install_comment1: "# macOS / Linux / Windows (avec Go installé)",
+      install_lede2: "Cross-compiler pour un autre OS/architecture ne demande que <code>GOOS</code> et <code>GOARCH</code> :",
+      install_comment2: "# depuis n'importe quelle machine, en ciblant Windows amd64",
+      commands_eyebrow: "Référence",
+      commands_title: "Commandes",
+      commands_th_command: "Commande",
+      commands_th_does: "Fait",
+      cmd_row1: "installe, routage auto ou forcé",
+      cmd_row2: "désinstalle, via l'adapter qui a fait l'installation",
+      cmd_row3: "affiche tout ce que poly a installé, et par quel biais",
+      cmd_row4: "vérifie l'existence et la dernière version sur tous les adapters",
+      cmd_row5: "affiche la version buildée de poly",
+      footer_text: "poly est open source sur <a href=\"https://github.com/opencorp2030-ctrl/poly\">GitHub</a>. <code>~/.poly/manifest.json</code> garde une trace de chaque installation.",
+      footer_license: "Licence : à définir",
+      cursor_pill: "Essayer poly",
+      copied_label: "copié ✓"
+    }
+  };
+
+  function splitHeroTitle() {
+    var el = document.querySelector('.hero-title');
+    if (!el) return;
+    var parts = el.innerHTML.split(/(\s+|<br\s*\/?>)/i);
+    el.innerHTML = '';
+    var idx = 0;
+    parts.forEach(function (part) {
+      if (/^<br/i.test(part)) { el.appendChild(document.createElement('br')); return; }
+      if (part.trim() === '') { if (part.length) el.appendChild(document.createTextNode(' ')); return; }
+      var wrapper = document.createElement('span');
+      wrapper.className = 'word-wrapper';
+      var inner = document.createElement('span');
+      inner.className = 'word-inner';
+      inner.textContent = part;
+      inner.style.animationDelay = (idx * 0.09) + 's';
+      idx++;
+      wrapper.appendChild(inner);
+      el.appendChild(wrapper);
     });
-  })();
+  }
+
+  function splitWordmark() {
+    var el = document.querySelector('.wordmark-giant');
+    if (!el) return;
+    var text = el.textContent.trim();
+    el.innerHTML = '';
+    text.split('').forEach(function (ch, i) {
+      var wrapper = document.createElement('span');
+      wrapper.className = 'letter-wrapper';
+      var inner = document.createElement('span');
+      inner.className = 'letter-inner';
+      inner.textContent = ch;
+      inner.style.animationDelay = (i * 0.07) + 's';
+      wrapper.appendChild(inner);
+      el.appendChild(wrapper);
+    });
+  }
+
+  function applyLanguage(lang) {
+    if (!I18N[lang]) lang = 'en';
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(function (node) {
+      var key = node.getAttribute('data-i18n');
+      if (I18N[lang][key] !== undefined) node.innerHTML = I18N[lang][key];
+    });
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+      var isActive = btn.getAttribute('data-lang') === lang;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+    splitHeroTitle();
+    try { localStorage.setItem('poly-lang', lang); } catch (e) {}
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var saved = null;
+    try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+    var browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+    applyLanguage(saved || browserLang);
+    splitWordmark();
+
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { applyLanguage(btn.getAttribute('data-lang')); });
+    });
+
+    var copyBtn = document.getElementById('copy-install');
+    var copyLabel = copyBtn ? copyBtn.querySelector('[data-i18n="cta_primary_label"]') : null;
+    if (copyBtn && copyLabel) {
+      copyBtn.addEventListener('click', function () {
+        var text = 'git clone https://github.com/opencorp2030-ctrl/poly.git && cd poly && go build -o poly .';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () {
+            var original = copyLabel.textContent;
+            var lang = document.documentElement.lang;
+            copyLabel.textContent = (I18N[lang] || I18N.en).copied_label;
+            setTimeout(function () { copyLabel.textContent = original; }, 1600);
+          }).catch(function () {});
+        }
+      });
+    }
+
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var noHover = window.matchMedia && window.matchMedia('(hover: none)').matches;
+    var hero = document.querySelector('.hero');
+    var ring = document.getElementById('cursor-ring');
+    var card = document.getElementById('glass-card');
+
+    if (hero && ring && card && !reduceMotion && !noHover) {
+      hero.classList.add('has-custom-cursor');
+
+      var mouseX = 0, mouseY = 0, cardX = 0, cardY = 0, scale = 0, targetScale = 0;
+      var primed = false, insideHero = false, hoveringBtn = false;
+
+      hero.addEventListener('mousemove', function (e) {
+        mouseX = e.clientX; mouseY = e.clientY;
+        if (!primed) { cardX = mouseX; cardY = mouseY; primed = true; }
+        if (insideHero && !hoveringBtn) targetScale = 1;
+      });
+      hero.addEventListener('mouseenter', function () { insideHero = true; if (!hoveringBtn) targetScale = 1; });
+      hero.addEventListener('mouseleave', function () { insideHero = false; targetScale = 0; });
+
+      if (copyBtn) {
+        copyBtn.addEventListener('mouseenter', function () {
+          hoveringBtn = true; targetScale = 0; ring.classList.add('expanded');
+        });
+        copyBtn.addEventListener('mouseleave', function () {
+          hoveringBtn = false; if (insideHero) targetScale = 1; ring.classList.remove('expanded');
+        });
+      }
+
+      (function tick() {
+        cardX += (mouseX - cardX) * 0.12;
+        cardY += (mouseY - cardY) * 0.12;
+        scale += (targetScale - scale) * 0.18;
+        var ringScale = ring.classList.contains('expanded') ? 1.5 * scale : scale;
+
+        card.style.transform = 'translate3d(' + cardX + 'px,' + cardY + 'px,0) translate(-50%,-50%) scale(' + scale + ')';
+        ring.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%) scale(' + ringScale + ')';
+        card.classList.toggle('active', scale > 0.02);
+        ring.classList.toggle('active', scale > 0.02 || insideHero);
+
+        requestAnimationFrame(tick);
+      })();
+    }
+  });
+})();
 </script>
 
 </body>
