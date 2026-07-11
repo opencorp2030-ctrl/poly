@@ -8,6 +8,7 @@
 <style>
   :root {
     --ink: #14171d;
+    --ink-rgb: 20, 23, 29;
     --ink-raised: #1b1f27;
     --border: rgba(255, 255, 255, 0.10);
     --text: #e9e4d8;
@@ -27,6 +28,7 @@
 
   :root[data-theme="light"] {
     --ink: #eff1f4;
+    --ink-rgb: 239, 241, 244;
     --ink-raised: #ffffff;
     --border: rgba(20, 23, 29, 0.10);
     --text: #1b1e24;
@@ -39,6 +41,7 @@
   @media (prefers-color-scheme: light) {
     :root:not([data-theme="dark"]) {
       --ink: #eff1f4;
+      --ink-rgb: 239, 241, 244;
       --ink-raised: #ffffff;
       --border: rgba(20, 23, 29, 0.10);
       --text: #1b1e24;
@@ -143,8 +146,36 @@
     margin: 0 0 0.9rem;
   }
 
-  .hero { position: relative; }
+  .hero { position: relative; overflow: hidden; }
   .hero.has-custom-cursor, .hero.has-custom-cursor * { cursor: none; }
+  .hero > .wrap { position: relative; z-index: 1; }
+
+  .hero-video-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .hero-video-bg video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.5;
+    filter: saturate(0.85);
+  }
+  .hero-video-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 130% 65% at 50% 0%,
+        rgba(var(--ink-rgb), 0.94) 0%,
+        rgba(var(--ink-rgb), 0.35) 45%,
+        rgba(var(--ink-rgb), 0.35) 62%,
+        rgba(var(--ink-rgb), 0.97) 100%);
+  }
 
   h1.hero-title {
     font-family: var(--mono);
@@ -494,6 +525,11 @@
 </header>
 
 <section class="hero">
+  <div class="hero-video-bg" aria-hidden="true">
+    <video id="hero-video" autoplay muted loop playsinline>
+      <source src="assets/flower.mp4" type="video/mp4">
+    </video>
+  </div>
   <div class="wrap">
     <p class="eyebrow" data-i18n="hero_eyebrow">Package manager · macOS · Linux · Windows</p>
     <h1 class="hero-title" data-i18n="hero_title">One command.<br>Every package manager.</h1>
@@ -834,6 +870,13 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
 
     var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var noHover = window.matchMedia && window.matchMedia('(hover: none)').matches;
+
+    var heroVideo = document.getElementById('hero-video');
+    if (heroVideo && reduceMotion) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.removeAttribute('loop');
+      heroVideo.pause();
+    }
     var hero = document.querySelector('.hero');
     var ring = document.getElementById('cursor-ring');
     var card = document.getElementById('glass-card');
