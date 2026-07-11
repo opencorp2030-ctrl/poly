@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Package · Poly</title>
+<meta name="description" content="Details for a package published to the Poly community registry: publisher, downloads, and how to install it." />
+<style>
+  :root {
+    --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
+    --ok: #6fbf8b;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --container: 720px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
+
+  header.top { border-bottom: 1px solid var(--border); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover { color: var(--accent); }
+  .lang-toggle { display: flex; gap: 0.2rem; border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem; }
+  .lang-btn { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.3rem 0.65rem; border-radius: 999px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
+
+  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+  .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; display: inline-block; }
+
+  .pname { font-family: var(--mono); font-weight: 700; font-size: 1.8rem; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.3rem; }
+  .official-badge { color: var(--ok); font-size: 1.3rem; }
+  .pdesc { color: var(--text-dim); max-width: 62ch; margin: 0.75rem 0 2rem; font-size: 1.05rem; }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin-bottom: 2rem;
+  }
+  .stat-tile { background: var(--ink-raised); padding: 1.1rem; }
+  .stat-value { font-family: var(--mono); font-weight: 700; font-size: 1.3rem; color: var(--accent); display: block; margin-bottom: 0.3rem; font-variant-numeric: tabular-nums; }
+  .stat-label { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); }
+
+  .install-box {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-family: var(--mono); font-size: 0.9rem; background: var(--ink-raised); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.85rem 1.1rem; cursor: pointer; margin-bottom: 2rem; overflow-x: auto;
+  }
+  .install-box:hover { border-color: var(--accent); }
+
+  .publisher-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+  .avatar-img {
+    width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    background: var(--ink-raised); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 1rem; color: var(--text-dim);
+  }
+  .publisher-label { font-size: 0.78rem; color: var(--text-dim); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.04em; }
+  .publisher-name { font-weight: 600; }
+
+  .note-box { border-left: 3px solid var(--accent); padding: 0.4rem 0 0.4rem 1rem; color: var(--text-dim); font-size: 0.88rem; margin: 2rem 0 0; max-width: 62ch; }
+  .notfound-note { color: var(--text-dim); font-size: 0.9rem; padding: 1rem 0; }
+
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links">
+      <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs.html" data-i18n="nav_docs">docs</a>
+      <a href="community.html" data-i18n="nav_community">community</a>
+      <a href="account.html" data-i18n="nav_account">account</a>
+    </nav>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <a href="dependencies.html" class="back-link" data-i18n="back">← Back to dependencies</a>
+
+    <div data-view="notfound">
+      <p class="notfound-note" data-i18n="not_found">No community package with that name.</p>
+    </div>
+
+    <div data-view="package">
+      <div class="pname"><span id="pname-text">—</span><span class="official-badge" id="official-badge" style="display:none" title="official">✓</span></div>
+      <p class="pdesc" id="pdesc"></p>
+
+      <div class="stats-row">
+        <div class="stat-tile"><span class="stat-value" id="stat-version">—</span><span class="stat-label" data-i18n="stat_version">Version</span></div>
+        <div class="stat-tile"><span class="stat-value" id="stat-downloads">—</span><span class="stat-label" data-i18n="stat_downloads">Downloads</span></div>
+        <div class="stat-tile"><span class="stat-value" id="stat-size">—</span><span class="stat-label" data-i18n="stat_size">Size</span></div>
+        <div class="stat-tile"><span class="stat-value" id="stat-updated">—</span><span class="stat-label" data-i18n="stat_updated">Updated</span></div>
+      </div>
+
+      <div class="install-box" id="install-box">
+        <span id="install-text">poly install community:…</span>
+      </div>
+
+      <div class="publisher-row">
+        <div class="avatar-img" id="avatar">—</div>
+        <div>
+          <div class="publisher-label" data-i18n="published_by">Published by</div>
+          <a class="publisher-name" id="publisher-link" href="#">@—</a>
+        </div>
+      </div>
+
+      <p class="note-box" data-i18n="safety_note">Community packages aren't scanned for malware. The SHA-256 recorded at publish time is checked at install time — that protects against corruption or tampering in transit, not against a malicious publisher. Only install packages you trust.</p>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
+      back: "← Back to dependencies",
+      not_found: "No community package with that name.",
+      stat_version: "Version", stat_downloads: "Downloads", stat_size: "Size", stat_updated: "Updated",
+      published_by: "Published by",
+      safety_note: "Community packages aren't scanned for malware. The SHA-256 recorded at publish time is checked at install time — that protects against corruption or tampering in transit, not against a malicious publisher. Only install packages you trust.",
+      copied: "copied ✓"
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
+      back: "← Retour aux dépendances",
+      not_found: "Aucun paquet communautaire avec ce nom.",
+      stat_version: "Version", stat_downloads: "Téléchargements", stat_size: "Taille", stat_updated: "Mis à jour",
+      published_by: "Publié par",
+      safety_note: "Les paquets communautaires ne sont pas scannés pour détecter les malwares. Le SHA-256 enregistré à la publication est vérifié à l'installation — ça protège contre la corruption ou l'altération en transit, pas contre un publieur malveillant. N'installe que des paquets en qui tu as confiance.",
+      copied: "copié ✓"
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+  }
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => applyLanguage(btn.getAttribute('data-lang')));
+  });
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+  function avatarHTML(avatarUrl, username) {
+    if (avatarUrl) return `<img src="${escapeHtml(avatarUrl)}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    return escapeHtml((username || '?').charAt(0).toUpperCase());
+  }
+  function humanSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+  function showView(name) {
+    document.querySelectorAll('[data-view]').forEach((el) => el.classList.toggle('active', el.getAttribute('data-view') === name));
+  }
+
+  const pkgName = new URLSearchParams(window.location.search).get('name') || '';
+
+  async function loadPackage() {
+    const { data: rows, error } = await supabase
+      .from('community_packages_public')
+      .select('name, version, description, size_bytes, download_count, is_official, updated_at, uploader_username')
+      .eq('name', pkgName)
+      .limit(1);
+
+    if (error || !rows || rows.length === 0) { showView('notfound'); return; }
+    const p = rows[0];
+
+    document.getElementById('pname-text').textContent = p.name;
+    document.getElementById('official-badge').style.display = p.is_official ? 'inline' : 'none';
+    document.getElementById('pdesc').textContent = p.description || '';
+    document.getElementById('stat-version').textContent = p.version;
+    document.getElementById('stat-downloads').textContent = p.download_count;
+    document.getElementById('stat-size').textContent = humanSize(p.size_bytes);
+    document.getElementById('stat-updated').textContent = new Date(p.updated_at).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US');
+    document.getElementById('install-text').textContent = 'poly install community:' + p.name;
+    document.getElementById('avatar').innerHTML = avatarHTML(null, p.uploader_username);
+
+    const link = document.getElementById('publisher-link');
+    link.textContent = '@' + p.uploader_username;
+    link.href = 'profile.html?u=' + encodeURIComponent(p.uploader_username);
+
+    showView('package');
+  }
+
+  document.getElementById('install-box').addEventListener('click', () => {
+    const text = document.getElementById('install-text').textContent;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        const el = document.getElementById('install-text');
+        const original = el.textContent;
+        el.textContent = t('copied');
+        setTimeout(() => { el.textContent = original; }, 1200);
+      }).catch(() => {});
+    }
+  });
+
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+  loadPackage();
+</script>
+
+</body>
+</html>

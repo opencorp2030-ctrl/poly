@@ -322,11 +322,11 @@
     }
     const html = data.map((p) => `
       <div class="result" style="margin-bottom:0.75rem">
-        <div class="rname">${escapeHtml(p.name)} ${p.is_official ? '<span class="official-badge" title="official">✓</span>' : ''}</div>
+        <a class="rname" style="display:block" href="package.html?name=${encodeURIComponent(p.name)}">${escapeHtml(p.name)} ${p.is_official ? '<span class="official-badge" title="official">✓</span>' : ''}</a>
         <div class="rversion">${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
         ${p.description ? `<div class="rsummary">${escapeHtml(p.description)}</div>` : ''}
         <div class="rinstall" data-copy="community:${escapeHtml(p.name)}">poly install community:${escapeHtml(p.name)}</div>
-        ${p.uploader_username ? `<div class="rby">${t('by')} @${escapeHtml(p.uploader_username)}</div>` : ''}
+        ${p.uploader_username ? `<div class="rby">${t('by')} <a href="profile.html?u=${encodeURIComponent(p.uploader_username)}">@${escapeHtml(p.uploader_username)}</a></div>` : ''}
       </div>
     `).join('');
     setLane('community', 'found', html);
