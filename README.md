@@ -6,6 +6,8 @@ One command, every package manager. `poly` installs from pip, npm,
 Homebrew, and checksum-verified binary releases behind a single unified
 command, on macOS, Linux, and Windows.
 
+Site + account management: **[poly.candygate.eu](https://poly.candygate.eu)**
+
 ```
 $ poly install ripgrep
 downloading ripgrep  [############################] 100%  1.7MiB/1.7MiB

@@ -157,6 +157,63 @@
     font-size: 0.82rem; color: var(--text-dim); margin-top: 0.75rem; text-align: center;
   }
 
+  .pro-confirmed {
+    display: flex; align-items: center; gap: 0.6rem;
+    background: rgba(111, 191, 139, 0.10);
+    border: 1px solid rgba(111, 191, 139, 0.3);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--ok);
+  }
+  .pro-confirmed .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
+
+  .avatar-row {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+  }
+  .avatar-img {
+    width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+    background: var(--ink); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 1.4rem; color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .avatar-upload {
+    font-family: var(--mono); font-size: 0.78rem; color: var(--accent);
+    cursor: pointer; border: none; background: none; padding: 0; text-align: left;
+  }
+  .avatar-upload:hover { text-decoration: underline; }
+  .avatar-upload input[type="file"] { display: none; }
+  .avatar-meta { display: flex; flex-direction: column; gap: 0.3rem; }
+  .username-display { font-weight: 600; font-size: 1.05rem; }
+
+  .field textarea {
+    width: 100%; padding: 0.7rem 0.85rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--ink); color: var(--text); font-family: var(--sans); font-size: 0.9rem;
+    resize: vertical; min-height: 4.5rem;
+  }
+  .field textarea:focus { border-color: var(--accent); outline: none; }
+  .field-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem; text-align: right; }
+  .btn.small { width: auto; padding: 0.45rem 0.9rem; font-size: 0.8rem; margin-top: 0.5rem; }
+
+  .search-card { max-width: 420px; margin: 1.25rem auto 0; }
+  .search-results { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .search-result {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px;
+  }
+  .search-result .avatar-img { width: 40px; height: 40px; font-size: 1rem; }
+  .search-result .info { flex: 1; min-width: 0; }
+  .search-result .uname { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
+  .search-result .ubio { font-size: 0.8rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .search-empty { font-size: 0.85rem; color: var(--text-dim); text-align: center; padding: 0.5rem 0; }
+  .mini-badge {
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px;
+    background: var(--accent); color: var(--accent-ink);
+  }
+
   [data-view] { display: none; }
   [data-view].active { display: block; }
 </style>
@@ -211,7 +268,31 @@
         <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
         <h1 data-i18n="acct_title">Your account</h1>
 
-        <div class="profile-row">
+        <div class="avatar-row">
+          <div class="avatar-img" id="avatar-preview">—</div>
+          <div class="avatar-meta">
+            <span class="username-display" id="profile-username">—</span>
+            <label class="avatar-upload">
+              <span data-i18n="avatar_change">Change photo</span>
+              <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/webp,image/gif" />
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="username-input" data-i18n="field_username">Username</label>
+          <input id="username-input" type="text" maxlength="30" pattern="[a-zA-Z0-9_.\-]{1,30}" />
+        </div>
+
+        <div class="field">
+          <label for="bio-input" data-i18n="field_bio">Bio</label>
+          <textarea id="bio-input" maxlength="280" data-i18n-placeholder="bio_placeholder"></textarea>
+          <div class="field-hint"><span id="bio-count">0</span>/280</div>
+        </div>
+
+        <button class="btn small" id="save-profile-btn" type="button" data-i18n="btn_save">Save changes</button>
+
+        <div class="profile-row" style="margin-top:1.25rem">
           <span class="k" data-i18n="field_email">Email</span>
           <span class="v" id="profile-email">—</span>
         </div>
@@ -224,12 +305,28 @@
           <span class="v" id="profile-since">—</span>
         </div>
 
-        <button class="btn primary" id="upgrade-btn" type="button" style="margin-top:1.5rem" data-i18n="pro_cta">Get Poly Pro — €0.99</button>
-        <p class="upgrade-note" data-i18n="upgrade_note">Payments aren't wired up yet — this is a placeholder until checkout is live.</p>
+        <p class="status" id="profile-status"></p>
+
+        <div id="upgrade-block">
+          <button class="btn primary" id="upgrade-btn" type="button" style="margin-top:1.5rem" data-i18n="pro_cta">Get Poly Pro — €0.99</button>
+          <p class="upgrade-note" data-i18n="upgrade_note_generic">One-time payment, handled by Stripe Checkout.</p>
+        </div>
+        <div id="pro-confirmed-block" class="pro-confirmed" style="display:none">
+          <span class="dot"></span>
+          <span data-i18n="already_pro">You're on Poly Pro — thanks for the support.</span>
+        </div>
 
         <button class="btn" id="signout-btn" type="button" style="margin-top:0.75rem" data-i18n="btn_signout">Sign out</button>
       </div>
 
+    </div>
+
+    <div class="card search-card" data-view="profile">
+      <p class="eyebrow" data-i18n="search_eyebrow">Find people</p>
+      <div class="field" style="margin-bottom:0">
+        <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" />
+      </div>
+      <div class="search-results" id="search-results"></div>
     </div>
   </div>
 </main>
@@ -251,7 +348,21 @@
       switch_to_signin_prompt: "Already have an account?", switch_to_signin_link: "Sign in",
       acct_title: "Your account",
       pro_cta: "Get Poly Pro — €0.99",
-      upgrade_note: "Payments aren't wired up yet — this is a placeholder until checkout is live.",
+      upgrade_note_generic: "One-time payment, handled by Stripe Checkout.",
+      already_pro: "You're on Poly Pro — thanks for the support.",
+      checkout_loading: "Redirecting to checkout…",
+      checkout_success: "Payment received — welcome to Pro!",
+      checkout_cancelled: "Checkout cancelled — no charge was made.",
+      avatar_change: "Change photo",
+      field_username: "Username",
+      field_bio: "Bio",
+      bio_placeholder: "Say something about yourself…",
+      btn_save: "Save changes",
+      saved_ok: "Saved.",
+      err_username_taken: "That username is already taken.",
+      search_eyebrow: "Find people",
+      search_placeholder: "Search by username…",
+      search_no_results: "No one found.",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in."
     },
@@ -264,7 +375,21 @@
       switch_to_signin_prompt: "Déjà un compte ?", switch_to_signin_link: "Se connecter",
       acct_title: "Ton compte",
       pro_cta: "Obtenir Poly Pro — 0,99 €",
-      upgrade_note: "Le paiement n'est pas encore branché — c'est un espace réservé en attendant.",
+      upgrade_note_generic: "Paiement unique, géré par Stripe Checkout.",
+      already_pro: "Tu es sur Poly Pro — merci pour le soutien.",
+      checkout_loading: "Redirection vers le paiement…",
+      checkout_success: "Paiement reçu — bienvenue dans Pro !",
+      checkout_cancelled: "Paiement annulé — aucun débit n'a été effectué.",
+      avatar_change: "Changer la photo",
+      field_username: "Nom d'utilisateur",
+      field_bio: "Bio",
+      bio_placeholder: "Dis-en un peu plus sur toi…",
+      btn_save: "Enregistrer",
+      saved_ok: "Enregistré.",
+      err_username_taken: "Ce nom d'utilisateur est déjà pris.",
+      search_eyebrow: "Trouver des gens",
+      search_placeholder: "Chercher par nom d'utilisateur…",
+      search_no_results: "Personne trouvé.",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi."
     }
@@ -279,6 +404,10 @@
     document.querySelectorAll('[data-i18n]').forEach((node) => {
       const key = node.getAttribute('data-i18n');
       if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+      const key = node.getAttribute('data-i18n-placeholder');
+      if (I18N[l][key] !== undefined) node.placeholder = I18N[l][key];
     });
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
@@ -309,6 +438,12 @@
     el.className = 'status' + (kind ? ' show ' + kind : '');
   }
 
+  function setProfileStatus(message, kind) {
+    const el = document.getElementById('profile-status');
+    el.textContent = message || '';
+    el.className = 'status' + (kind ? ' show ' + kind : '');
+  }
+
   function showView(name) {
     document.querySelectorAll('[data-view]').forEach((el) => {
       el.classList.toggle('active', el.getAttribute('data-view') === name);
@@ -335,29 +470,186 @@
     await supabase.auth.signOut();
   });
 
-  document.getElementById('upgrade-btn').addEventListener('click', () => {
-    setStatus('');
-    alert(t('upgrade_note'));
+  document.getElementById('upgrade-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('upgrade-btn');
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = t('checkout_loading');
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('not signed in');
+
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+        },
+      });
+      const payload = await resp.json();
+      if (!resp.ok || !payload.url) throw new Error(payload.error || t('err_generic'));
+
+      window.location.href = payload.url;
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = original;
+      setProfileStatus(err.message || t('err_generic'), 'error');
+    }
   });
 
+  let currentUserId = null;
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+
+  function avatarPreviewHTML(avatarUrl, username) {
+    if (avatarUrl) return `<img src="${escapeHtml(avatarUrl)}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    return escapeHtml((username || '?').charAt(0).toUpperCase());
+  }
+
+  function setProBlocks(isPro) {
+    document.getElementById('upgrade-block').style.display = isPro ? 'none' : 'block';
+    document.getElementById('pro-confirmed-block').style.display = isPro ? 'flex' : 'none';
+  }
+
   async function renderProfile(session) {
+    currentUserId = session.user.id;
     const { data, error } = await supabase
       .from('profiles')
-      .select('email, plan, created_at')
+      .select('email, plan, created_at, username, bio, avatar_url')
       .eq('id', session.user.id)
       .single();
 
     const email = (data && data.email) || session.user.email;
     const plan = (data && data.plan) || 'free';
     const since = data && data.created_at ? new Date(data.created_at).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US') : '—';
+    const username = (data && data.username) || '';
+    const bio = (data && data.bio) || '';
+    const avatarUrl = data && data.avatar_url;
 
     document.getElementById('profile-email').textContent = email;
     document.getElementById('profile-since').textContent = since;
+    document.getElementById('profile-username').textContent = username ? '@' + username : '—';
+    document.getElementById('username-input').value = username;
+    document.getElementById('bio-input').value = bio;
+    document.getElementById('bio-count').textContent = bio.length;
+    document.getElementById('avatar-preview').innerHTML = avatarPreviewHTML(avatarUrl, username);
+
     const badge = document.getElementById('profile-plan');
     badge.textContent = plan;
     badge.className = 'plan-badge ' + plan;
+    setProBlocks(plan === 'pro');
 
     showView('profile');
+
+    const checkoutParam = new URLSearchParams(window.location.search).get('checkout');
+    if (checkoutParam === 'success') {
+      setProfileStatus(t('checkout_success'), 'ok');
+      // The Stripe webhook updates the plan asynchronously, so it may not
+      // have landed yet at redirect time -- poll briefly for it.
+      if (plan !== 'pro') pollForProUpgrade(session, 5);
+    } else if (checkoutParam === 'cancelled') {
+      setProfileStatus(t('checkout_cancelled'), 'error');
+    }
+    if (checkoutParam) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('checkout');
+      window.history.replaceState({}, '', url);
+    }
+  }
+
+  function pollForProUpgrade(session, attemptsLeft) {
+    if (attemptsLeft <= 0) return;
+    setTimeout(async () => {
+      const { data } = await supabase.from('profiles').select('plan').eq('id', session.user.id).single();
+      if (data && data.plan === 'pro') {
+        const badge = document.getElementById('profile-plan');
+        badge.textContent = 'pro';
+        badge.className = 'plan-badge pro';
+        setProBlocks(true);
+      } else {
+        pollForProUpgrade(session, attemptsLeft - 1);
+      }
+    }, 1500);
+  }
+
+  document.getElementById('avatar-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentUserId) return;
+
+    setProfileStatus('', null);
+    const ext = (file.name.split('.').pop() || 'png').toLowerCase();
+    const path = `${currentUserId}/avatar.${ext}`;
+
+    const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true });
+    if (uploadError) { setProfileStatus(uploadError.message || t('err_generic'), 'error'); return; }
+
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
+    const avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+    const { error: updateError } = await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', currentUserId);
+    if (updateError) { setProfileStatus(updateError.message || t('err_generic'), 'error'); return; }
+
+    document.getElementById('avatar-preview').innerHTML = avatarPreviewHTML(avatarUrl, document.getElementById('username-input').value);
+    setProfileStatus(t('saved_ok'), 'ok');
+  });
+
+  document.getElementById('bio-input').addEventListener('input', (e) => {
+    document.getElementById('bio-count').textContent = e.target.value.length;
+  });
+
+  document.getElementById('save-profile-btn').addEventListener('click', async () => {
+    if (!currentUserId) return;
+    const username = document.getElementById('username-input').value.trim();
+    const bio = document.getElementById('bio-input').value.trim();
+
+    const { error } = await supabase.from('profiles').update({ username, bio }).eq('id', currentUserId);
+    if (error) {
+      const msg = error.code === '23505' ? t('err_username_taken') : (error.message || t('err_generic'));
+      setProfileStatus(msg, 'error');
+      return;
+    }
+    document.getElementById('profile-username').textContent = username ? '@' + username : '—';
+    setProfileStatus(t('saved_ok'), 'ok');
+  });
+
+  let searchDebounce = null;
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    clearTimeout(searchDebounce);
+    const q = e.target.value.trim();
+    searchDebounce = setTimeout(() => runSearch(q), 300);
+  });
+
+  async function runSearch(q) {
+    const resultsEl = document.getElementById('search-results');
+    if (!q) { resultsEl.innerHTML = ''; return; }
+
+    const { data, error } = await supabase
+      .from('profiles_public')
+      .select('id, username, bio, avatar_url, plan')
+      .ilike('username', `%${q}%`)
+      .neq('id', currentUserId || '')
+      .limit(15);
+
+    if (error || !data || data.length === 0) {
+      resultsEl.innerHTML = `<p class="search-empty">${escapeHtml(t('search_no_results'))}</p>`;
+      return;
+    }
+
+    resultsEl.innerHTML = data.map((u) => `
+      <div class="search-result">
+        <div class="avatar-img">${avatarPreviewHTML(u.avatar_url, u.username)}</div>
+        <div class="info">
+          <div class="uname">@${escapeHtml(u.username)} ${u.plan === 'pro' ? '<span class="mini-badge">pro</span>' : ''}</div>
+          ${u.bio ? `<div class="ubio">${escapeHtml(u.bio)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
   }
 
   supabase.auth.onAuthStateChange((_event, session) => {
