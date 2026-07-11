@@ -3,8 +3,10 @@
 > Poly is a cross-platform CLI package manager: one command (`poly install <name>`) that
 > routes to pip, npm, Homebrew, cargo, go install, or its own checksum-verified binary
 > "tap" downloads, whichever actually has the package, on macOS, Linux, and Windows.
-> It does not replace pip/npm/brew — it orchestrates them behind a single interface and
-> keeps one local record (`~/.poly/manifest.json`) of what got installed through which.
+> Poly works alongside pip/npm/brew rather than replacing them — it unifies them behind
+> a single interface, keeps one local record (`~/.poly/manifest.json`) of what got
+> installed through which, and can write that state to a committable `poly.json` so a
+> second machine can reproduce it with a single `poly install`.
 
 Poly is free and open source. A one-time €0.99 "Pro" unlock adds concurrent multi-package
 installs and automatic background package upgrades — it does not gate any package or
@@ -28,7 +30,9 @@ formula; the entire built-in tap catalog is free.
 - `poly upgrade` — check every installed package against its adapter's latest version and reinstall what's outdated.
 - `poly self-update` — check GitHub releases, download, SHA-256-verify, and atomically replace the running poly binary.
 - `poly login` / `poly logout` / `poly account` — Supabase-backed account: sign in, sign out, print your email/username/bio/plan.
+- `poly send name version path` — publish a file or directory to the community registry under your signed-in account. Installable by anyone via `poly install community:name` (never auto-detected, to prevent name-squatting on real packages).
 - `poly version` — print the build version and, if signed in, your account/plan.
+- `poly doctor` — check for common setup problems: missing toolchains, an unwritable `~/.poly`, `~/.poly/bin` missing from `PATH`, GitHub reachability.
 
 ## Adapters (in auto-detect order)
 
@@ -38,6 +42,8 @@ formula; the entire built-in tap catalog is free.
 4. `npm` — shells to `npm install -g name@latest` (or `@version`). Search hits the npm registry API.
 5. `cargo` — shells to `cargo install --force`. Search hits the crates.io API.
 6. `go` — shells to `go install <module>@version`; takes a full module import path, not a short name (e.g. `golang.org/x/tools/cmd/goimports`), so it's realistically only used via an explicit `go:` prefix.
+
+`community` is a 7th adapter (user-published packages, via `poly send`) that is deliberately excluded from auto-detect order — only reachable via an explicit `community:` prefix, so a published name can never silently shadow a real pip/npm/crates.io package.
 
 ## Key files and formats
 
@@ -53,4 +59,7 @@ formula; the entire built-in tap catalog is free.
 - Full docs: https://poly.candygate.eu/docs.html
 - Account (sign up / manage plan): https://poly.candygate.eu/account.html
 - Community directory + live download/member stats: https://poly.candygate.eu/community.html
+- Cross-ecosystem dependency search (pip/npm/crates.io/Homebrew/community, live): https://poly.candygate.eu/dependencies.html
+- Public user profiles: https://poly.candygate.eu/profile.html?u=<username>
+- Public package detail pages: https://poly.candygate.eu/package.html?name=<package>
 - Source code, issues: https://github.com/opencorp2030-ctrl/poly

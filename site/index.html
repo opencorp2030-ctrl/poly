@@ -586,7 +586,7 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
   <div class="wrap">
     <p class="eyebrow" data-i18n="why_eyebrow">Why poly</p>
     <h2 data-i18n="why_title">Three ecosystems, one manifest</h2>
-    <p class="section-lede" data-i18n="why_lede">Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.</p>
+    <p class="section-lede" data-i18n="why_lede">Poly works alongside pip and npm instead of replacing them — one command routes to whichever already has your package, and poly.json turns that into a manifest anyone can clone and reproduce with a single poly install.</p>
     <div class="grid-3">
       <div class="feature">
         <p class="tag" data-i18n="feat1_tag">01 · Auto-routed</p>
@@ -701,7 +701,9 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
           <tr><td><code>poly upgrade</code></td><td data-i18n="cmd_row_upgrade">update every installed package to its latest version</td></tr>
           <tr><td><code>poly self-update</code></td><td data-i18n="cmd_row_selfupdate">update poly itself to the latest release</td></tr>
           <tr><td><code>poly account</code> / <code>login</code> / <code>logout</code></td><td data-i18n="cmd_row_account">manage your signed-in Poly account</td></tr>
+          <tr><td><code>poly send name version path</code></td><td data-i18n="cmd_row_send">publish a package to the community registry</td></tr>
           <tr><td><code>poly version</code></td><td data-i18n="cmd_row5">print the poly build version</td></tr>
+          <tr><td><code>poly doctor</code></td><td data-i18n="cmd_row_doctor">check for common setup problems</td></tr>
         </tbody>
       </table>
     </div>
@@ -770,7 +772,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cta_secondary: "See how routing works →",
       why_eyebrow: "Why poly",
       why_title: "Six ecosystems, one manifest",
-      why_lede: "Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.",
+      why_lede: "Poly works alongside pip and npm instead of replacing them — one command routes to whichever already has your package, and poly.json turns that into a manifest anyone can clone and reproduce with a single poly install.",
       feat1_tag: "01 · Auto-routed",
       feat1_p: "Poly checks its binary tap, then Homebrew, then PyPI, then the npm registry, then crates.io, then the Go module proxy, and installs from the first place the package actually exists. No need to remember which ecosystem a tool ships from.",
       feat2_tag: "02 · Verified",
@@ -822,7 +824,9 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cmd_row_upgrade: "update every installed package to its latest version",
       cmd_row_selfupdate: "update poly itself to the latest release",
       cmd_row_account: "manage your signed-in Poly account",
+      cmd_row_send: "publish a package to the community registry",
       cmd_row5: "print the poly build version",
+      cmd_row_doctor: "check for common setup problems",
       docs_note: "Full reference, including the poly.json format and how to write a tap formula, is on the <a href=\"docs.html\">docs page</a>.",
       footer_text: "poly is open source on <a href=\"https://github.com/opencorp2030-ctrl/poly\">GitHub</a>. <code>~/.poly/manifest.json</code> tracks every install.",
       footer_license: "License: TBD",
@@ -860,7 +864,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cta_secondary: "Voir comment le routage fonctionne →",
       why_eyebrow: "Pourquoi poly",
       why_title: "Six écosystèmes, un seul manifeste",
-      why_lede: "Poly ne réimplémente ni pip ni npm — il route vers eux, et vers des binaires bruts, tout en gardant un seul registre de ce qui est installé et d'où ça vient.",
+      why_lede: "Poly travaille avec pip et npm plutôt que de les remplacer — une seule commande route vers celui qui a déjà ton paquet, et poly.json en fait un manifeste que n'importe qui peut cloner et reproduire avec un simple poly install.",
       feat1_tag: "01 · Routage automatique",
       feat1_p: "Poly vérifie d'abord son tap binaire, puis Homebrew, puis PyPI, puis le registre npm, puis crates.io, puis le proxy des modules Go, et installe depuis le premier endroit où le paquet existe réellement. Plus besoin de savoir de quel écosystème vient un outil.",
       feat2_tag: "02 · Vérifié",
@@ -912,7 +916,9 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cmd_row_upgrade: "met à jour chaque paquet installé vers sa dernière version",
       cmd_row_selfupdate: "met à jour poly lui-même vers la dernière release",
       cmd_row_account: "gère ton compte Poly connecté",
+      cmd_row_send: "publie un paquet dans le registre communautaire",
       cmd_row5: "affiche la version buildée de poly",
+      cmd_row_doctor: "vérifie les problèmes de configuration courants",
       docs_note: "La référence complète, avec le format de poly.json et comment écrire une formule tap, est sur la <a href=\"docs.html\">page de doc</a>.",
       pro_eyebrow: "Poly Pro",
       pro_title: "Soutiens poly, installe plus vite",

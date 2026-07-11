@@ -151,6 +151,7 @@
             <tr><td><code>poly account</code></td><td data-i18n="cmd_account">Print your signed-in email, username, bio, and plan.</td></tr>
             <tr><td><code>poly send name version path</code></td><td data-i18n="cmd_send">Publish a file or directory to the community registry under your account. Requires <code>poly login</code>.</td></tr>
             <tr><td><code>poly version</code></td><td data-i18n="cmd_version">Print the poly build version, and your account/plan if signed in.</td></tr>
+            <tr><td><code>poly doctor</code></td><td data-i18n="cmd_doctor">Check for common setup problems: missing toolchains, an unwritable <code>~/.poly</code>, <code>~/.poly/bin</code> missing from your <code>PATH</code>, GitHub reachability.</td></tr>
           </tbody>
         </table>
       </div>
@@ -269,6 +270,7 @@ poly install community:hello-world</div>
       cmd_account: "Print your signed-in email, username, bio, and plan.",
       cmd_send: 'Publish a file or directory to the community registry under your account. Requires <code>poly login</code>.',
       cmd_version: "Print the poly build version, and your account/plan if signed in.",
+      cmd_doctor: 'Check for common setup problems: missing toolchains, an unwritable <code>~/.poly</code>, <code>~/.poly/bin</code> missing from your <code>PATH</code>, GitHub reachability.',
       commands_note: 'State lives in <code>~/.poly/manifest.json</code>. Tap binaries land in <code>~/.poly/bin</code> — make sure it\'s on your <code>PATH</code>.',
       adapters_h: "Adapters", th_adapter: "Adapter", th_installs_via: "Installs via", th_search_via: "Search via",
       ad_tap_install: 'Direct binary download from a pinned URL, SHA-256 verified, extracted to <code>~/.poly/bin</code>',
@@ -322,6 +324,7 @@ poly install community:hello-world</div>
       cmd_account: "Affiche ton e-mail, username, bio et formule connectés.",
       cmd_send: 'Publie un fichier ou un dossier dans le registre communautaire sous ton compte. Nécessite <code>poly login</code>.',
       cmd_version: "Affiche la version buildée de poly, et ton compte/formule si connecté.",
+      cmd_doctor: 'Vérifie les problèmes de configuration courants : toolchains manquantes, <code>~/.poly</code> non accessible en écriture, <code>~/.poly/bin</code> absent du <code>PATH</code>, accès à GitHub.',
       commands_note: 'L\'état vit dans <code>~/.poly/manifest.json</code>. Les binaires tap atterrissent dans <code>~/.poly/bin</code> — ajoute-le à ton <code>PATH</code>.',
       adapters_h: "Adapters", th_adapter: "Adapter", th_installs_via: "Installe via", th_search_via: "Recherche via",
       ad_tap_install: 'Téléchargement binaire direct depuis une URL fixée, vérifié par SHA-256, extrait dans <code>~/.poly/bin</code>',
