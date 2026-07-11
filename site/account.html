@@ -126,6 +126,7 @@
     color: var(--text-dim); margin: 0 0 1rem;
   }
   .auth-card { max-width: 420px; margin: 0 auto; }
+  .community-link-note { font-size: 0.85rem; color: var(--text-dim); margin: 0 0 1.25rem; }
 
   .cli-card .eyebrow { margin-bottom: 1.25rem; }
   .cli-tip {
@@ -238,23 +239,6 @@
   .field-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem; text-align: right; }
   .btn.small { width: auto; padding: 0.45rem 0.9rem; font-size: 0.8rem; margin-top: 0.5rem; }
 
-  .search-card { max-width: 420px; margin: 1.25rem auto 0; }
-  .search-results { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
-  .search-result {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px;
-  }
-  .search-result .avatar-img { width: 40px; height: 40px; font-size: 1rem; }
-  .search-result .info { flex: 1; min-width: 0; }
-  .search-result .uname { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
-  .search-result .ubio { font-size: 0.8rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .search-empty { font-size: 0.85rem; color: var(--text-dim); text-align: center; padding: 0.5rem 0; }
-  .mini-badge {
-    font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
-    text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px;
-    background: var(--accent); color: var(--accent-ink);
-  }
-
   [data-view] { display: none; }
   [data-view].active { display: block; }
   .account-grid[data-view].active { display: grid; }
@@ -268,6 +252,7 @@
     <nav class="top-links">
       <a href="index.html#install" data-i18n="nav_install">install</a>
       <a href="index.html#pro" data-i18n="nav_pro">pro</a>
+      <a href="community.html" data-i18n="nav_community">community</a>
       <a href="account.html" class="current" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
@@ -372,10 +357,8 @@
       <div class="side-col">
         <div class="card search-card">
           <p class="eyebrow" data-i18n="search_eyebrow">Find people</p>
-          <div class="field" style="margin-bottom:0">
-            <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" />
-          </div>
-          <div class="search-results" id="search-results"></div>
+          <p class="community-link-note" data-i18n="community_link_note">Search and browse everyone on Poly from the community page.</p>
+          <a class="btn primary" href="community.html" data-i18n="community_link_cta">Browse the community →</a>
         </div>
 
         <div class="card cli-card">
@@ -409,7 +392,7 @@
 
   const I18N = {
     en: {
-      nav_install: "install", nav_pro: "pro", nav_account: "account", nav_github: "github",
+      nav_install: "install", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
       acct_eyebrow: "Account",
       field_email: "Email", field_password: "Password", field_plan: "Plan", field_since: "Member since",
       btn_signin: "Sign in", btn_signup: "Create account", btn_signout: "Sign out",
@@ -437,13 +420,13 @@
       saved_ok: "Saved.",
       err_username_taken: "That username is already taken.",
       search_eyebrow: "Find people",
-      search_placeholder: "Search by username…",
-      search_no_results: "No one found.",
+      community_link_note: "Search and browse everyone on Poly from the community page.",
+      community_link_cta: "Browse the community →",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in."
     },
     fr: {
-      nav_install: "installer", nav_pro: "pro", nav_account: "compte", nav_github: "github",
+      nav_install: "installer", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
       acct_eyebrow: "Compte",
       field_email: "E-mail", field_password: "Mot de passe", field_plan: "Formule", field_since: "Membre depuis",
       btn_signin: "Se connecter", btn_signup: "Créer un compte", btn_signout: "Se déconnecter",
@@ -471,8 +454,8 @@
       saved_ok: "Enregistré.",
       err_username_taken: "Ce nom d'utilisateur est déjà pris.",
       search_eyebrow: "Trouver des gens",
-      search_placeholder: "Chercher par nom d'utilisateur…",
-      search_no_results: "Personne trouvé.",
+      community_link_note: "Cherche et parcours tous les membres de Poly depuis la page communauté.",
+      community_link_cta: "Parcourir la communauté →",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi."
     }
@@ -700,40 +683,6 @@
     document.getElementById('profile-username').textContent = username ? '@' + username : '—';
     setProfileStatus(t('saved_ok'), 'ok');
   });
-
-  let searchDebounce = null;
-  document.getElementById('search-input').addEventListener('input', (e) => {
-    clearTimeout(searchDebounce);
-    const q = e.target.value.trim();
-    searchDebounce = setTimeout(() => runSearch(q), 300);
-  });
-
-  async function runSearch(q) {
-    const resultsEl = document.getElementById('search-results');
-    if (!q) { resultsEl.innerHTML = ''; return; }
-
-    const { data, error } = await supabase
-      .from('profiles_public')
-      .select('id, username, bio, avatar_url, plan')
-      .ilike('username', `%${q}%`)
-      .neq('id', currentUserId || '')
-      .limit(15);
-
-    if (error || !data || data.length === 0) {
-      resultsEl.innerHTML = `<p class="search-empty">${escapeHtml(t('search_no_results'))}</p>`;
-      return;
-    }
-
-    resultsEl.innerHTML = data.map((u) => `
-      <div class="search-result">
-        <div class="avatar-img">${avatarPreviewHTML(u.avatar_url, u.username)}</div>
-        <div class="info">
-          <div class="uname">@${escapeHtml(u.username)} ${u.plan === 'pro' ? '<span class="mini-badge">pro</span>' : ''}</div>
-          ${u.bio ? `<div class="ubio">${escapeHtml(u.bio)}</div>` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
 
   supabase.auth.onAuthStateChange((_event, session) => {
     if (session) {

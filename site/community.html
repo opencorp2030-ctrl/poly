@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Community · Poly</title>
+<meta name="description" content="Browse the Poly community, real download counts, and member stats." />
+<style>
+  :root {
+    --ink: #14171d;
+    --ink-raised: #1b1f27;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8;
+    --text-dim: #9c9686;
+    --accent: #f0a93e;
+    --accent-ink: #14171d;
+    --danger: #e0664a;
+    --ok: #6fbf8b;
+
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --container: 980px;
+    color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --ink: #eff1f4;
+    --ink-raised: #ffffff;
+    --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24;
+    --text-dim: #5b6270;
+    --accent: #a8660a;
+    --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4;
+      --ink-raised: #ffffff;
+      --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24;
+      --text-dim: #5b6270;
+      --accent: #a8660a;
+      --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding-left: clamp(1.25rem, 4vw, 2rem);
+    padding-right: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  header.top { border-bottom: 1px solid var(--border); }
+  header.top .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap; min-height: 64px;
+  }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover { color: var(--accent); }
+  nav.top-links a.current { color: var(--accent); }
+
+  .lang-toggle { display: flex; gap: 0.2rem; border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem; }
+  .lang-btn {
+    font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+    padding: 0.3rem 0.65rem; border-radius: 999px; border: none; background: transparent;
+    color: var(--text-dim); cursor: pointer;
+  }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
+
+  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim); margin: 0 0 0.9rem;
+  }
+  h1 {
+    font-family: var(--mono); font-weight: 700; font-size: clamp(1.9rem, 4vw, 2.6rem);
+    letter-spacing: -0.02em; margin: 0 0 0.6rem; text-wrap: balance;
+  }
+  .lede { color: var(--text-dim); max-width: 60ch; margin: 0 0 2.5rem; font-size: 1.05rem; }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin-bottom: 3rem;
+  }
+  .stat-tile { background: var(--ink-raised); padding: 1.5rem; }
+  .stat-value {
+    font-family: var(--mono); font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-variant-numeric: tabular-nums; color: var(--accent); line-height: 1;
+    display: block; margin-bottom: 0.5rem;
+  }
+  .stat-value.loading { color: var(--text-dim); font-size: 1.2rem; }
+  .stat-label {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .search-section {
+    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 12px;
+    padding: clamp(1.75rem, 4vw, 2.5rem);
+  }
+  .search-section .eyebrow { margin-bottom: 1.25rem; }
+  .field input {
+    width: 100%; padding: 0.75rem 0.9rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--ink); color: var(--text); font-family: var(--sans); font-size: 0.95rem;
+  }
+  .field input:focus { border-color: var(--accent); outline: none; }
+
+  .signin-prompt {
+    text-align: center; padding: 2.5rem 1rem; color: var(--text-dim); font-size: 0.95rem;
+  }
+  .signin-prompt a { color: var(--accent); font-weight: 600; }
+
+  .member-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem; margin-top: 1.75rem;
+  }
+  .member-card {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 1rem; border: 1px solid var(--border); border-radius: 8px;
+  }
+  .avatar-img {
+    width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    background: var(--ink); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 1.05rem; color: var(--text-dim);
+  }
+  .member-info { min-width: 0; }
+  .member-uname { font-weight: 600; font-size: 0.92rem; display: flex; align-items: center; gap: 0.4rem; }
+  .member-bio { font-size: 0.82rem; color: var(--text-dim); margin-top: 0.2rem; overflow-wrap: break-word; }
+  .mini-badge {
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px;
+    background: var(--accent); color: var(--accent-ink); flex-shrink: 0;
+  }
+  .empty-note { font-size: 0.85rem; color: var(--text-dim); text-align: center; padding: 1.5rem 0; grid-column: 1 / -1; }
+
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links">
+      <a href="index.html#install" data-i18n="nav_install">install</a>
+      <a href="index.html#pro" data-i18n="nav_pro">pro</a>
+      <a href="community.html" class="current" data-i18n="nav_community">community</a>
+      <a href="account.html" data-i18n="nav_account">account</a>
+      <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
+    </nav>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <p class="eyebrow" data-i18n="eyebrow">Community</p>
+    <h1 data-i18n="title">The people building with poly</h1>
+    <p class="lede" data-i18n="lede">Real numbers, pulled live from GitHub releases and the Poly account system -- not made up.</p>
+
+    <div class="stats-row">
+      <div class="stat-tile">
+        <span class="stat-value loading" id="stat-downloads">…</span>
+        <span class="stat-label" data-i18n="stat_downloads">Downloads</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-value loading" id="stat-members">…</span>
+        <span class="stat-label" data-i18n="stat_members">Members</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-value loading" id="stat-pro">…</span>
+        <span class="stat-label" data-i18n="stat_pro">Pro members</span>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-value loading" id="stat-releases">…</span>
+        <span class="stat-label" data-i18n="stat_releases">Releases</span>
+      </div>
+    </div>
+
+    <div class="search-section">
+      <p class="eyebrow" data-i18n="search_eyebrow">Find people</p>
+
+      <div data-view="signedout">
+        <p class="signin-prompt" data-i18n-html="signin_prompt">
+          <a href="account.html">Sign in</a> to search and browse the community.
+        </p>
+      </div>
+
+      <div data-view="signedin">
+        <div class="field">
+          <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" />
+        </div>
+        <div class="member-grid" id="member-grid"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const I18N = {
+    en: {
+      nav_install: "install", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
+      eyebrow: "Community",
+      title: "The people building with poly",
+      lede: "Real numbers, pulled live from GitHub releases and the Poly account system — not made up.",
+      stat_downloads: "Downloads", stat_members: "Members", stat_pro: "Pro members", stat_releases: "Releases",
+      search_eyebrow: "Find people",
+      search_placeholder: "Search by username…",
+      signin_prompt_html: '<a href="account.html">Sign in</a> to search and browse the community.',
+      empty_note: "No one found.",
+      browse_note: "Recent members"
+    },
+    fr: {
+      nav_install: "installer", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      eyebrow: "Communauté",
+      title: "Les gens qui construisent avec poly",
+      lede: "De vrais chiffres, tirés en direct des releases GitHub et du système de compte Poly — rien d'inventé.",
+      stat_downloads: "Téléchargements", stat_members: "Membres", stat_pro: "Membres Pro", stat_releases: "Releases",
+      search_eyebrow: "Trouver des gens",
+      search_placeholder: "Chercher par nom d'utilisateur…",
+      signin_prompt_html: '<a href="account.html">Connecte-toi</a> pour chercher et parcourir la communauté.',
+      empty_note: "Personne trouvé.",
+      browse_note: "Membres récents"
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+      const key = node.getAttribute('data-i18n-placeholder');
+      if (I18N[l][key] !== undefined) node.placeholder = I18N[l][key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach((node) => {
+      const key = node.getAttribute('data-i18n-html') + '_html';
+      if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
+    });
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+  }
+
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => { applyLanguage(btn.getAttribute('data-lang')); runSearch(currentQuery); });
+  });
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+
+  function avatarHTML(avatarUrl, username) {
+    if (avatarUrl) return `<img src="${escapeHtml(avatarUrl)}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    return escapeHtml((username || '?').charAt(0).toUpperCase());
+  }
+
+  function showView(name) {
+    document.querySelectorAll('[data-view]').forEach((el) => {
+      el.classList.toggle('active', el.getAttribute('data-view') === name);
+    });
+  }
+
+  // --- live stats: GitHub release downloads + Supabase member counts ---
+  fetch('https://api.github.com/repos/opencorp2030-ctrl/poly/releases')
+    .then((r) => r.json())
+    .then((releases) => {
+      if (!Array.isArray(releases)) throw new Error('unexpected response');
+      let downloads = 0;
+      releases.forEach((r) => (r.assets || []).forEach((a) => { downloads += a.download_count; }));
+      document.getElementById('stat-downloads').textContent = downloads.toLocaleString(lang() === 'fr' ? 'fr-FR' : 'en-US');
+      document.getElementById('stat-downloads').classList.remove('loading');
+      document.getElementById('stat-releases').textContent = releases.length;
+      document.getElementById('stat-releases').classList.remove('loading');
+    })
+    .catch(() => {
+      document.getElementById('stat-downloads').textContent = '—';
+      document.getElementById('stat-releases').textContent = '—';
+    });
+
+  supabase.rpc('community_stats').then(({ data, error }) => {
+    if (error || !data || !data[0]) {
+      document.getElementById('stat-members').textContent = '—';
+      document.getElementById('stat-pro').textContent = '—';
+      return;
+    }
+    document.getElementById('stat-members').textContent = data[0].total_members;
+    document.getElementById('stat-members').classList.remove('loading');
+    document.getElementById('stat-pro').textContent = data[0].pro_members;
+    document.getElementById('stat-pro').classList.remove('loading');
+  });
+
+  // --- search / browse (signed-in only) ---
+  let currentUserId = null;
+  let currentQuery = '';
+  let searchDebounce = null;
+
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    clearTimeout(searchDebounce);
+    currentQuery = e.target.value.trim();
+    searchDebounce = setTimeout(() => runSearch(currentQuery), 300);
+  });
+
+  function renderMembers(rows, emptyKey) {
+    const grid = document.getElementById('member-grid');
+    if (!rows || rows.length === 0) {
+      grid.innerHTML = `<p class="empty-note">${escapeHtml(t(emptyKey))}</p>`;
+      return;
+    }
+    grid.innerHTML = rows.map((u) => `
+      <div class="member-card">
+        <div class="avatar-img">${avatarHTML(u.avatar_url, u.username)}</div>
+        <div class="member-info">
+          <div class="member-uname">@${escapeHtml(u.username)} ${u.plan === 'pro' ? '<span class="mini-badge">pro</span>' : ''}</div>
+          ${u.bio ? `<div class="member-bio">${escapeHtml(u.bio)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function runSearch(q) {
+    if (!currentUserId) return;
+    if (!q) {
+      const { data } = await supabase
+        .from('profiles_public')
+        .select('id, username, bio, avatar_url, plan')
+        .order('created_at', { ascending: false })
+        .limit(24);
+      renderMembers(data, 'empty_note');
+      return;
+    }
+    const { data, error } = await supabase
+      .from('profiles_public')
+      .select('id, username, bio, avatar_url, plan')
+      .ilike('username', `%${q}%`)
+      .neq('id', currentUserId)
+      .limit(30);
+    if (error) { renderMembers([], 'empty_note'); return; }
+    renderMembers(data, 'empty_note');
+  }
+
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      currentUserId = data.session.user.id;
+      showView('signedin');
+      runSearch('');
+    } else {
+      showView('signedout');
+    }
+  });
+
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      currentUserId = session.user.id;
+      showView('signedin');
+      runSearch('');
+    } else {
+      currentUserId = null;
+      showView('signedout');
+    }
+  });
+
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+</script>
+
+</body>
+</html>
