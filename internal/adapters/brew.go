@@ -41,11 +41,21 @@ func (b Brew) Install(name, version string) (installedVersion string, err error)
 		spec = name + "@" + version
 	}
 
-	install := exec.Command(bin, "install", spec)
+	// `brew install` is a no-op if any version is already present, so
+	// ensuring latest (no version pin, already installed) needs
+	// `brew upgrade` instead -- poly upgrade relies on this.
+	verb := "install"
+	if version == "" {
+		if listCmd := exec.Command(bin, "list", "--versions", name); listCmd.Run() == nil {
+			verb = "upgrade"
+		}
+	}
+
+	install := exec.Command(bin, verb, spec)
 	install.Stdout = os.Stdout
 	install.Stderr = os.Stderr
 	if err := install.Run(); err != nil {
-		return "", fmt.Errorf("brew install %s failed: %w", spec, err)
+		return "", fmt.Errorf("brew %s %s failed: %w", verb, spec, err)
 	}
 
 	list := exec.Command(bin, "list", "--versions", name)

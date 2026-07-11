@@ -3,6 +3,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p dist
 
+VERSION="${VERSION:-0.1.0}"
+
 targets=(
   "darwin amd64"
   "darwin arm64"
@@ -18,6 +20,6 @@ for target in "${targets[@]}"; do
   if [ "$os" = "windows" ]; then
     out="${out}.exe"
   fi
-  echo "building ${out} (GOOS=${os} GOARCH=${arch})"
-  GOOS="$os" GOARCH="$arch" go build -ldflags "-X poly/cmd.Version=0.1.0" -o "$out" .
+  echo "building ${out} (GOOS=${os} GOARCH=${arch}, version ${VERSION})"
+  GOOS="$os" GOARCH="$arch" go build -ldflags "-X poly/cmd.Version=${VERSION}" -o "$out" .
 done

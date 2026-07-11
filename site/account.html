@@ -92,13 +92,54 @@
   .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
 
   main { padding: clamp(3rem, 8vw, 6rem) 0; }
-  .card {
-    max-width: 420px;
+
+  .account-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+    max-width: 980px;
     margin: 0 auto;
+  }
+  @media (min-width: 860px) {
+    .account-grid {
+      grid-template-columns: 1.35fr 1fr;
+      align-items: start;
+    }
+    .account-grid .side-col { display: flex; flex-direction: column; gap: 1.75rem; }
+  }
+
+  .card {
     background: var(--ink-raised);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: clamp(1.75rem, 5vw, 2.5rem);
+    border-radius: 12px;
+    padding: clamp(2rem, 5vw, 2.75rem);
+  }
+  .card + .card { margin-top: 1.75rem; }
+  .card-section {
+    padding-top: 1.75rem;
+    margin-top: 1.75rem;
+    border-top: 1px solid var(--border);
+  }
+  .card-section:first-child { padding-top: 0; margin-top: 0; border-top: none; }
+  .section-label {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim); margin: 0 0 1rem;
+  }
+  .auth-card { max-width: 420px; margin: 0 auto; }
+
+  .cli-card .eyebrow { margin-bottom: 1.25rem; }
+  .cli-tip {
+    display: flex; flex-direction: column; gap: 0.2rem;
+    padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+  }
+  .cli-tip:last-of-type { border-bottom: none; }
+  .cli-tip code {
+    font-family: var(--mono); font-size: 0.85rem; color: var(--accent);
+    background: var(--ink); padding: 0.15rem 0.45rem; border-radius: 4px; width: fit-content;
+  }
+  .cli-tip span { font-size: 0.82rem; color: var(--text-dim); }
+  .cli-auto-note {
+    font-size: 0.78rem; color: var(--text-dim); margin: 1.25rem 0 0; line-height: 1.5;
   }
   .eyebrow {
     font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
@@ -170,13 +211,13 @@
   .pro-confirmed .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
 
   .avatar-row {
-    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.75rem;
   }
   .avatar-img {
-    width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+    width: 84px; height: 84px; border-radius: 50%; object-fit: cover;
     background: var(--ink); border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 1.4rem; color: var(--text-dim);
+    font-family: var(--mono); font-size: 1.75rem; color: var(--text-dim);
     flex-shrink: 0;
   }
   .avatar-upload {
@@ -216,6 +257,7 @@
 
   [data-view] { display: none; }
   [data-view].active { display: block; }
+  .account-grid[data-view].active { display: grid; }
 </style>
 </head>
 <body>
@@ -238,96 +280,123 @@
 
 <main>
   <div class="wrap">
-    <div class="card">
 
-      <div data-view="auth" class="active">
-        <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
-        <h1 id="auth-heading">Sign in</h1>
+    <div class="card auth-card active" data-view="auth">
+      <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
+      <h1 id="auth-heading">Sign in</h1>
 
-        <p class="status" id="auth-status"></p>
+      <p class="status" id="auth-status"></p>
 
-        <form id="auth-form">
-          <div class="field">
-            <label for="email" data-i18n="field_email">Email</label>
-            <input id="email" type="email" required autocomplete="email" />
-          </div>
-          <div class="field">
-            <label for="password" data-i18n="field_password">Password</label>
-            <input id="password" type="password" required autocomplete="current-password" minlength="6" />
-          </div>
-          <button class="btn primary" type="submit" id="submit-btn" data-i18n="btn_signin">Sign in</button>
-        </form>
+      <form id="auth-form">
+        <div class="field">
+          <label for="email" data-i18n="field_email">Email</label>
+          <input id="email" type="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="password" data-i18n="field_password">Password</label>
+          <input id="password" type="password" required autocomplete="current-password" minlength="6" />
+        </div>
+        <button class="btn primary" type="submit" id="submit-btn" data-i18n="btn_signin">Sign in</button>
+      </form>
 
-        <p class="switch-mode">
-          <span id="switch-text" data-i18n="switch_to_signup_prompt">No account yet?</span>
-          <a href="#" id="switch-link" data-i18n="switch_to_signup_link">Create one</a>
-        </p>
-      </div>
+      <p class="switch-mode">
+        <span id="switch-text" data-i18n="switch_to_signup_prompt">No account yet?</span>
+        <a href="#" id="switch-link" data-i18n="switch_to_signup_link">Create one</a>
+      </p>
+    </div>
 
-      <div data-view="profile">
+    <div class="account-grid" data-view="profile">
+      <div class="card">
         <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
         <h1 data-i18n="acct_title">Your account</h1>
 
-        <div class="avatar-row">
-          <div class="avatar-img" id="avatar-preview">—</div>
-          <div class="avatar-meta">
-            <span class="username-display" id="profile-username">—</span>
-            <label class="avatar-upload">
-              <span data-i18n="avatar_change">Change photo</span>
-              <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/webp,image/gif" />
-            </label>
+        <div class="card-section">
+          <p class="section-label" data-i18n="section_profile">Profile</p>
+          <div class="avatar-row">
+            <div class="avatar-img" id="avatar-preview">—</div>
+            <div class="avatar-meta">
+              <span class="username-display" id="profile-username">—</span>
+              <label class="avatar-upload">
+                <span data-i18n="avatar_change">Change photo</span>
+                <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/webp,image/gif" />
+              </label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="username-input" data-i18n="field_username">Username</label>
+            <input id="username-input" type="text" maxlength="30" pattern="[a-zA-Z0-9_.\-]{1,30}" />
+          </div>
+
+          <div class="field">
+            <label for="bio-input" data-i18n="field_bio">Bio</label>
+            <textarea id="bio-input" maxlength="280" data-i18n-placeholder="bio_placeholder"></textarea>
+            <div class="field-hint"><span id="bio-count">0</span>/280</div>
+          </div>
+
+          <button class="btn small" id="save-profile-btn" type="button" data-i18n="btn_save">Save changes</button>
+        </div>
+
+        <div class="card-section">
+          <p class="section-label" data-i18n="section_plan">Plan &amp; account</p>
+          <div class="profile-row">
+            <span class="k" data-i18n="field_email">Email</span>
+            <span class="v" id="profile-email">—</span>
+          </div>
+          <div class="profile-row">
+            <span class="k" data-i18n="field_plan">Plan</span>
+            <span class="v"><span class="plan-badge free" id="profile-plan">free</span></span>
+          </div>
+          <div class="profile-row">
+            <span class="k" data-i18n="field_since">Member since</span>
+            <span class="v" id="profile-since">—</span>
+          </div>
+
+          <p class="status" id="profile-status"></p>
+
+          <div id="upgrade-block">
+            <button class="btn primary" id="upgrade-btn" type="button" style="margin-top:1.5rem" data-i18n="pro_cta">Get Poly Pro — €0.99</button>
+            <p class="upgrade-note" data-i18n="upgrade_note_generic">One-time payment, handled by Stripe Checkout.</p>
+          </div>
+          <div id="pro-confirmed-block" class="pro-confirmed" style="display:none">
+            <span class="dot"></span>
+            <span data-i18n="already_pro">You're on Poly Pro — thanks for the support.</span>
           </div>
         </div>
 
-        <div class="field">
-          <label for="username-input" data-i18n="field_username">Username</label>
-          <input id="username-input" type="text" maxlength="30" pattern="[a-zA-Z0-9_.\-]{1,30}" />
+        <div class="card-section">
+          <button class="btn" id="signout-btn" type="button" data-i18n="btn_signout">Sign out</button>
         </div>
-
-        <div class="field">
-          <label for="bio-input" data-i18n="field_bio">Bio</label>
-          <textarea id="bio-input" maxlength="280" data-i18n-placeholder="bio_placeholder"></textarea>
-          <div class="field-hint"><span id="bio-count">0</span>/280</div>
-        </div>
-
-        <button class="btn small" id="save-profile-btn" type="button" data-i18n="btn_save">Save changes</button>
-
-        <div class="profile-row" style="margin-top:1.25rem">
-          <span class="k" data-i18n="field_email">Email</span>
-          <span class="v" id="profile-email">—</span>
-        </div>
-        <div class="profile-row">
-          <span class="k" data-i18n="field_plan">Plan</span>
-          <span class="v"><span class="plan-badge free" id="profile-plan">free</span></span>
-        </div>
-        <div class="profile-row">
-          <span class="k" data-i18n="field_since">Member since</span>
-          <span class="v" id="profile-since">—</span>
-        </div>
-
-        <p class="status" id="profile-status"></p>
-
-        <div id="upgrade-block">
-          <button class="btn primary" id="upgrade-btn" type="button" style="margin-top:1.5rem" data-i18n="pro_cta">Get Poly Pro — €0.99</button>
-          <p class="upgrade-note" data-i18n="upgrade_note_generic">One-time payment, handled by Stripe Checkout.</p>
-        </div>
-        <div id="pro-confirmed-block" class="pro-confirmed" style="display:none">
-          <span class="dot"></span>
-          <span data-i18n="already_pro">You're on Poly Pro — thanks for the support.</span>
-        </div>
-
-        <button class="btn" id="signout-btn" type="button" style="margin-top:0.75rem" data-i18n="btn_signout">Sign out</button>
       </div>
 
+      <div class="side-col">
+        <div class="card search-card">
+          <p class="eyebrow" data-i18n="search_eyebrow">Find people</p>
+          <div class="field" style="margin-bottom:0">
+            <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" />
+          </div>
+          <div class="search-results" id="search-results"></div>
+        </div>
+
+        <div class="card cli-card">
+          <p class="eyebrow" data-i18n="cli_eyebrow">From the terminal</p>
+          <div class="cli-tip">
+            <code>poly account</code>
+            <span data-i18n="cli_tip_account">see this info without leaving the terminal</span>
+          </div>
+          <div class="cli-tip">
+            <code>poly upgrade</code>
+            <span data-i18n="cli_tip_upgrade">update installed packages now</span>
+          </div>
+          <div class="cli-tip">
+            <code>poly self-update</code>
+            <span data-i18n="cli_tip_selfupdate">update poly itself</span>
+          </div>
+          <p class="cli-auto-note" data-i18n="cli_auto_note">poly checks for its own updates automatically. Pro accounts also get installed packages kept current automatically.</p>
+        </div>
+      </div>
     </div>
 
-    <div class="card search-card" data-view="profile">
-      <p class="eyebrow" data-i18n="search_eyebrow">Find people</p>
-      <div class="field" style="margin-bottom:0">
-        <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" />
-      </div>
-      <div class="search-results" id="search-results"></div>
-    </div>
   </div>
 </main>
 
@@ -347,6 +416,13 @@
       switch_to_signup_prompt: "No account yet?", switch_to_signup_link: "Create one",
       switch_to_signin_prompt: "Already have an account?", switch_to_signin_link: "Sign in",
       acct_title: "Your account",
+      section_profile: "Profile",
+      section_plan: "Plan & account",
+      cli_eyebrow: "From the terminal",
+      cli_tip_account: "see this info without leaving the terminal",
+      cli_tip_upgrade: "update installed packages now",
+      cli_tip_selfupdate: "update poly itself",
+      cli_auto_note: "poly checks for its own updates automatically. Pro accounts also get installed packages kept current automatically.",
       pro_cta: "Get Poly Pro — €0.99",
       upgrade_note_generic: "One-time payment, handled by Stripe Checkout.",
       already_pro: "You're on Poly Pro — thanks for the support.",
@@ -374,6 +450,13 @@
       switch_to_signup_prompt: "Pas encore de compte ?", switch_to_signup_link: "En créer un",
       switch_to_signin_prompt: "Déjà un compte ?", switch_to_signin_link: "Se connecter",
       acct_title: "Ton compte",
+      section_profile: "Profil",
+      section_plan: "Formule & compte",
+      cli_eyebrow: "Depuis le terminal",
+      cli_tip_account: "voir ces infos sans quitter le terminal",
+      cli_tip_upgrade: "mettre à jour les paquets installés maintenant",
+      cli_tip_selfupdate: "mettre à jour poly lui-même",
+      cli_auto_note: "poly vérifie ses propres mises à jour automatiquement. Les comptes Pro gardent aussi leurs paquets installés à jour automatiquement.",
       pro_cta: "Obtenir Poly Pro — 0,99 €",
       upgrade_note_generic: "Paiement unique, géré par Stripe Checkout.",
       already_pro: "Tu es sur Poly Pro — merci pour le soutien.",

@@ -190,3 +190,53 @@ func Email() string {
 	}
 	return creds.Email
 }
+
+// Profile is the signed-in user's public account info, as shown on
+// site/account.html and by `poly account`.
+type Profile struct {
+	Email     string `json:"email"`
+	Username  string `json:"username"`
+	Bio       string `json:"bio"`
+	Plan      string `json:"plan"`
+	CreatedAt string `json:"created_at"`
+}
+
+// GetProfile fetches the signed-in user's profile row. Returns an error
+// if nobody is signed in or the request fails.
+func GetProfile() (*Profile, error) {
+	creds, err := Load()
+	if err != nil {
+		return nil, err
+	}
+	if creds == nil {
+		return nil, fmt.Errorf("not signed in — run `poly login`")
+	}
+
+	url := supabaseURL + "/rest/v1/profiles?id=eq." + creds.UserID + "&select=email,username,bio,plan,created_at"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("apikey", supabaseAnonKey)
+	req.Header.Set("Authorization", "Bearer "+creds.AccessToken)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("fetching profile failed: %s: %s", resp.Status, body)
+	}
+
+	var rows []Profile
+	if err := json.NewDecoder(resp.Body).Decode(&rows); err != nil {
+		return nil, err
+	}
+	if len(rows) == 0 {
+		return nil, fmt.Errorf("no profile found for this account")
+	}
+	return &rows[0], nil
+}

@@ -29,9 +29,12 @@ func (n Npm) Install(name, version string) (installedVersion string, err error) 
 		return "", err
 	}
 
-	spec := name
-	if version != "" {
-		spec = name + "@" + version
+	// Always pin to a concrete tag -- "@latest" when no version is given
+	// -- so this reliably fetches the newest release whether name is
+	// already installed or not (poly upgrade relies on this).
+	spec := name + "@" + version
+	if version == "" {
+		spec = name + "@latest"
 	}
 
 	install := exec.Command(bin, "install", "-g", spec)

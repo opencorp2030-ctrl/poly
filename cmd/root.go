@@ -11,6 +11,13 @@ var rootCmd = &cobra.Command{
 	Use:   "poly",
 	Short: "poly is one command for every package manager",
 	Long:  "poly installs, removes, and tracks packages from pip, npm, and more behind a single unified command.",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		switch cmd.Name() {
+		case "self-update", "upgrade":
+			return // avoid a background check re-triggering itself
+		}
+		maybeAutoUpdate()
+	},
 }
 
 func Execute() {

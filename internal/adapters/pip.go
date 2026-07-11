@@ -33,11 +33,19 @@ func (p Pip) Install(name, version string) (installedVersion string, err error) 
 	}
 
 	spec := name
+	args := []string{"install"}
 	if version != "" {
 		spec = name + "==" + version
+	} else {
+		// No version pin means "ensure latest" -- pip's plain `install`
+		// is a no-op if any version is already present, so this needs
+		// --upgrade to actually fetch newer releases (poly upgrade
+		// relies on this).
+		args = append(args, "--upgrade")
 	}
+	args = append(args, spec)
 
-	install := exec.Command(bin, "install", spec)
+	install := exec.Command(bin, args...)
 	install.Stdout = os.Stdout
 	install.Stderr = os.Stderr
 	if err := install.Run(); err != nil {
