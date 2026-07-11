@@ -90,6 +90,7 @@
   }
   .result .rinstall:hover { border-color: var(--accent); }
   .result .rby { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.4rem; }
+  .official-badge { color: var(--ok); font-size: 0.85rem; }
 
   .cta-row { margin-top: 3rem; text-align: center; }
   .cta-row p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.75rem; }
@@ -179,7 +180,7 @@
       lane_not_found: "Not found.", lane_error: "Lookup failed.",
       cta_p: "Published something of your own? Ship it to the community lane.",
       cta_btn: "poly send name version path →",
-      by: "published by"
+      by: "published by", downloads_label: "downloads"
     },
     fr: {
       nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
@@ -191,7 +192,7 @@
       lane_not_found: "Introuvable.", lane_error: "Échec de la recherche.",
       cta_p: "Tu as publié quelque chose ? Envoie-le dans la colonne communauté.",
       cta_btn: "poly send nom version chemin →",
-      by: "publié par"
+      by: "publié par", downloads_label: "téléchargements"
     }
   };
 
@@ -312,7 +313,7 @@
   async function searchCommunity(q) {
     const { data, error } = await supabase
       .from('community_packages_public')
-      .select('name, version, description, uploader_username')
+      .select('name, version, description, uploader_username, download_count, is_official')
       .ilike('name', `%${q}%`)
       .limit(5);
     if (error || !data || data.length === 0) {
@@ -321,8 +322,8 @@
     }
     const html = data.map((p) => `
       <div class="result" style="margin-bottom:0.75rem">
-        <div class="rname">${escapeHtml(p.name)}</div>
-        <div class="rversion">${escapeHtml(p.version)}</div>
+        <div class="rname">${escapeHtml(p.name)} ${p.is_official ? '<span class="official-badge" title="official">✓</span>' : ''}</div>
+        <div class="rversion">${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
         ${p.description ? `<div class="rsummary">${escapeHtml(p.description)}</div>` : ''}
         <div class="rinstall" data-copy="community:${escapeHtml(p.name)}">poly install community:${escapeHtml(p.name)}</div>
         ${p.uploader_username ? `<div class="rby">${t('by')} @${escapeHtml(p.uploader_username)}</div>` : ''}

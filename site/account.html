@@ -128,6 +128,12 @@
   .auth-card { max-width: 420px; margin: 0 auto; }
   .community-link-note { font-size: 0.85rem; color: var(--text-dim); margin: 0 0 1.25rem; }
 
+  .pkg-row { padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+  .pkg-row:last-of-type { border-bottom: none; }
+  .pkg-row .pname { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
+  .pkg-row .pmeta { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; font-family: var(--mono); }
+  .official-badge { color: var(--ok); font-size: 0.8rem; }
+
   .cli-card .eyebrow { margin-bottom: 1.25rem; }
   .cli-tip {
     display: flex; flex-direction: column; gap: 0.2rem;
@@ -363,6 +369,12 @@
           <a class="btn primary" href="community.html" data-i18n="community_link_cta">Browse the community →</a>
         </div>
 
+        <div class="card packages-card" id="packages-card" style="display:none">
+          <p class="eyebrow" data-i18n="packages_eyebrow">Your published packages</p>
+          <div id="packages-list"></div>
+          <p class="community-link-note" id="packages-empty" data-i18n="packages_empty" style="display:none">Nothing published yet.</p>
+        </div>
+
         <div class="card cli-card">
           <p class="eyebrow" data-i18n="cli_eyebrow">From the terminal</p>
           <div class="cli-tip">
@@ -424,6 +436,9 @@
       search_eyebrow: "Find people",
       community_link_note: "Search and browse everyone on Poly from the community page.",
       community_link_cta: "Browse the community →",
+      packages_eyebrow: "Your published packages",
+      packages_empty: "Nothing published yet — see the docs for poly send.",
+      downloads_label: "downloads",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in."
     },
@@ -458,6 +473,9 @@
       search_eyebrow: "Trouver des gens",
       community_link_note: "Cherche et parcours tous les membres de Poly depuis la page communauté.",
       community_link_cta: "Parcourir la communauté →",
+      packages_eyebrow: "Tes paquets publiés",
+      packages_empty: "Rien publié pour l'instant — voir la doc pour poly send.",
+      downloads_label: "téléchargements",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi."
     }
@@ -585,6 +603,34 @@
     document.getElementById('pro-confirmed-block').style.display = isPro ? 'flex' : 'none';
   }
 
+  async function loadPublishedPackages(userId) {
+    const card = document.getElementById('packages-card');
+    const list = document.getElementById('packages-list');
+    const empty = document.getElementById('packages-empty');
+
+    const { data, error } = await supabase
+      .from('community_packages')
+      .select('name, version, download_count, is_official')
+      .eq('uploader_id', userId)
+      .order('created_at', { ascending: false });
+
+    card.style.display = 'block';
+
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    list.innerHTML = data.map((p) => `
+      <div class="pkg-row">
+        <div class="pname">${escapeHtml(p.name)} ${p.is_official ? '<span class="official-badge" title="official">✓</span>' : ''}</div>
+        <div class="pmeta">v${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
+      </div>
+    `).join('');
+  }
+
   async function renderProfile(session) {
     currentUserId = session.user.id;
     const { data, error } = await supabase
@@ -614,6 +660,7 @@
     setProBlocks(plan === 'pro');
 
     showView('profile');
+    loadPublishedPackages(session.user.id);
 
     const checkoutParam = new URLSearchParams(window.location.search).get('checkout');
     if (checkoutParam === 'success') {

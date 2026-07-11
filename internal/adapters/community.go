@@ -15,6 +15,7 @@
 package adapters
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -48,10 +49,11 @@ type communityPackageRow struct {
 	Description string `json:"description"`
 	StoragePath string `json:"storage_path"`
 	SHA256      string `json:"sha256"`
+	IsOfficial  bool   `json:"is_official"`
 }
 
 func fetchCommunityPackage(name string) (row communityPackageRow, found bool, err error) {
-	url := supabaseURL + "/rest/v1/community_packages?name=eq." + name + "&select=version,description,storage_path,sha256"
+	url := supabaseURL + "/rest/v1/community_packages?name=eq." + name + "&select=version,description,storage_path,sha256,is_official"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return row, false, err
@@ -87,7 +89,11 @@ func (c Community) Search(name string) (SearchResult, error) {
 	if !found {
 		return SearchResult{Found: false}, nil
 	}
-	return SearchResult{Found: true, Version: row.Version, Summary: row.Description}, nil
+	summary := row.Description
+	if row.IsOfficial {
+		summary += " [official ✓]"
+	}
+	return SearchResult{Found: true, Version: row.Version, Summary: summary}, nil
 }
 
 func (c Community) Install(name, version string) (installedVersion string, err error) {
@@ -143,7 +149,27 @@ func (c Community) Install(name, version string) (installedVersion string, err e
 		return "", err
 	}
 
+	recordCommunityDownload(name) // best-effort; a failed counter bump shouldn't fail the install
+
 	return row.Version, nil
+}
+
+func recordCommunityDownload(name string) {
+	payload, err := json.Marshal(map[string]string{"p_name": name})
+	if err != nil {
+		return
+	}
+	req, err := http.NewRequest("POST", supabaseURL+"/rest/v1/rpc/record_download", bytes.NewReader(payload))
+	if err != nil {
+		return
+	}
+	req.Header.Set("apikey", supabaseAnonKey)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	resp.Body.Close()
 }
 
 func (c Community) Remove(name string) error {
