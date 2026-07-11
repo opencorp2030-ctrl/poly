@@ -243,10 +243,19 @@ poly install community:hello-world</div>
     <section class="doc-section" id="mcp">
       <h2 data-i18n="mcp_h">AI assistants (MCP)</h2>
       <p data-i18n="mcp_p">Poly runs a remote <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> server (Streamable HTTP, hosted as a Supabase Edge Function — no separate infrastructure) so Claude, ChatGPT, or any MCP-compatible assistant can search, browse, and publish to the community registry as you. It authenticates with a personal access token, never your email or password, and the token is scoped and revocable at any time.</p>
+
+      <h3 data-i18n="mcp_h_ui">Claude.ai / ChatGPT (Add custom connector)</h3>
       <ol class="doc-steps">
-        <li data-i18n="mcp_step1">Generate a token on <a href="account.html">your account page</a>, under "AI assistants (MCP)". It's shown once — copy it immediately.</li>
-        <li data-i18n="mcp_step2">Add a remote MCP connector pointing at the URL below, with the token as a bearer <code>Authorization</code> header.</li>
+        <li data-i18n="mcp_ui_step1">In Settings → Connectors → Add custom connector, paste this URL — leave everything else blank:</li>
       </ol>
+      <div class="code-block">https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp</div>
+      <ol class="doc-steps" start="2">
+        <li data-i18n="mcp_ui_step2">Connecting opens a Poly-branded page asking for a personal access token. Generate one on <a href="account.html">your account page</a>, under "AI assistants (MCP)" (shown once — copy it immediately), paste it there, and authorize.</li>
+      </ol>
+      <p data-i18n="mcp_ui_note">This uses standard OAuth with Dynamic Client Registration under the hood — the token you paste becomes what the assistant holds, so revoking it on your account page still breaks the connection everywhere, immediately.</p>
+
+      <h3 data-i18n="mcp_h_manual">Claude Desktop / Claude Code (config file)</h3>
+      <p data-i18n="mcp_step2">Add a remote MCP connector pointing at the URL below, with the token as a bearer <code>Authorization</code> header.</p>
       <div class="code-block">{
   "mcpServers": {
     "poly": {
@@ -255,7 +264,6 @@ poly install community:hello-world</div>
     }
   }
 }</div>
-      <p data-i18n="mcp_p2">That's the config format Claude Desktop and Claude Code use for remote connectors (Settings → Connectors → Add custom connector). ChatGPT's connector UI takes the same URL and header, though the exact menu location varies by plan and changes as OpenAI iterates on it.</p>
       <table>
         <thead><tr><th data-i18n="th_command">Tool</th><th data-i18n="th_does">Does</th></tr></thead>
         <tbody>
@@ -333,6 +341,11 @@ poly install community:hello-world</div>
       registry_note: 'There is no malware scanning. The SHA-256 recorded at publish time is verified at install time — that protects against corruption or tampering in transit, not against a malicious uploader. Only install community packages you trust.',
       mcp_h: "AI assistants (MCP)",
       mcp_p: 'Poly runs a remote <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> server (Streamable HTTP, hosted as a Supabase Edge Function — no separate infrastructure) so Claude, ChatGPT, or any MCP-compatible assistant can search, browse, and publish to the community registry as you. It authenticates with a personal access token, never your email or password, and the token is scoped and revocable at any time.',
+      mcp_h_ui: "Claude.ai / ChatGPT (Add custom connector)",
+      mcp_ui_step1: "In Settings → Connectors → Add custom connector, paste this URL — leave everything else blank:",
+      mcp_ui_step2: 'Connecting opens a Poly-branded page asking for a personal access token. Generate one on <a href="account.html">your account page</a>, under "AI assistants (MCP)" (shown once — copy it immediately), paste it there, and authorize.',
+      mcp_ui_note: "This uses standard OAuth with Dynamic Client Registration under the hood — the token you paste becomes what the assistant holds, so revoking it on your account page still breaks the connection everywhere, immediately.",
+      mcp_h_manual: "Claude Desktop / Claude Code (config file)",
       mcp_step1: 'Generate a token on <a href="account.html">your account page</a>, under "AI assistants (MCP)". It\'s shown once — copy it immediately.',
       mcp_step2: 'Add a remote MCP connector pointing at the URL below, with the token as a bearer <code>Authorization</code> header.',
       mcp_p2: "That's the config format Claude Desktop and Claude Code use for remote connectors (Settings → Connectors → Add custom connector). ChatGPT's connector UI takes the same URL and header, though the exact menu location varies by plan and changes as OpenAI iterates on it.",
@@ -397,6 +410,11 @@ poly install community:hello-world</div>
       registry_note: 'Il n\'y a pas de scan anti-malware. Le SHA-256 enregistré à la publication est vérifié à l\'installation — ça protège contre la corruption ou l\'altération en transit, pas contre un uploader malveillant. N\'installe que des paquets communautaires en qui tu as confiance.',
       mcp_h: "Assistants IA (MCP)",
       mcp_p: 'Poly fait tourner un serveur <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> distant (Streamable HTTP, hébergé comme fonction Supabase Edge — aucune infra séparée) pour que Claude, ChatGPT, ou tout assistant compatible MCP puisse chercher, parcourir et publier dans le registre communautaire en ton nom. L\'authentification se fait via un token d\'accès personnel, jamais ton e-mail ou mot de passe, et le token est révocable à tout moment.',
+      mcp_h_ui: "Claude.ai / ChatGPT (Ajouter un connecteur personnalisé)",
+      mcp_ui_step1: "Dans Réglages → Connecteurs → Ajouter un connecteur personnalisé, colle cette URL — laisse le reste vide :",
+      mcp_ui_step2: 'La connexion ouvre une page aux couleurs de Poly qui demande un token d\'accès personnel. Génères-en un sur <a href="account.html">ta page compte</a>, section "Assistants IA (MCP)" (affiché une seule fois — copie-le tout de suite), colle-le là, et autorise.',
+      mcp_ui_note: "Ça passe par un OAuth standard avec Dynamic Client Registration en coulisses — le token que tu colles devient ce que l'assistant détient, donc le révoquer depuis ta page compte casse la connexion partout, immédiatement.",
+      mcp_h_manual: "Claude Desktop / Claude Code (fichier de config)",
       mcp_step1: 'Génère un token sur <a href="account.html">ta page compte</a>, section "Assistants IA (MCP)". Il n\'est affiché qu\'une fois — copie-le tout de suite.',
       mcp_step2: 'Ajoute un connecteur MCP distant pointant vers l\'URL ci-dessous, avec le token comme en-tête <code>Authorization</code> bearer.',
       mcp_p2: "C'est le format de config utilisé par Claude Desktop et Claude Code pour les connecteurs distants (Réglages → Connecteurs → Ajouter un connecteur personnalisé). L'interface de connecteurs de ChatGPT prend la même URL et le même en-tête, même si l'emplacement exact dans les menus varie selon la formule et change au fil des évolutions d'OpenAI.",

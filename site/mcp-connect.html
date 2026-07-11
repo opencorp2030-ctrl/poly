@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Connect an assistant · Poly</title>
+<meta name="robots" content="noindex" />
+<style>
+  :root {
+    --ink: #14171d;
+    --ink-raised: #1b1f27;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8;
+    --text-dim: #9c9686;
+    --accent: #f0a93e;
+    --accent-ink: #14171d;
+    --danger: #e0664a;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); }
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; max-width: 440px; width: 100%; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+  .wordmark span { color: var(--accent); }
+  h1 { font-size: 1.15rem; margin: 0 0 0.6rem; }
+  p { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; margin: 0 0 1rem; }
+  p a { color: var(--accent); }
+  .client-note { font-family: var(--mono); font-size: 0.75rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.7rem; margin-bottom: 1.25rem; color: var(--text-dim); overflow-wrap: anywhere; }
+  input[type=text] {
+    width: 100%; padding: 0.75rem 0.9rem; margin-bottom: 1rem; background: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 0.9rem;
+  }
+  input[type=text]:focus { outline: none; border-color: var(--accent); }
+  button { width: 100%; padding: 0.8rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-weight: 700; font-family: var(--sans); font-size: 0.92rem; cursor: pointer; }
+  button:hover { opacity: 0.92; }
+  .err { color: var(--danger); font-size: 0.85rem; margin: -0.6rem 0 1rem; }
+  .missing { text-align: center; padding: 1rem 0; }
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="wordmark">poly<span>&gt;</span></div>
+
+  <div data-view="form">
+    <h1>Connect this assistant to Poly</h1>
+    <p>Paste a Poly personal access token so it can search and publish to the community registry as you. Generate one from <a href="account.html" target="_blank">your account page</a>, under "AI assistants (MCP)" — it's shown once, so keep this tab open until you've copied it.</p>
+    <div class="client-note" id="client-note"></div>
+    <p class="err" id="err" style="display:none"></p>
+    <form method="POST" action="https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp/authorize" id="authorize-form">
+      <input type="hidden" name="client_id" id="f-client-id">
+      <input type="hidden" name="redirect_uri" id="f-redirect-uri">
+      <input type="hidden" name="state" id="f-state">
+      <input type="hidden" name="code_challenge" id="f-code-challenge">
+      <input type="hidden" name="code_challenge_method" id="f-code-challenge-method">
+      <input type="hidden" name="response_type" id="f-response-type">
+      <input type="text" name="poly_token" placeholder="poly_pat_..." autofocus autocomplete="off" spellcheck="false" required>
+      <button type="submit">Authorize</button>
+    </form>
+  </div>
+
+  <div data-view="missing" class="missing">
+    <p>This page is opened by an AI assistant during setup — there's nothing to do here directly. If you were sent here by mistake, go to <a href="account.html">your account page</a> instead.</p>
+  </div>
+</div>
+
+<script>
+  function showView(name) {
+    document.querySelectorAll('[data-view]').forEach((el) => el.classList.toggle('active', el.getAttribute('data-view') === name));
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var redirectUri = params.get('redirect_uri');
+
+  if (!redirectUri) {
+    showView('missing');
+  } else {
+    showView('form');
+    document.getElementById('f-client-id').value = params.get('client_id') || '';
+    document.getElementById('f-redirect-uri').value = redirectUri;
+    document.getElementById('f-state').value = params.get('state') || '';
+    document.getElementById('f-code-challenge').value = params.get('code_challenge') || '';
+    document.getElementById('f-code-challenge-method').value = params.get('code_challenge_method') || '';
+    document.getElementById('f-response-type').value = params.get('response_type') || 'code';
+
+    var host = '(unknown)';
+    try { host = new URL(redirectUri).host; } catch (e) {}
+    document.getElementById('client-note').textContent = 'This will send your token to: ' + redirectUri.split('?')[0] + ' (' + host + ')';
+
+    if (params.get('error')) {
+      var err = document.getElementById('err');
+      err.textContent = params.get('error_description') || 'That token was rejected. Generate a new one and try again.';
+      err.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
