@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"poly/internal/adapters"
+	"poly/internal/ui"
 )
 
 var searchCmd = &cobra.Command{
@@ -35,7 +36,7 @@ var searchCmd = &cobra.Command{
 				continue
 			}
 			anyFound = true
-			fmt.Printf("%s %s (%s)\n", name, result.Version, a.Name())
+			fmt.Printf("%s %s\n", ui.Orange(name), ui.Dim(fmt.Sprintf("%s (%s)", result.Version, a.Name())))
 			if result.Summary != "" {
 				fmt.Printf("  %s\n", result.Summary)
 			}

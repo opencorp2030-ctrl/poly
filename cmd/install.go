@@ -10,6 +10,7 @@ import (
 	"poly/internal/account"
 	"poly/internal/adapters"
 	"poly/internal/manifest"
+	"poly/internal/ui"
 )
 
 type installResult struct {
@@ -82,11 +83,11 @@ Examples:
 		var results []installResult
 		if len(args) > 1 {
 			if account.IsPro() {
-				fmt.Printf("installing %d packages in parallel (pro)\n", len(args))
+				fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installing %d packages in parallel (pro)", len(args))))
 				results = installParallel(args)
 			} else {
 				results = installSequential(args)
-				fmt.Println("note: poly pro installs multiple packages in parallel — see the site's Pro section")
+				fmt.Println(ui.Dim("note: poly pro installs multiple packages in parallel — see the site's Pro section"))
 			}
 		} else {
 			results = installSequential(args)
@@ -101,7 +102,7 @@ Examples:
 		usedTap := false
 		for _, r := range results {
 			if r.err != nil {
-				fmt.Printf("failed to install %s: %v\n", r.spec, r.err)
+				fmt.Println(ui.Red(fmt.Sprintf("failed to install %s: %v", r.spec, r.err)))
 				if firstErr == nil {
 					firstErr = r.err
 				}
@@ -114,7 +115,7 @@ Examples:
 				Version:     r.installedVersion,
 				InstalledAt: time.Now(),
 			})
-			fmt.Printf("installed %s %s (via %s)\n", r.name, r.installedVersion, r.a.Name())
+			fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installed %s %s (via %s)", r.name, r.installedVersion, r.a.Name())))
 			if r.a.Name() == "tap" {
 				usedTap = true
 			}
@@ -127,7 +128,7 @@ Examples:
 		if usedTap {
 			binDir, err := adapters.BinDir()
 			if err == nil {
-				fmt.Printf("note: tap binaries are installed to %s — make sure it's on your PATH\n", binDir)
+				fmt.Println(ui.Dim(fmt.Sprintf("note: tap binaries are installed to %s — make sure it's on your PATH", binDir)))
 			}
 		}
 

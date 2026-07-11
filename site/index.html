@@ -146,73 +146,32 @@
     margin: 0 0 0.9rem;
   }
 
-  /* full-bleed video banner, the very first thing on the page */
-  .video-hero {
-    position: relative;
-    height: 100vh;
-    min-height: 480px;
-    max-height: 900px;
-    overflow: hidden;
+  /* full-screen intro splash: just the wordmark, for ~3s, then it fades
+     to reveal the page sitting underneath it */
+  .intro-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--ink);
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.7s ease;
   }
-  .video-hero video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .intro-splash.dismissed {
+    opacity: 0;
+    pointer-events: none;
   }
-  .video-hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: rgba(var(--ink-rgb), 0.25);
-  }
-  .video-hero::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 40%;
-    z-index: 1;
-    background: linear-gradient(180deg, rgba(var(--ink-rgb), 0) 0%, rgba(var(--ink-rgb), 1) 100%);
-  }
-  .video-hero .wordmark-giant-wrap {
-    position: relative;
-    z-index: 2;
+  .intro-splash .wordmark-giant-wrap {
     margin: 0;
     padding: 0 1rem;
   }
-  .video-hero .wordmark-giant {
+  .intro-splash .wordmark-giant {
     font-size: clamp(4.5rem, 19vw, 12rem);
-    text-shadow: 0 10px 50px rgba(0, 0, 0, 0.55), 0 2px 14px rgba(0, 0, 0, 0.5);
-  }
-  .scroll-hint {
-    position: absolute;
-    left: 50%;
-    bottom: 1.75rem;
-    transform: translateX(-50%);
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(233, 228, 216, 0.75);
-    animation: scroll-hint-bob 2.2s ease-in-out infinite;
-  }
-  .scroll-hint svg { display: block; }
-  @keyframes scroll-hint-bob {
-    0%, 100% { transform: translate(-50%, 0); }
-    50% { transform: translate(-50%, 6px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .scroll-hint { animation: none; }
+    .intro-splash { transition: none; }
   }
 
   .hero { position: relative; overflow: hidden; }
@@ -549,18 +508,11 @@
 </head>
 <body>
 
-<section class="video-hero">
-  <video id="hero-video" autoplay muted loop playsinline aria-hidden="true">
-    <source src="assets/flower.mp4" type="video/mp4">
-  </video>
+<div id="splash" class="intro-splash">
   <div class="wordmark-giant-wrap">
     <p class="wordmark-giant" aria-hidden="true">poly</p>
   </div>
-  <a href="#top-nav" class="scroll-hint">
-    <span data-i18n="scroll_hint">Scroll</span>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>
-  </a>
-</section>
+</div>
 
 <header class="top" id="top-nav">
   <div class="wrap">
@@ -978,12 +930,24 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
     var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var noHover = window.matchMedia && window.matchMedia('(hover: none)').matches;
 
-    var heroVideo = document.getElementById('hero-video');
-    if (heroVideo && reduceMotion) {
-      heroVideo.removeAttribute('autoplay');
-      heroVideo.removeAttribute('loop');
-      heroVideo.pause();
+    var splash = document.getElementById('splash');
+    if (splash) {
+      var bodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      var dismissed = false;
+      function dismissSplash() {
+        if (dismissed) return;
+        dismissed = true;
+        splash.classList.add('dismissed');
+        document.body.style.overflow = bodyOverflow;
+      }
+      splash.addEventListener('click', dismissSplash);
+      window.addEventListener('keydown', dismissSplash, { once: true });
+      window.addEventListener('wheel', dismissSplash, { once: true, passive: true });
+      window.addEventListener('touchstart', dismissSplash, { once: true, passive: true });
+      setTimeout(dismissSplash, reduceMotion ? 400 : 3000);
     }
+
     var hero = document.querySelector('.hero');
     var ring = document.getElementById('cursor-ring');
     var card = document.getElementById('glass-card');

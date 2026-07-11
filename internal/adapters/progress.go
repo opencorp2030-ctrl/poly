@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"poly/internal/ui"
 )
 
 const progressBarWidth = 28
@@ -26,8 +28,10 @@ func (pw *progressWriter) Write(p []byte) (int, error) {
 }
 
 func (pw *progressWriter) render() {
+	label := ui.Orange(pw.label)
+
 	if pw.total <= 0 {
-		fmt.Fprintf(os.Stderr, "\r%s  %s", pw.label, humanBytes(pw.written))
+		fmt.Fprintf(os.Stderr, "\r%s  %s", label, humanBytes(pw.written))
 		return
 	}
 
@@ -36,10 +40,10 @@ func (pw *progressWriter) render() {
 		frac = 1
 	}
 	filled := int(frac * progressBarWidth)
-	bar := strings.Repeat("#", filled) + strings.Repeat(" ", progressBarWidth-filled)
+	bar := ui.Orange(strings.Repeat("#", filled)) + strings.Repeat(" ", progressBarWidth-filled)
 
 	fmt.Fprintf(os.Stderr, "\r%s  [%s] %3.0f%%  %s/%s",
-		pw.label, bar, frac*100, humanBytes(pw.written), humanBytes(pw.total))
+		label, bar, frac*100, humanBytes(pw.written), humanBytes(pw.total))
 }
 
 func (pw *progressWriter) done() {

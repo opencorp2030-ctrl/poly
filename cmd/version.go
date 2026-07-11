@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"poly/internal/account"
+	"poly/internal/ui"
 )
 
 // Version is injected at build time via -ldflags "-X poly/cmd.Version=x.y.z".
@@ -17,12 +18,12 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the poly version",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Printf("poly %s (%s/%s)\n", Version, runtime.GOOS, runtime.GOARCH)
+		fmt.Printf("%s %s (%s/%s)\n", ui.Orange("poly"), Version, runtime.GOOS, runtime.GOARCH)
 		if email := account.Email(); email != "" {
 			if account.IsPro() {
-				fmt.Printf("signed in as %s — pro ✓\n", email)
+				fmt.Println(ui.Orange("signed in as " + email + " — pro ✓"))
 			} else {
-				fmt.Printf("signed in as %s\n", email)
+				fmt.Println(ui.Dim("signed in as " + email))
 			}
 		}
 		return nil

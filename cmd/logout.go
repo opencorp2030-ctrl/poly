@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"poly/internal/account"
+	"poly/internal/ui"
 )
 
 var logoutCmd = &cobra.Command{
@@ -15,7 +16,7 @@ var logoutCmd = &cobra.Command{
 		if err := account.Logout(); err != nil {
 			return err
 		}
-		fmt.Println("logged out")
+		fmt.Println(ui.Orange("logged out"))
 		return nil
 	},
 }

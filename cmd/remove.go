@@ -7,6 +7,7 @@ import (
 
 	"poly/internal/adapters"
 	"poly/internal/manifest"
+	"poly/internal/ui"
 )
 
 var removeCmd = &cobra.Command{
@@ -39,7 +40,7 @@ var removeCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("removed %s\n", name)
+		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange("removed "+name))
 		return nil
 	},
 }

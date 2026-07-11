@@ -10,6 +10,7 @@ import (
 	"golang.org/x/term"
 
 	"poly/internal/account"
+	"poly/internal/ui"
 )
 
 var loginCmd = &cobra.Command{
@@ -37,7 +38,7 @@ var loginCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Printf("logged in as %s\n", creds.Email)
+		fmt.Println(ui.Orange("logged in as " + creds.Email))
 		return nil
 	},
 }
