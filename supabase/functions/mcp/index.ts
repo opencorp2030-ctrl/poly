@@ -217,6 +217,27 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
   }
 }
 
+// Per the MCP Authorization spec, a protected resource server must
+// answer an unauthenticated (or invalidly authenticated) request with
+// HTTP 401 and a WWW-Authenticate header pointing at its protected-
+// resource metadata -- that 401 is the ONLY signal most clients
+// (Claude.ai, ChatGPT) use to realize OAuth is required at all. Letting
+// `initialize`/`tools/list` quietly succeed without a token (as this
+// server used to) means the client sees a working connection and never
+// starts the OAuth dance, so the user is never prompted for a token.
+const PROTECTED_RESOURCE_METADATA_URL = "https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp/.well-known/oauth-protected-resource";
+
+function unauthorizedResponse(id: unknown): Response {
+  return new Response(JSON.stringify(jsonRpcError(id ?? null, -32001, "Authentication required")), {
+    status: 401,
+    headers: {
+      ...CORS_HEADERS,
+      "Content-Type": "application/json",
+      "WWW-Authenticate": `Bearer resource_metadata="${PROTECTED_RESOURCE_METADATA_URL}"`,
+    },
+  });
+}
+
 async function handleJsonRpc(req: Request): Promise<Response> {
   let body: any;
   try {
@@ -231,6 +252,23 @@ async function handleJsonRpc(req: Request): Promise<Response> {
   const { id, method, params } = body ?? {};
   const isNotification = id === undefined;
   const token = bearerToken(req);
+
+  // notifications/initialized carries no meaningful auth outcome (the
+  // client doesn't process a response body for it) -- let it through
+  // regardless so a client that's already past the challenge doesn't
+  // get stuck on a stray notification.
+  if (method !== "notifications/initialized") {
+    let authed = false;
+    if (token) {
+      try {
+        const who = await callRpc("mcp_whoami", { p_token: token });
+        authed = !!who?.length;
+      } catch {
+        authed = false;
+      }
+    }
+    if (!authed) return unauthorizedResponse(id);
+  }
 
   try {
     let result: unknown;
