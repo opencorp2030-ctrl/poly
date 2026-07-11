@@ -33,14 +33,14 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
 
 ## Installation
 
-**macOS** — télécharge [`poly-macos-0.5.0.pkg`](https://github.com/opencorp2030-ctrl/poly/releases/latest),
+**macOS** — télécharge [`poly-macos.pkg`](https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-macos.pkg),
 ouvre-le, suis l'installeur. Installe un binaire universel
 (Intel + Apple Silicon) dans `/usr/local/bin/poly`. Non signé/non
 notarié (pas encore de compte Apple Developer), donc Gatekeeper va
 avertir à la première ouverture — clic droit → Ouvrir, ou
 `Réglages Système → Confidentialité et sécurité → Ouvrir quand même`.
 
-**Windows** — télécharge [`poly-setup-0.5.0.exe`](https://github.com/opencorp2030-ctrl/poly/releases/latest),
+**Windows** — télécharge [`poly-setup.exe`](https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-setup.exe),
 lance-le. Installe dans `%LOCALAPPDATA%\Poly` et l'ajoute au `PATH` de
 ton utilisateur (pas besoin des droits admin). Non signé, donc
 SmartScreen va avertir — "Plus d'infos" → "Exécuter quand même".
@@ -73,56 +73,83 @@ lance `scripts/build-all.sh` pour builder les cinq cibles
 ## Comment la résolution de paquet fonctionne
 
 `poly install <name>` essaie la recherche (`Search`) de chaque adapter
-dans l'ordre — **tap → brew → pip → npm** — et installe via le premier
-qui signale que le paquet existe. Force un backend précis avec un préfixe :
+dans l'ordre — **tap → brew → pip → npm → cargo → go** — et installe via
+le premier qui signale que le paquet existe. Force un backend précis
+avec un préfixe :
 
 | Commande | Résout vers |
 |---|---|
-| `poly install ripgrep` | première correspondance : tap → brew → pip → npm |
+| `poly install ripgrep` | première correspondance : tap → brew → pip → npm → cargo → go |
 | `poly install tap:ripgrep` | téléchargement binaire forcé depuis la formule tap |
 | `poly install brew:wget` | `brew install wget` forcé |
 | `poly install pip:requests` | `pip install requests` forcé |
 | `poly install npm:lodash` | `npm install -g lodash` forcé |
+| `poly install cargo:ripgrep` | `cargo install ripgrep` forcé |
+| `poly install go:golang.org/x/tools/cmd/goimports` | `go install <module>@latest` forcé |
 
 Ajoute `@version` pour figer une version : `poly install requests@2.31.0`.
-Les adapters pip et npm la transmettent directement ; l'adapter tap
-n'offre que la version fixée dans sa formule et échoue si tu en demandes
-une autre.
+pip, npm et cargo la transmettent directement ; l'adapter tap n'offre
+que la version fixée dans sa formule et échoue si tu en demandes une
+autre ; `go` la traite comme la version/tag du module.
 
 ## Commandes
 
 | Commande | Fait |
 |---|---|
-| `poly install [adapter:]name[@version] ...` | installe un ou plusieurs paquets, routage auto ou forcé |
+| `poly install [[adapter:]name[@version] ...]` | installe des paquets, routage auto ou forcé ; sans argument, installe depuis `poly.json` |
 | `poly remove name` | désinstalle, via l'adapter qui a fait l'installation |
 | `poly list` | affiche tout ce que poly a installé, et par quel biais |
 | `poly search [adapter:]name` | vérifie l'existence et la dernière version sur tous les adapters |
+| `poly info [adapter:]name` | version, résumé, site web et statut d'installation, par adapter |
+| `poly init` | écrit `poly.json` à partir de tes paquets actuellement installés |
+| `poly upgrade` | met à jour chaque paquet installé vers la dernière version de son adapter |
+| `poly self-update` | met à jour le binaire poly lui-même vers la dernière release GitHub |
+| `poly account` | affiche ton e-mail/username/bio/formule connectés |
 | `poly login` / `poly logout` | connexion/déconnexion à ton compte Poly (débloque Pro) |
 | `poly version` | affiche la version buildée de poly et, si connecté, ton compte/ta formule |
 
 L'état vit dans `~/.poly/manifest.json`. Les binaires tap atterrissent
 dans `~/.poly/bin` (ajoute-le à ton `PATH`). Les identifiants de connexion
-vivent dans `~/.poly/credentials.json` (mode 0600).
+vivent dans `~/.poly/credentials.json` (mode 0600). `poly self-update` et,
+pour les comptes Pro, `poly upgrade` tournent aussi automatiquement en
+arrière-plan (throttlé à ~1×/jour, loggé dans `~/.poly/auto-update.log`).
+
+## Installations reproductibles avec poly.json
+
+`poly init` écrit un `poly.json` dans le dossier courant, listant chaque
+paquet installé par poly, figé à sa version exacte :
+
+```json
+{
+  "packages": [
+    "tap:ripgrep@15.1.0",
+    "npm:eslint@9.2.0",
+    "pip:requests@2.31.0"
+  ]
+}
+```
+
+Commit-le, et n'importe qui (ou une machine CI) peut reproduire le même
+environnement avec un simple `poly install` — sans argument.
 
 ## Poly Pro
 
-Poly est et reste 100% gratuit et open source. Deux vrais avantages
-Pro :
+Poly est et reste 100% gratuit et open source — tout le catalogue tap
+intégré (`ripgrep`, `fd`, `jq`, ...) est gratuit aussi, volontairement :
+Pro n'a pas vocation à retenir des outils que les gens attendent
+gratuits. Le vrai avantage mesurable aujourd'hui :
 
 - `poly install a b c` (plusieurs paquets en une commande) les installe
-  **séquentiellement** en version gratuite ; connecté avec une formule Pro
-  active (`poly login`), la même commande les installe **en parallèle** —
-  un vrai gain mesurable, pas un ralentissement artificiel de la version
-  gratuite.
-- Le catalogue tap a des formules réservées à Pro (actuellement `fd`,
-  `jq`) en plus des gratuites (actuellement `ripgrep`) — `poly search`
-  les montre dans les deux cas, marquées `[pro]`, mais `poly install`
-  bloque avec un message clair si tu n'es pas connecté en Pro.
+  **séquentiellement** en version gratuite ; connecté avec une formule
+  Pro active (`poly login`), la même commande les installe **en
+  parallèle**, et `poly upgrade` tourne automatiquement en arrière-plan
+  au lieu de seulement à la demande.
 
-Gère ton compte (inscription, formule) sur `site/account.html`, propulsé
-par Supabase Auth — voir `internal/account/account.go` pour la logique
-côté client et la table `public.profiles` pour où vit le statut de
-formule.
+Gère ton compte (inscription, formule) sur
+[poly.candygate.eu/account.html](https://poly.candygate.eu/account.html),
+propulsé par Supabase Auth — voir `internal/account/account.go` pour la
+logique côté client et la table `public.profiles` pour où vit le statut
+de formule.
 
 ## Adapters
 
@@ -137,12 +164,19 @@ formule.
   sortie streamée en direct. La recherche interroge l'API publique
   `formulae.brew.sh/api/formula/<name>.json`, donc ça marche même sans
   brew installé (seule l'installation en a besoin).
+- **cargo** — appelle `cargo install --force`/`cargo uninstall`. La
+  recherche interroge l'API publique `crates.io/api/v1/crates/<name>`.
+- **go** — appelle `go install <module>@version`. Les paquets ici sont
+  des chemins d'import de module complets, pas des noms courts (ex.
+  `golang.org/x/tools/cmd/goimports`), donc c'est en pratique utilisé
+  uniquement via un préfixe `go:` explicite. La recherche remonte le
+  chemin jusqu'à trouver le module englobant via le proxy public des
+  modules Go, la même résolution que fait `go install` en interne.
 - **tap** — installe des binaires précompilés directement depuis une
   URL fixée, avec une barre de progression en direct pendant le
   téléchargement, vérifiés par un checksum SHA-256, puis extraits
   (`.tar.gz`/`.zip`) ou copiés dans `~/.poly/bin`. Pas besoin de
-  runtime Python, Node, ou Homebrew. Les formules peuvent être marquées
-  `tier: pro` — voir plus bas.
+  runtime Python, Node, Rust, ou Homebrew.
 
 ## Ajouter une formule tap
 
@@ -169,24 +203,31 @@ artifacts:
 
 La clé d'artifact est `<GOOS>_<GOARCH>`. `poly install <name>` choisit
 l'entrée qui correspond à la machine sur laquelle il tourne. Formules
-intégrées aujourd'hui : `ripgrep` (gratuite), `fd` et `jq` (pro — voir
-`internal/registry/embedded/taps`).
+intégrées aujourd'hui, toutes gratuites : `ripgrep`, `fd`, `jq` — voir
+`internal/registry/embedded/taps`.
 
 ## Structure du projet
 
 ```
 main.go                          point d'entrée
-cmd/                              commandes cobra (install, remove, list, search, version)
+cmd/                              commandes cobra (install, upgrade, init, info, account, self-update, ...)
 internal/manifest/                lecture/écriture de ~/.poly/manifest.json
-internal/adapters/                interface Adapter + implémentations pip, npm, tap
+internal/lockfile/                lecture/écriture de poly.json
+internal/adapters/                interface Adapter + implémentations pip, npm, brew, cargo, go, tap
 internal/registry/embedded/       formules tap intégrées au binaire
-site/                             site marketing/doc (site/index.html)
+internal/account/                 client Supabase Auth (login/formule/profil)
+internal/selfupdate/              télécharge + vérifie + remplace le binaire poly
+installers/                       sources des installeurs .pkg macOS et .exe Windows
+site/                             site marketing, doc, compte, communauté
 scripts/build-all.sh              build cross-plateforme pour les releases
 ```
 
 ## État
 
-Early-stage. Fonctionne : install/remove/list/search sur pip, npm et
-tap ; version figée ; builds cross-plateforme. Pas encore construit :
-un installeur/registre hébergé, plus de formules tap intégrées, et une
-UI de recherche de paquets sur le site.
+Fonctionne : install/remove/list/search/info/upgrade/init sur pip, npm,
+brew, cargo, go et tap ; version figée ; auto-update et (Pro) upgrade
+auto des paquets ; installeurs macOS/Windows ; système de compte
+Supabase avec annuaire communautaire. Pas encore construit : installeurs
+signés/notariés, une UI de recherche couvrant le catalogue complet de
+chaque adapter (vs. recherche par nom exact), et les gestionnaires de
+paquets des distros Linux (apt/dnf/pacman).

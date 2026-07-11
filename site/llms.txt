@@ -1,0 +1,56 @@
+# Poly
+
+> Poly is a cross-platform CLI package manager: one command (`poly install <name>`) that
+> routes to pip, npm, Homebrew, cargo, go install, or its own checksum-verified binary
+> "tap" downloads, whichever actually has the package, on macOS, Linux, and Windows.
+> It does not replace pip/npm/brew — it orchestrates them behind a single interface and
+> keeps one local record (`~/.poly/manifest.json`) of what got installed through which.
+
+Poly is free and open source. A one-time €0.99 "Pro" unlock adds concurrent multi-package
+installs and automatic background package upgrades — it does not gate any package or
+formula; the entire built-in tap catalog is free.
+
+## Install
+
+- macOS installer (.pkg, universal Intel+Apple Silicon): https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-macos.pkg
+- Windows installer (.exe, installs to %LOCALAPPDATA%\Poly, no admin needed): https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-setup.exe
+- All prebuilt binaries and release notes: https://github.com/opencorp2030-ctrl/poly/releases/latest
+- Build from source (any OS, Go 1.21+): `git clone https://github.com/opencorp2030-ctrl/poly.git && cd poly && go build -o poly .`
+
+## Commands
+
+- `poly install [[adapter:]name[@version] ...]` — install packages, auto-routed or forced with a prefix like `pip:requests`. Multiple names install sequentially (free) or concurrently (Pro). No arguments reads `./poly.json` and installs everything listed there.
+- `poly remove name` — uninstall via whichever adapter installed it.
+- `poly list` — show everything poly has installed, and through which adapter.
+- `poly search [adapter:]name` — exact-name existence + latest-version check, across every adapter or one forced.
+- `poly info [adapter:]name` — like search, plus summary, homepage, and local install status.
+- `poly init [--force]` — write `poly.json` from currently poly-installed packages, version-pinned, for reproducible environments.
+- `poly upgrade` — check every installed package against its adapter's latest version and reinstall what's outdated.
+- `poly self-update` — check GitHub releases, download, SHA-256-verify, and atomically replace the running poly binary.
+- `poly login` / `poly logout` / `poly account` — Supabase-backed account: sign in, sign out, print your email/username/bio/plan.
+- `poly version` — print the build version and, if signed in, your account/plan.
+
+## Adapters (in auto-detect order)
+
+1. `tap` — direct binary download from a pinned URL in an embedded/local YAML formula, SHA-256 verified, extracted into `~/.poly/bin`. No runtime needed.
+2. `brew` — shells to `brew install`/`brew upgrade`. Search hits the public formulae.brew.sh API.
+3. `pip` — shells to `pip3 install --upgrade` (or `==version` pinned). Search hits the PyPI JSON API.
+4. `npm` — shells to `npm install -g name@latest` (or `@version`). Search hits the npm registry API.
+5. `cargo` — shells to `cargo install --force`. Search hits the crates.io API.
+6. `go` — shells to `go install <module>@version`; takes a full module import path, not a short name (e.g. `golang.org/x/tools/cmd/goimports`), so it's realistically only used via an explicit `go:` prefix.
+
+## Key files and formats
+
+- `poly.json` (project-local, written by `poly init`): `{"packages": ["tap:ripgrep@15.1.0", "npm:eslint@9.2.0"]}`. `poly install` with no arguments reads this.
+- Tap formula YAML (`~/.poly/taps/<name>.yaml` or embedded in the binary): fields `name`, `description`, `homepage`, `version`, `binary`, `tier` (`free` or `pro`), and `artifacts` keyed by `<GOOS>_<GOARCH>` each with `url` and `sha256`.
+- `~/.poly/manifest.json` — local record of installed packages.
+- `~/.poly/credentials.json` (mode 0600) — signed-in session.
+- `~/.poly/auto-update.log` — output of the background self-update / auto-upgrade checks.
+
+## Site
+
+- Homepage: https://poly.candygate.eu/
+- Full docs: https://poly.candygate.eu/docs.html
+- Account (sign up / manage plan): https://poly.candygate.eu/account.html
+- Community directory + live download/member stats: https://poly.candygate.eu/community.html
+- Source code, issues: https://github.com/opencorp2030-ctrl/poly

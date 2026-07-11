@@ -95,9 +95,10 @@ func (n Npm) Search(name string) (SearchResult, error) {
 	var payload struct {
 		Version     string `json:"version"`
 		Description string `json:"description"`
+		Homepage    string `json:"homepage"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
 		return SearchResult{}, err
 	}
-	return SearchResult{Found: true, Version: payload.Version, Summary: payload.Description}, nil
+	return SearchResult{Found: true, Version: payload.Version, Summary: payload.Description, Homepage: payload.Homepage}, nil
 }

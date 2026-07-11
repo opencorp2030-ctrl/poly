@@ -521,6 +521,7 @@
       <a href="#install" data-i18n="nav_install">install</a>
       <a href="#how" data-i18n="nav_how">how it works</a>
       <a href="#commands" data-i18n="nav_commands">commands</a>
+      <a href="docs.html" data-i18n="nav_docs">docs</a>
       <a href="#pro" data-i18n="nav_pro">pro</a>
       <a href="community.html" data-i18n="nav_community">community</a>
       <a href="account.html" data-i18n="nav_account">account</a>
@@ -619,6 +620,10 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
       <span class="step">pip</span>
       <span class="arrow">→</span>
       <span class="step">npm</span>
+      <span class="arrow">→</span>
+      <span class="step">cargo</span>
+      <span class="arrow">→</span>
+      <span class="step">go</span>
     </div>
 
     <p class="section-lede" style="margin-bottom:1rem" data-i18n="how_prefix_lede">You can also force a specific backend with a prefix:</p>
@@ -626,11 +631,13 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
       <table>
         <thead><tr><th data-i18n="how_th_command">Command</th><th data-i18n="how_th_resolves">Resolves to</th></tr></thead>
         <tbody>
-          <tr><td><code>poly install ripgrep</code></td><td data-i18n="how_row1">first match: tap → brew → pip → npm</td></tr>
+          <tr><td><code>poly install ripgrep</code></td><td data-i18n="how_row1">first match: tap → brew → pip → npm → cargo → go</td></tr>
           <tr><td><code>poly install tap:ripgrep</code></td><td data-i18n="how_row2">forced binary download from the tap formula</td></tr>
           <tr><td><code>poly install brew:wget</code></td><td data-i18n="how_row_brew">forced <code>brew install wget</code></td></tr>
           <tr><td><code>poly install pip:requests</code></td><td data-i18n="how_row3">forced <code>pip install requests</code></td></tr>
           <tr><td><code>poly install npm:lodash</code></td><td data-i18n="how_row4">forced <code>npm install -g lodash</code></td></tr>
+          <tr><td><code>poly install cargo:ripgrep</code></td><td data-i18n="how_row_cargo">forced <code>cargo install ripgrep</code></td></tr>
+          <tr><td><code>poly install go:golang.org/x/tools/cmd/goimports</code></td><td data-i18n="how_row_go">forced <code>go install &lt;module&gt;@latest</code></td></tr>
         </tbody>
       </table>
     </div>
@@ -641,8 +648,30 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
 <section id="install">
   <div class="wrap">
     <p class="eyebrow" data-i18n="install_eyebrow">Install</p>
-    <h2 data-i18n="install_title">Build from source</h2>
-    <p class="section-lede" data-i18n="install_lede">Poly is early — there's no hosted installer yet. Building it takes one Go toolchain and a few seconds.</p>
+    <h2 data-i18n="install_title">Get poly</h2>
+    <p class="section-lede" data-i18n="install_lede_installers">Native installers for macOS and Windows. Both are unsigned (no developer certificates yet), so your OS will warn on first run — that's expected for a young open-source tool.</p>
+    <div class="grid-3" style="margin-bottom:2.5rem">
+      <div class="feature">
+        <p class="tag">macOS</p>
+        <h3 data-i18n="install_macos_h">Universal .pkg</h3>
+        <p data-i18n="install_macos_p">Intel + Apple Silicon, installs to /usr/local/bin.</p>
+        <p style="margin-top:0.75rem"><a class="btn primary" href="https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-macos.pkg" data-i18n="install_download">Download →</a></p>
+      </div>
+      <div class="feature">
+        <p class="tag">Windows</p>
+        <h3 data-i18n="install_windows_h">.exe installer</h3>
+        <p data-i18n="install_windows_p">Installs to %LOCALAPPDATA%\Poly, adds itself to PATH, no admin needed.</p>
+        <p style="margin-top:0.75rem"><a class="btn primary" href="https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-setup.exe" data-i18n="install_download">Download →</a></p>
+      </div>
+      <div class="feature">
+        <p class="tag" data-i18n="install_other_tag">Linux / any OS</p>
+        <h3 data-i18n="install_other_h">Prebuilt binaries</h3>
+        <p data-i18n="install_other_p">Plain binaries for every platform, no installer, on the releases page.</p>
+        <p style="margin-top:0.75rem"><a class="btn" href="https://github.com/opencorp2030-ctrl/poly/releases/latest" data-i18n="install_releases">All releases →</a></p>
+      </div>
+    </div>
+
+    <p class="section-lede" data-i18n="install_lede">Prefer to build it yourself? One Go toolchain and a few seconds:</p>
     <div class="code-block"><span class="comment" data-i18n="install_comment1"># macOS / Linux / Windows (with Go installed)</span>
 git clone https://github.com/opencorp2030-ctrl/poly.git
 cd poly
@@ -662,14 +691,20 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       <table>
         <thead><tr><th data-i18n="commands_th_command">Command</th><th data-i18n="commands_th_does">Does</th></tr></thead>
         <tbody>
-          <tr><td><code>poly install [adapter:]name[@version]</code></td><td data-i18n="cmd_row1">install, auto-routed or forced</td></tr>
+          <tr><td><code>poly install [[adapter:]name[@version] ...]</code></td><td data-i18n="cmd_row1">install, auto-routed or forced; no args installs from poly.json</td></tr>
           <tr><td><code>poly remove name</code></td><td data-i18n="cmd_row2">uninstall, via whichever adapter installed it</td></tr>
           <tr><td><code>poly list</code></td><td data-i18n="cmd_row3">show everything poly has installed, and through what</td></tr>
           <tr><td><code>poly search [adapter:]name</code></td><td data-i18n="cmd_row4">check existence and latest version across adapters</td></tr>
+          <tr><td><code>poly info [adapter:]name</code></td><td data-i18n="cmd_row_info">version, summary, homepage, install status</td></tr>
+          <tr><td><code>poly init</code></td><td data-i18n="cmd_row_init">write poly.json from what's currently installed</td></tr>
+          <tr><td><code>poly upgrade</code></td><td data-i18n="cmd_row_upgrade">update every installed package to its latest version</td></tr>
+          <tr><td><code>poly self-update</code></td><td data-i18n="cmd_row_selfupdate">update poly itself to the latest release</td></tr>
+          <tr><td><code>poly account</code> / <code>login</code> / <code>logout</code></td><td data-i18n="cmd_row_account">manage your signed-in Poly account</td></tr>
           <tr><td><code>poly version</code></td><td data-i18n="cmd_row5">print the poly build version</td></tr>
         </tbody>
       </table>
     </div>
+    <p class="note-box" data-i18n="docs_note">Full reference, including the poly.json format and how to write a tap formula, is on the <a href="docs.html">docs page</a>.</p>
   </div>
 </section>
 
@@ -685,9 +720,9 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
         <p data-i18n="pro1_p">Free installs packages one at a time. Pro runs <code>poly install a b c</code> concurrently, so multi-package installs actually finish faster — a measurable gain, not a fake one.</p>
       </div>
       <div class="feature">
-        <p class="tag" data-i18n="pro2_tag">More taps</p>
-        <h3 data-i18n="pro2_h">Expanded formula catalog</h3>
-        <p data-i18n="pro2_p">Access to a larger, curated set of tap formulas beyond the small free built-in list — more binaries installable with zero setup.</p>
+        <p class="tag" data-i18n="pro2_tag">Hands-off</p>
+        <h3 data-i18n="pro2_h">Automatic package upgrades</h3>
+        <p data-i18n="pro2_p">Free runs <code>poly upgrade</code> only when you ask. Pro runs it automatically in the background (throttled, ~once a day) so your tools stay current without thinking about it.</p>
       </div>
       <div class="feature">
         <p class="tag" data-i18n="pro3_tag">Thanks</p>
@@ -722,6 +757,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       nav_how: "how it works",
       nav_commands: "commands",
       nav_pro: "pro",
+      nav_docs: "docs",
       nav_community: "community",
       nav_account: "account",
       nav_github: "github",
@@ -731,10 +767,10 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cta_primary_label: "$ copy install steps",
       cta_secondary: "See how routing works →",
       why_eyebrow: "Why poly",
-      why_title: "Four ecosystems, one manifest",
+      why_title: "Six ecosystems, one manifest",
       why_lede: "Poly doesn't reimplement pip or npm — it routes to them, and to raw binary releases, while keeping one record of what's installed and where it came from.",
       feat1_tag: "01 · Auto-routed",
-      feat1_p: "Poly checks its binary tap, then Homebrew, then PyPI, then the npm registry, and installs from the first place the package actually exists. No need to remember if a tool ships as a Python package, an npm package, a brew formula, or a standalone binary.",
+      feat1_p: "Poly checks its binary tap, then Homebrew, then PyPI, then the npm registry, then crates.io, then the Go module proxy, and installs from the first place the package actually exists. No need to remember which ecosystem a tool ships from.",
       feat2_tag: "02 · Verified",
       feat2_h: "Checksummed binaries",
       feat2_p: "Tap installs download a release asset over HTTPS, hash it with SHA-256, and compare against a pinned checksum in the formula before anything is extracted or placed on disk.",
@@ -747,15 +783,27 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       how_prefix_lede: "You can also force a specific backend with a prefix:",
       how_th_command: "Command",
       how_th_resolves: "Resolves to",
-      how_row1: "first match: tap → brew → pip → npm",
+      how_row1: "first match: tap → brew → pip → npm → cargo → go",
       how_row_brew: "forced <code>brew install wget</code>",
+      how_row_cargo: "forced <code>cargo install ripgrep</code>",
+      how_row_go: "forced <code>go install &lt;module&gt;@latest</code>",
       how_row2: "forced binary download from the tap formula",
       how_row3: "forced <code>pip install requests</code>",
       how_row4: "forced <code>npm install -g lodash</code>",
       how_note: "Tap formulas are plain YAML — a small set ship embedded in the poly binary, and you can drop more into <code>~/.poly/taps/&lt;name&gt;.yaml</code> to override or extend them.",
       install_eyebrow: "Install",
-      install_title: "Build from source",
-      install_lede: "Poly is early — there's no hosted installer yet. Building it takes one Go toolchain and a few seconds.",
+      install_title: "Get poly",
+      install_lede_installers: "Native installers for macOS and Windows. Both are unsigned (no developer certificates yet), so your OS will warn on first run — that's expected for a young open-source tool.",
+      install_macos_h: "Universal .pkg",
+      install_macos_p: "Intel + Apple Silicon, installs to /usr/local/bin.",
+      install_windows_h: ".exe installer",
+      install_windows_p: "Installs to %LOCALAPPDATA%\\Poly, adds itself to PATH, no admin needed.",
+      install_other_tag: "Linux / any OS",
+      install_other_h: "Prebuilt binaries",
+      install_other_p: "Plain binaries for every platform, no installer, on the releases page.",
+      install_download: "Download →",
+      install_releases: "All releases →",
+      install_lede: "Prefer to build it yourself? One Go toolchain and a few seconds:",
       install_comment1: "# macOS / Linux / Windows (with Go installed)",
       install_lede2: "Cross-compiling for another OS/architecture only needs <code>GOOS</code> and <code>GOARCH</code>:",
       install_comment2: "# from any machine, targeting Windows on amd64",
@@ -763,11 +811,17 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       commands_title: "Commands",
       commands_th_command: "Command",
       commands_th_does: "Does",
-      cmd_row1: "install, auto-routed or forced",
+      cmd_row1: "install, auto-routed or forced; no args installs from poly.json",
       cmd_row2: "uninstall, via whichever adapter installed it",
       cmd_row3: "show everything poly has installed, and through what",
       cmd_row4: "check existence and latest version across adapters",
+      cmd_row_info: "version, summary, homepage, install status",
+      cmd_row_init: "write poly.json from what's currently installed",
+      cmd_row_upgrade: "update every installed package to its latest version",
+      cmd_row_selfupdate: "update poly itself to the latest release",
+      cmd_row_account: "manage your signed-in Poly account",
       cmd_row5: "print the poly build version",
+      docs_note: "Full reference, including the poly.json format and how to write a tap formula, is on the <a href=\"docs.html\">docs page</a>.",
       footer_text: "poly is open source on <a href=\"https://github.com/opencorp2030-ctrl/poly\">GitHub</a>. <code>~/.poly/manifest.json</code> tracks every install.",
       footer_license: "License: TBD",
       pro_eyebrow: "Poly Pro",
@@ -792,6 +846,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       nav_how: "fonctionnement",
       nav_commands: "commandes",
       nav_pro: "pro",
+      nav_docs: "doc",
       nav_community: "communauté",
       nav_account: "compte",
       nav_github: "github",
@@ -801,10 +856,10 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       cta_primary_label: "$ copier les étapes d'install",
       cta_secondary: "Voir comment le routage fonctionne →",
       why_eyebrow: "Pourquoi poly",
-      why_title: "Quatre écosystèmes, un seul manifeste",
+      why_title: "Six écosystèmes, un seul manifeste",
       why_lede: "Poly ne réimplémente ni pip ni npm — il route vers eux, et vers des binaires bruts, tout en gardant un seul registre de ce qui est installé et d'où ça vient.",
       feat1_tag: "01 · Routage automatique",
-      feat1_p: "Poly vérifie d'abord son tap binaire, puis Homebrew, puis PyPI, puis le registre npm, et installe depuis le premier endroit où le paquet existe réellement. Plus besoin de savoir si un outil est un paquet Python, un paquet npm, une formule brew, ou un binaire autonome.",
+      feat1_p: "Poly vérifie d'abord son tap binaire, puis Homebrew, puis PyPI, puis le registre npm, puis crates.io, puis le proxy des modules Go, et installe depuis le premier endroit où le paquet existe réellement. Plus besoin de savoir de quel écosystème vient un outil.",
       feat2_tag: "02 · Vérifié",
       feat2_h: "Binaires vérifiés par checksum",
       feat2_p: "Les installations tap téléchargent un binaire de release en HTTPS, le hashent en SHA-256, et comparent le résultat au checksum fixé dans la formule avant toute extraction ou écriture sur disque.",
@@ -817,15 +872,27 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       how_prefix_lede: "Tu peux aussi forcer un backend précis avec un préfixe :",
       how_th_command: "Commande",
       how_th_resolves: "Résout vers",
-      how_row1: "première correspondance : tap → brew → pip → npm",
+      how_row1: "première correspondance : tap → brew → pip → npm → cargo → go",
       how_row_brew: "<code>brew install wget</code> forcé",
+      how_row_cargo: "<code>cargo install ripgrep</code> forcé",
+      how_row_go: "<code>go install &lt;module&gt;@latest</code> forcé",
       how_row2: "téléchargement binaire forcé depuis la formule tap",
       how_row3: "<code>pip install requests</code> forcé",
       how_row4: "<code>npm install -g lodash</code> forcé",
       how_note: "Les formules tap sont du YAML simple — un petit ensemble est intégré au binaire poly, et tu peux en ajouter d'autres dans <code>~/.poly/taps/&lt;name&gt;.yaml</code> pour les surcharger ou les étendre.",
       install_eyebrow: "Installation",
-      install_title: "Compiler depuis les sources",
-      install_lede: "Poly est encore jeune — il n'y a pas encore d'installeur hébergé. La compilation ne prend qu'une toolchain Go et quelques secondes.",
+      install_title: "Installer poly",
+      install_lede_installers: "Installeurs natifs pour macOS et Windows. Les deux sont non signés (pas encore de certificat développeur), donc ton OS va avertir au premier lancement — normal pour un outil open source qui débute.",
+      install_macos_h: "Pkg universel",
+      install_macos_p: "Intel + Apple Silicon, installe dans /usr/local/bin.",
+      install_windows_h: "Installeur .exe",
+      install_windows_p: "Installe dans %LOCALAPPDATA%\\Poly, s'ajoute au PATH, pas besoin d'admin.",
+      install_other_tag: "Linux / autre OS",
+      install_other_h: "Binaires précompilés",
+      install_other_p: "Binaires bruts pour chaque plateforme, sans installeur, sur la page des releases.",
+      install_download: "Télécharger →",
+      install_releases: "Toutes les releases →",
+      install_lede: "Tu préfères compiler toi-même ? Une toolchain Go et quelques secondes :",
       install_comment1: "# macOS / Linux / Windows (avec Go installé)",
       install_lede2: "Cross-compiler pour un autre OS/architecture ne demande que <code>GOOS</code> et <code>GOARCH</code> :",
       install_comment2: "# depuis n'importe quelle machine, en ciblant Windows amd64",
@@ -833,20 +900,26 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       commands_title: "Commandes",
       commands_th_command: "Commande",
       commands_th_does: "Fait",
-      cmd_row1: "installe, routage auto ou forcé",
+      cmd_row1: "installe, routage auto ou forcé ; sans argument installe depuis poly.json",
       cmd_row2: "désinstalle, via l'adapter qui a fait l'installation",
       cmd_row3: "affiche tout ce que poly a installé, et par quel biais",
       cmd_row4: "vérifie l'existence et la dernière version sur tous les adapters",
+      cmd_row_info: "version, résumé, site web, statut d'installation",
+      cmd_row_init: "écrit poly.json à partir de ce qui est actuellement installé",
+      cmd_row_upgrade: "met à jour chaque paquet installé vers sa dernière version",
+      cmd_row_selfupdate: "met à jour poly lui-même vers la dernière release",
+      cmd_row_account: "gère ton compte Poly connecté",
       cmd_row5: "affiche la version buildée de poly",
+      docs_note: "La référence complète, avec le format de poly.json et comment écrire une formule tap, est sur la <a href=\"docs.html\">page de doc</a>.",
       pro_eyebrow: "Poly Pro",
       pro_title: "Soutiens poly, installe plus vite",
       pro_lede: "Poly est et reste 100% gratuit et open source. Pro est un petit pack optionnel — de vrais avantages, pas un péage sur des fonctionnalités qui marchent déjà.",
       pro1_tag: "Vraie vitesse",
       pro1_h: "Installs en parallèle",
       pro1_p: "La version gratuite installe les paquets un par un. Pro fait tourner <code>poly install a b c</code> en parallèle, donc les installs multiples finissent vraiment plus vite — un gain mesurable, pas inventé.",
-      pro2_tag: "Plus de taps",
-      pro2_h: "Catalogue de formules élargi",
-      pro2_p: "Accès à un ensemble plus large de formules tap curées (comme <code>fd</code> et <code>jq</code>), au-delà du petit set gratuit intégré — plus de binaires installables sans rien configurer.",
+      pro2_tag: "Mains libres",
+      pro2_h: "Mises à jour automatiques des paquets",
+      pro2_p: "La version gratuite ne lance <code>poly upgrade</code> que si tu le demandes. Pro le fait tourner automatiquement en arrière-plan (throttlé, ~1×/jour) pour que tes outils restent à jour sans y penser.",
       pro3_tag: "Merci",
       pro3_h: "Tu finances le développement",
       pro3_p: "Un badge de soutien à côté de ton nom dans <code>poly version</code> et <code>poly list</code> — et tu paies directement pour la prochaine fonctionnalité.",

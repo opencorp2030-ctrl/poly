@@ -196,7 +196,7 @@ func (t Tap) Search(name string) (SearchResult, error) {
 	if f.isPro() {
 		summary += " [pro]"
 	}
-	return SearchResult{Found: true, Version: f.Version, Summary: summary}, nil
+	return SearchResult{Found: true, Version: f.Version, Summary: summary, Homepage: f.Homepage}, nil
 }
 
 // BinDir exposes ~/.poly/bin so the CLI layer can tell the user to add it

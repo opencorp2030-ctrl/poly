@@ -3,7 +3,7 @@ description: "Lightweight and flexible command-line JSON processor"
 homepage: "https://github.com/jqlang/jq"
 version: "1.8.2"
 binary: jq
-tier: pro
+tier: free
 artifacts:
   darwin_arm64:
     url: "https://github.com/jqlang/jq/releases/download/jq-1.8.2/jq-macos-arm64"

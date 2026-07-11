@@ -21,9 +21,11 @@ pkgbuild --root "$WORK/pkgroot" \
   --version "$VERSION" \
   --install-location / \
   "installers/macos/poly-macos-${VERSION}.pkg"
-echo "-> installers/macos/poly-macos-${VERSION}.pkg"
+cp "installers/macos/poly-macos-${VERSION}.pkg" installers/macos/poly-macos.pkg
+echo "-> installers/macos/poly-macos-${VERSION}.pkg (+ stable alias poly-macos.pkg)"
 
 echo "== Windows .exe =="
 GOOS=windows GOARCH=amd64 go build -ldflags "-X poly/cmd.Version=${VERSION}" -o "$WORK/poly-windows-amd64.exe" .
 (cd installers/windows && makensis -DVERSION="$VERSION" "-DSOURCE_EXE=$WORK/poly-windows-amd64.exe" poly-installer.nsi)
-echo "-> installers/windows/poly-setup-${VERSION}.exe"
+cp "installers/windows/poly-setup-${VERSION}.exe" installers/windows/poly-setup.exe
+echo "-> installers/windows/poly-setup-${VERSION}.exe (+ stable alias poly-setup.exe)"

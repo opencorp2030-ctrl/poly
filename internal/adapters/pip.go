@@ -94,14 +94,15 @@ func (p Pip) Search(name string) (SearchResult, error) {
 
 	var payload struct {
 		Info struct {
-			Version string `json:"version"`
-			Summary string `json:"summary"`
+			Version  string `json:"version"`
+			Summary  string `json:"summary"`
+			HomePage string `json:"home_page"`
 		} `json:"info"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
 		return SearchResult{}, err
 	}
-	return SearchResult{Found: true, Version: payload.Info.Version, Summary: payload.Info.Summary}, nil
+	return SearchResult{Found: true, Version: payload.Info.Version, Summary: payload.Info.Summary, Homepage: payload.Info.HomePage}, nil
 }
 
 func parseVersion(pipShowOutput []byte) string {

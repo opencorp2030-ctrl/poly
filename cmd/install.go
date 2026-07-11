@@ -9,6 +9,7 @@ import (
 
 	"poly/internal/account"
 	"poly/internal/adapters"
+	"poly/internal/lockfile"
 	"poly/internal/manifest"
 	"poly/internal/ui"
 )
@@ -67,8 +68,8 @@ func installParallel(specs []string) []installResult {
 }
 
 var installCmd = &cobra.Command{
-	Use:   "install [adapter:]package[@version] [[adapter:]package[@version] ...]",
-	Short: "Install one or more packages (auto-detected across tap, pip, npm, or forced via a prefix)",
+	Use:   "install [[adapter:]package[@version] ...]",
+	Short: "Install one or more packages, or everything listed in poly.json",
 	Long: `Install one or more packages.
 
 Examples:
@@ -77,9 +78,26 @@ Examples:
   poly install pip:requests     # force the pip adapter
   poly install npm:lodash       # force the npm adapter
   poly install tap:ripgrep      # force a direct binary download
-  poly install ripgrep requests npm:lodash   # multiple packages; Pro installs them in parallel`,
-	Args: cobra.MinimumNArgs(1),
+  poly install ripgrep requests npm:lodash   # multiple packages; Pro installs them in parallel
+  poly install                  # no args: installs everything listed in ./poly.json`,
+	Args: cobra.ArbitraryArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			f, found, err := lockfile.Load()
+			if err != nil {
+				return err
+			}
+			if !found {
+				return fmt.Errorf("no packages given and no %s in this directory (run `poly init` to create one)", lockfile.FileName)
+			}
+			if len(f.Packages) == 0 {
+				fmt.Println(ui.Dim(lockfile.FileName + " has no packages"))
+				return nil
+			}
+			args = f.Packages
+			fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installing %d package(s) from %s", len(args), lockfile.FileName)))
+		}
+
 		var results []installResult
 		if len(args) > 1 {
 			if account.IsPro() {

@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Docs · Poly</title>
+<meta name="description" content="Full command reference, adapter details, poly.json and tap formula formats for Poly." />
+<style>
+  :root {
+    --ink: #14171d;
+    --ink-raised: #1b1f27;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8;
+    --text-dim: #9c9686;
+    --accent: #f0a93e;
+    --accent-ink: #14171d;
+    --ok: #6fbf8b;
+
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --container: 1080px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body { font-size: 16px; line-height: 1.65; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
+
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--ink); z-index: 10; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+
+  .lang-toggle { display: flex; gap: 0.2rem; border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem; }
+  .lang-btn { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.3rem 0.65rem; border-radius: 999px; border: none; background: transparent; color: var(--text-dim); cursor: pointer; }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
+
+  .layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 2.5rem; padding: clamp(2rem, 5vw, 3.5rem) 0 5rem; }
+  @media (min-width: 900px) {
+    .layout { grid-template-columns: 200px minmax(0,1fr); align-items: start; }
+    .toc { position: sticky; top: 90px; }
+  }
+
+  .toc { font-family: var(--mono); font-size: 0.82rem; }
+  .toc-title { color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.72rem; margin: 0 0 0.75rem; }
+  .toc a { display: block; color: var(--text-dim); padding: 0.3rem 0; }
+  .toc a:hover { color: var(--accent); }
+
+  h1 { font-family: var(--mono); font-weight: 700; font-size: clamp(1.9rem, 4vw, 2.4rem); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+  .lede { color: var(--text-dim); max-width: 68ch; margin: 0 0 1rem; font-size: 1.05rem; }
+
+  section.doc-section { padding-top: 2.75rem; margin-top: 2.75rem; border-top: 1px solid var(--border); scroll-margin-top: 90px; }
+  section.doc-section:first-of-type { padding-top: 0; margin-top: 0; border-top: none; }
+  h2 { font-family: var(--mono); font-size: 1.4rem; letter-spacing: -0.01em; margin: 0 0 0.75rem; }
+  h3 { font-family: var(--sans); font-size: 1.02rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  p { max-width: 74ch; }
+  code { font-family: var(--mono); font-size: 0.88em; background: var(--ink-raised); padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+  .code-block { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.2rem; font-family: var(--mono); font-size: 0.85rem; overflow-x: auto; white-space: pre; margin: 0.5rem 0 1.25rem; }
+  .code-block code { background: none; padding: 0; }
+  .code-block .comment { color: var(--text-dim); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1.25rem; }
+  th, td { text-align: left; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
+  th { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); background: var(--ink-raised); white-space: nowrap; }
+  td code { white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+
+  .note-box { border-left: 3px solid var(--accent); padding: 0.4rem 0 0.4rem 1rem; color: var(--text-dim); font-size: 0.9rem; margin: 1.25rem 0; max-width: 68ch; }
+  ul.plain { padding-left: 1.2rem; }
+  ul.plain li { margin-bottom: 0.5rem; max-width: 68ch; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links">
+      <a href="docs.html" class="current" data-i18n="nav_docs">docs</a>
+      <a href="index.html#pro" data-i18n="nav_pro">pro</a>
+      <a href="community.html" data-i18n="nav_community">community</a>
+      <a href="account.html" data-i18n="nav_account">account</a>
+      <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
+    </nav>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap layout">
+  <nav class="toc">
+    <p class="toc-title" data-i18n="toc_title">On this page</p>
+    <a href="#commands" data-i18n="toc_commands">Commands</a>
+    <a href="#adapters" data-i18n="toc_adapters">Adapters</a>
+    <a href="#resolution" data-i18n="toc_resolution">Resolution order</a>
+    <a href="#lockfile" data-i18n="toc_lockfile">poly.json</a>
+    <a href="#taps" data-i18n="toc_taps">Tap formulas</a>
+    <a href="#autoupdate" data-i18n="toc_autoupdate">Auto-update</a>
+    <a href="#pro" data-i18n="toc_pro">Pro</a>
+    <a href="llms.txt" data-i18n="toc_llms">llms.txt</a>
+  </nav>
+
+  <main>
+    <p class="eyebrow" style="font-family:var(--mono);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin:0 0 0.75rem" data-i18n="eyebrow">Documentation</p>
+    <h1 data-i18n="title">Everything poly does</h1>
+    <p class="lede" data-i18n="lede">The full reference. For the pitch, see the <a href="index.html">homepage</a>.</p>
+
+    <section class="doc-section" id="commands">
+      <h2 data-i18n="commands_h">Commands</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="th_command">Command</th><th data-i18n="th_does">Does</th></tr></thead>
+          <tbody>
+            <tr><td><code>poly install [[adapter:]name[@version] ...]</code></td><td data-i18n="cmd_install">Install one or more packages, auto-routed across adapters or forced with a prefix. Multiple names install sequentially (free) or concurrently (Pro). No arguments installs everything listed in <code>./poly.json</code>.</td></tr>
+            <tr><td><code>poly remove name</code></td><td data-i18n="cmd_remove">Uninstall, via whichever adapter poly recorded as having installed it.</td></tr>
+            <tr><td><code>poly list</code></td><td data-i18n="cmd_list">Show everything poly has installed: name, version, adapter, install date.</td></tr>
+            <tr><td><code>poly search [adapter:]name</code></td><td data-i18n="cmd_search">Check whether a package exists (exact name) and its latest version, across every adapter or one forced by prefix.</td></tr>
+            <tr><td><code>poly info [adapter:]name</code></td><td data-i18n="cmd_info">Like search, plus summary, homepage, and whether/what version you have installed.</td></tr>
+            <tr><td><code>poly init [--force]</code></td><td data-i18n="cmd_init">Write <code>poly.json</code> in the current directory from your currently poly-installed packages, version-pinned.</td></tr>
+            <tr><td><code>poly upgrade</code></td><td data-i18n="cmd_upgrade">Check every installed package against its adapter's latest version and reinstall what's outdated.</td></tr>
+            <tr><td><code>poly self-update</code></td><td data-i18n="cmd_selfupdate">Check GitHub releases for a newer poly version; download, verify (SHA-256), and atomically replace the running binary.</td></tr>
+            <tr><td><code>poly login</code> / <code>logout</code></td><td data-i18n="cmd_login">Sign in/out of your Poly account. Credentials live in <code>~/.poly/credentials.json</code> (mode 0600).</td></tr>
+            <tr><td><code>poly account</code></td><td data-i18n="cmd_account">Print your signed-in email, username, bio, and plan.</td></tr>
+            <tr><td><code>poly version</code></td><td data-i18n="cmd_version">Print the poly build version, and your account/plan if signed in.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note-box" data-i18n="commands_note">State lives in <code>~/.poly/manifest.json</code>. Tap binaries land in <code>~/.poly/bin</code> — make sure it's on your <code>PATH</code>.</p>
+    </section>
+
+    <section class="doc-section" id="adapters">
+      <h2 data-i18n="adapters_h">Adapters</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="th_adapter">Adapter</th><th data-i18n="th_installs_via">Installs via</th><th data-i18n="th_search_via">Search via</th></tr></thead>
+          <tbody>
+            <tr><td><code>tap</code></td><td data-i18n="ad_tap_install">Direct binary download from a pinned URL, SHA-256 verified, extracted to <code>~/.poly/bin</code></td><td data-i18n="ad_tap_search">Embedded/local YAML formulas, no network needed to check</td></tr>
+            <tr><td><code>brew</code></td><td data-i18n="ad_brew_install"><code>brew install</code> / <code>brew upgrade</code> if already present</td><td><code>formulae.brew.sh/api/formula/&lt;name&gt;.json</code></td></tr>
+            <tr><td><code>pip</code></td><td data-i18n="ad_pip_install"><code>pip3 install --upgrade</code> (or <code>==version</code> when pinned)</td><td><code>pypi.org/pypi/&lt;name&gt;/json</code></td></tr>
+            <tr><td><code>npm</code></td><td data-i18n="ad_npm_install"><code>npm install -g name@latest</code> (or <code>@version</code> when pinned)</td><td><code>registry.npmjs.org/&lt;name&gt;/latest</code></td></tr>
+            <tr><td><code>cargo</code></td><td data-i18n="ad_cargo_install"><code>cargo install --force</code></td><td><code>crates.io/api/v1/crates/&lt;name&gt;</code></td></tr>
+            <tr><td><code>go</code></td><td data-i18n="ad_go_install"><code>go install &lt;module&gt;@version</code>; requires a full module path, not a short name</td><td data-i18n="ad_go_search">Go module proxy, walking the path upward to find the enclosing module</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p data-i18n="adapters_p">Every adapter that shells out to a real package manager (pip/npm/brew/cargo) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.</p>
+    </section>
+
+    <section class="doc-section" id="resolution">
+      <h2 data-i18n="resolution_h">Resolution order &amp; prefixes</h2>
+      <p data-i18n="resolution_p">Without a prefix, <code>poly install name</code> tries each adapter's <code>Search</code> in this order and installs through the first hit:</p>
+      <div class="code-block">tap → brew → pip → npm → cargo → go</div>
+      <p data-i18n="resolution_p2">Force a specific one with <code>adapter:name</code>, and pin a version with <code>name@version</code> (or combine: <code>pip:requests@2.31.0</code>).</p>
+    </section>
+
+    <section class="doc-section" id="lockfile">
+      <h2 data-i18n="lockfile_h">Reproducible installs: poly.json</h2>
+      <p data-i18n="lockfile_p"><code>poly init</code> writes <code>poly.json</code> in the current directory, listing every package poly has installed, pinned to its exact version:</p>
+      <div class="code-block">{
+  "packages": [
+    "tap:ripgrep@15.1.0",
+    "npm:eslint@9.2.0",
+    "pip:requests@2.31.0"
+  ]
+}</div>
+      <p data-i18n="lockfile_p2">Commit it. Anyone (or any CI machine) reproduces the same environment with a plain <code>poly install</code> — no arguments needed. Use <code>poly init --force</code> to overwrite an existing file.</p>
+    </section>
+
+    <section class="doc-section" id="taps">
+      <h2 data-i18n="taps_h">Writing a tap formula</h2>
+      <p data-i18n="taps_p">Drop a YAML file into <code>~/.poly/taps/&lt;name&gt;.yaml</code> — this overrides any built-in formula of the same name:</p>
+      <div class="code-block">name: ripgrep
+description: "Line-oriented search tool that recursively searches directories for a regex pattern"
+homepage: "https://github.com/BurntSushi/ripgrep"
+version: "15.1.0"
+binary: rg
+tier: free   <span class="comment"># omit for free, or "pro" to gate it behind an active Pro plan</span>
+artifacts:
+  darwin_arm64:
+    url: "https://github.com/BurntSushi/ripgrep/releases/download/15.1.0/ripgrep-15.1.0-aarch64-apple-darwin.tar.gz"
+    sha256: "378e973289176ca0c6054054ee7f631a065874a352bf43f0fa60ef079b6ba715"
+  darwin_amd64: { url: "...", sha256: "..." }
+  linux_amd64: { url: "...", sha256: "..." }
+  linux_arm64: { url: "...", sha256: "..." }
+  windows_amd64: { url: "...", sha256: "..." }</div>
+      <p data-i18n="taps_p2">The artifact key is <code>&lt;GOOS&gt;_&lt;GOARCH&gt;</code>. <code>poly install name</code> picks the entry matching the machine it's running on, downloads it, verifies the SHA-256, and extracts (<code>.tar.gz</code>/<code>.zip</code>) or copies the raw binary into <code>~/.poly/bin</code>. Built-in formulas today, all free: <code>ripgrep</code>, <code>fd</code>, <code>jq</code> — see <code>internal/registry/embedded/taps</code> in the repo.</p>
+    </section>
+
+    <section class="doc-section" id="autoupdate">
+      <h2 data-i18n="autoupdate_h">Automatic updates</h2>
+      <ul class="plain">
+        <li data-i18n="au_li1"><strong>poly self-update</strong> — free, for everyone. On every command, throttled to about once a day, poly checks GitHub releases in the background (a detached process, so it never blocks whatever you're doing) and updates itself if there's a newer version.</li>
+        <li data-i18n="au_li2"><strong>poly upgrade</strong> — additionally automatic for Pro accounts, same throttling and background behavior. On the free tier it only runs when you type <code>poly upgrade</code> yourself.</li>
+      </ul>
+      <p data-i18n="au_p">Both log to <code>~/.poly/auto-update.log</code> so you can see what happened. Throttle state lives in <code>~/.poly/last-selfupdate-check</code> and <code>~/.poly/last-autoupgrade-check</code>.</p>
+    </section>
+
+    <section class="doc-section" id="pro">
+      <h2 data-i18n="pro_h">Poly Pro</h2>
+      <p data-i18n="pro_p">Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:</p>
+      <ul class="plain">
+        <li data-i18n="pro_li1">Concurrent installs when you name more than one package at once.</li>
+        <li data-i18n="pro_li2">Automatic background package upgrades (see above), instead of only on demand.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var I18N = {
+    en: {
+      nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
+      toc_title: "On this page", toc_commands: "Commands", toc_adapters: "Adapters", toc_resolution: "Resolution order",
+      toc_lockfile: "poly.json", toc_taps: "Tap formulas", toc_autoupdate: "Auto-update", toc_pro: "Pro", toc_llms: "llms.txt",
+      eyebrow: "Documentation", title: "Everything poly does",
+      lede: 'The full reference. For the pitch, see the <a href="index.html">homepage</a>.',
+      commands_h: "Commands", th_command: "Command", th_does: "Does",
+      cmd_install: 'Install one or more packages, auto-routed across adapters or forced with a prefix. Multiple names install sequentially (free) or concurrently (Pro). No arguments installs everything listed in <code>./poly.json</code>.',
+      cmd_remove: "Uninstall, via whichever adapter poly recorded as having installed it.",
+      cmd_list: "Show everything poly has installed: name, version, adapter, install date.",
+      cmd_search: "Check whether a package exists (exact name) and its latest version, across every adapter or one forced by prefix.",
+      cmd_info: "Like search, plus summary, homepage, and whether/what version you have installed.",
+      cmd_init: 'Write <code>poly.json</code> in the current directory from your currently poly-installed packages, version-pinned.',
+      cmd_upgrade: "Check every installed package against its adapter's latest version and reinstall what's outdated.",
+      cmd_selfupdate: 'Check GitHub releases for a newer poly version; download, verify (SHA-256), and atomically replace the running binary.',
+      cmd_login: 'Sign in/out of your Poly account. Credentials live in <code>~/.poly/credentials.json</code> (mode 0600).',
+      cmd_account: "Print your signed-in email, username, bio, and plan.",
+      cmd_version: "Print the poly build version, and your account/plan if signed in.",
+      commands_note: 'State lives in <code>~/.poly/manifest.json</code>. Tap binaries land in <code>~/.poly/bin</code> — make sure it\'s on your <code>PATH</code>.',
+      adapters_h: "Adapters", th_adapter: "Adapter", th_installs_via: "Installs via", th_search_via: "Search via",
+      ad_tap_install: 'Direct binary download from a pinned URL, SHA-256 verified, extracted to <code>~/.poly/bin</code>',
+      ad_tap_search: "Embedded/local YAML formulas, no network needed to check",
+      ad_brew_install: '<code>brew install</code> / <code>brew upgrade</code> if already present',
+      ad_pip_install: '<code>pip3 install --upgrade</code> (or <code>==version</code> when pinned)',
+      ad_npm_install: '<code>npm install -g name@latest</code> (or <code>@version</code> when pinned)',
+      ad_cargo_install: '<code>cargo install --force</code>',
+      ad_go_install: '<code>go install &lt;module&gt;@version</code>; requires a full module path, not a short name',
+      ad_go_search: "Go module proxy, walking the path upward to find the enclosing module",
+      adapters_p: "Every adapter that shells out to a real package manager (pip/npm/brew/cargo) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.",
+      resolution_h: "Resolution order &amp; prefixes",
+      resolution_p: 'Without a prefix, <code>poly install name</code> tries each adapter\'s <code>Search</code> in this order and installs through the first hit:',
+      resolution_p2: 'Force a specific one with <code>adapter:name</code>, and pin a version with <code>name@version</code> (or combine: <code>pip:requests@2.31.0</code>).',
+      lockfile_h: "Reproducible installs: poly.json",
+      lockfile_p: '<code>poly init</code> writes <code>poly.json</code> in the current directory, listing every package poly has installed, pinned to its exact version:',
+      lockfile_p2: 'Commit it. Anyone (or any CI machine) reproduces the same environment with a plain <code>poly install</code> — no arguments needed. Use <code>poly init --force</code> to overwrite an existing file.',
+      taps_h: "Writing a tap formula",
+      taps_p: 'Drop a YAML file into <code>~/.poly/taps/&lt;name&gt;.yaml</code> — this overrides any built-in formula of the same name:',
+      taps_p2: 'The artifact key is <code>&lt;GOOS&gt;_&lt;GOARCH&gt;</code>. <code>poly install name</code> picks the entry matching the machine it\'s running on, downloads it, verifies the SHA-256, and extracts (<code>.tar.gz</code>/<code>.zip</code>) or copies the raw binary into <code>~/.poly/bin</code>. Built-in formulas today, all free: <code>ripgrep</code>, <code>fd</code>, <code>jq</code> — see <code>internal/registry/embedded/taps</code> in the repo.',
+      autoupdate_h: "Automatic updates",
+      au_li1: "<strong>poly self-update</strong> — free, for everyone. On every command, throttled to about once a day, poly checks GitHub releases in the background (a detached process, so it never blocks whatever you're doing) and updates itself if there's a newer version.",
+      au_li2: '<strong>poly upgrade</strong> — additionally automatic for Pro accounts, same throttling and background behavior. On the free tier it only runs when you type <code>poly upgrade</code> yourself.',
+      au_p: 'Both log to <code>~/.poly/auto-update.log</code> so you can see what happened. Throttle state lives in <code>~/.poly/last-selfupdate-check</code> and <code>~/.poly/last-autoupgrade-check</code>.',
+      pro_h: "Poly Pro",
+      pro_p: 'Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:',
+      pro_li1: "Concurrent installs when you name more than one package at once.",
+      pro_li2: "Automatic background package upgrades (see above), instead of only on demand."
+    },
+    fr: {
+      nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      toc_title: "Sur cette page", toc_commands: "Commandes", toc_adapters: "Adapters", toc_resolution: "Ordre de résolution",
+      toc_lockfile: "poly.json", toc_taps: "Formules tap", toc_autoupdate: "Auto-update", toc_pro: "Pro", toc_llms: "llms.txt",
+      eyebrow: "Documentation", title: "Tout ce que fait poly",
+      lede: 'La référence complète. Pour le pitch, voir la <a href="index.html">page d\'accueil</a>.',
+      commands_h: "Commandes", th_command: "Commande", th_does: "Fait",
+      cmd_install: 'Installe un ou plusieurs paquets, routage auto entre adapters ou forcé avec un préfixe. Plusieurs noms s\'installent séquentiellement (gratuit) ou en parallèle (Pro). Sans argument, installe tout ce qui est listé dans <code>./poly.json</code>.',
+      cmd_remove: "Désinstalle, via l'adapter que poly a enregistré comme ayant fait l'installation.",
+      cmd_list: "Affiche tout ce que poly a installé : nom, version, adapter, date d'installation.",
+      cmd_search: "Vérifie si un paquet existe (nom exact) et sa dernière version, sur tous les adapters ou un seul forcé par préfixe.",
+      cmd_info: "Comme search, plus le résumé, le site web, et si/quelle version tu as installée.",
+      cmd_init: 'Écrit <code>poly.json</code> dans le dossier courant à partir des paquets actuellement installés par poly, figés en version.',
+      cmd_upgrade: "Vérifie chaque paquet installé contre la dernière version de son adapter et réinstalle ce qui est obsolète.",
+      cmd_selfupdate: 'Vérifie les releases GitHub pour une version plus récente de poly ; télécharge, vérifie (SHA-256), et remplace le binaire en cours d\'exécution de façon atomique.',
+      cmd_login: 'Connexion/déconnexion de ton compte Poly. Les identifiants vivent dans <code>~/.poly/credentials.json</code> (mode 0600).',
+      cmd_account: "Affiche ton e-mail, username, bio et formule connectés.",
+      cmd_version: "Affiche la version buildée de poly, et ton compte/formule si connecté.",
+      commands_note: 'L\'état vit dans <code>~/.poly/manifest.json</code>. Les binaires tap atterrissent dans <code>~/.poly/bin</code> — ajoute-le à ton <code>PATH</code>.',
+      adapters_h: "Adapters", th_adapter: "Adapter", th_installs_via: "Installe via", th_search_via: "Recherche via",
+      ad_tap_install: 'Téléchargement binaire direct depuis une URL fixée, vérifié par SHA-256, extrait dans <code>~/.poly/bin</code>',
+      ad_tap_search: "Formules YAML embarquées/locales, pas besoin de réseau pour vérifier",
+      ad_brew_install: '<code>brew install</code> / <code>brew upgrade</code> si déjà présent',
+      ad_pip_install: '<code>pip3 install --upgrade</code> (ou <code>==version</code> si figé)',
+      ad_npm_install: '<code>npm install -g name@latest</code> (ou <code>@version</code> si figé)',
+      ad_cargo_install: '<code>cargo install --force</code>',
+      ad_go_install: '<code>go install &lt;module&gt;@version</code> ; demande un chemin de module complet, pas un nom court',
+      ad_go_search: "Proxy des modules Go, en remontant le chemin jusqu'à trouver le module englobant",
+      adapters_p: "Chaque adapter qui appelle un vrai gestionnaire de paquets (pip/npm/brew/cargo) streame la sortie native de cet outil en direct, donc tu vois sa vraie progression. L'adapter <code>tap</code> affiche sa propre barre de progression puisqu'il parle directement à un téléchargement HTTP.",
+      resolution_h: "Ordre de résolution &amp; préfixes",
+      resolution_p: 'Sans préfixe, <code>poly install name</code> essaie la recherche de chaque adapter dans cet ordre et installe via le premier qui répond :',
+      resolution_p2: 'Force un adapter précis avec <code>adapter:name</code>, et fige une version avec <code>name@version</code> (ou combine : <code>pip:requests@2.31.0</code>).',
+      lockfile_h: "Installations reproductibles : poly.json",
+      lockfile_p: '<code>poly init</code> écrit <code>poly.json</code> dans le dossier courant, listant chaque paquet installé par poly, figé à sa version exacte :',
+      lockfile_p2: 'Commit-le. N\'importe qui (ou une machine CI) reproduit le même environnement avec un simple <code>poly install</code> — sans argument. Utilise <code>poly init --force</code> pour écraser un fichier existant.',
+      taps_h: "Écrire une formule tap",
+      taps_p: 'Dépose un fichier YAML dans <code>~/.poly/taps/&lt;name&gt;.yaml</code> — ceci surcharge toute formule intégrée du même nom :',
+      taps_p2: 'La clé d\'artifact est <code>&lt;GOOS&gt;_&lt;GOARCH&gt;</code>. <code>poly install name</code> choisit l\'entrée qui correspond à la machine sur laquelle il tourne, la télécharge, vérifie le SHA-256, et extrait (<code>.tar.gz</code>/<code>.zip</code>) ou copie le binaire brut dans <code>~/.poly/bin</code>. Formules intégrées aujourd\'hui, toutes gratuites : <code>ripgrep</code>, <code>fd</code>, <code>jq</code> — voir <code>internal/registry/embedded/taps</code> dans le repo.',
+      autoupdate_h: "Mises à jour automatiques",
+      au_li1: "<strong>poly self-update</strong> — gratuit, pour tout le monde. À chaque commande, throttlé à environ 1×/jour, poly vérifie les releases GitHub en arrière-plan (un processus détaché, qui ne bloque jamais ce que tu fais) et se met à jour s'il y a une version plus récente.",
+      au_li2: '<strong>poly upgrade</strong> — automatique en plus pour les comptes Pro, même throttling et comportement en arrière-plan. En gratuit, il ne tourne que si tu tapes <code>poly upgrade</code> toi-même.',
+      au_p: 'Les deux logguent dans <code>~/.poly/auto-update.log</code> pour que tu voies ce qui s\'est passé. L\'état du throttle vit dans <code>~/.poly/last-selfupdate-check</code> et <code>~/.poly/last-autoupgrade-check</code>.',
+      pro_h: "Poly Pro",
+      pro_p: 'Poly est et reste 100% gratuit et open source — le catalogue tap intégré est entièrement gratuit aussi. Pro (0,99 € en une fois, via Stripe Checkout depuis <a href="account.html">ta page de compte</a>) débloque :',
+      pro_li1: "Les installs en parallèle quand tu nommes plusieurs paquets d'un coup.",
+      pro_li2: "Les mises à jour automatiques des paquets en arrière-plan (voir plus haut), au lieu de seulement à la demande."
+    }
+  };
+
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach(function (node) {
+      var key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
+    });
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { applyLanguage(btn.getAttribute('data-lang')); });
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  var browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+})();
+</script>
+
+</body>
+</html>

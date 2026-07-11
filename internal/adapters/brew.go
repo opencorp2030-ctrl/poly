@@ -99,6 +99,7 @@ func (b Brew) Search(name string) (SearchResult, error) {
 
 	var payload struct {
 		Desc     string `json:"desc"`
+		Homepage string `json:"homepage"`
 		Versions struct {
 			Stable string `json:"stable"`
 		} `json:"versions"`
@@ -106,7 +107,7 @@ func (b Brew) Search(name string) (SearchResult, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&payload); err != nil {
 		return SearchResult{}, err
 	}
-	return SearchResult{Found: true, Version: payload.Versions.Stable, Summary: payload.Desc}, nil
+	return SearchResult{Found: true, Version: payload.Versions.Stable, Summary: payload.Desc, Homepage: payload.Homepage}, nil
 }
 
 // parseBrewVersion reads the last whitespace-separated field of
