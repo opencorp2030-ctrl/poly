@@ -69,14 +69,28 @@ version pinned in its formula and errors if you ask for a different one.
 
 | Command | Does |
 |---|---|
-| `poly install [adapter:]name[@version]` | install, auto-routed or forced |
+| `poly install [adapter:]name[@version] ...` | install one or more packages, auto-routed or forced |
 | `poly remove name` | uninstall, via whichever adapter installed it |
 | `poly list` | show everything poly has installed, and through what |
 | `poly search [adapter:]name` | check existence and latest version across adapters |
-| `poly version` | print the poly build version |
+| `poly login` / `poly logout` | sign in/out of your Poly account (unlocks Pro) |
+| `poly version` | print the poly build version and, if signed in, your account/plan |
 
 State lives in `~/.poly/manifest.json`. Tap binaries land in `~/.poly/bin`
-(add it to your `PATH`).
+(add it to your `PATH`). Login credentials live in `~/.poly/credentials.json`
+(mode 0600).
+
+## Poly Pro
+
+Poly is and stays 100% free and open source. `poly install a b c` (multiple
+packages in one command) installs them **sequentially** on the free tier.
+Signed in with an active Pro plan (`poly login`), the same command installs
+them **concurrently** — a real, measurable speedup, not an artificial delay
+on the free tier. Manage your account (sign up, check your plan) at
+`site/account.html`, backed by Supabase Auth — see
+`internal/account/account.go` for the client-side logic and
+`internal/registry` / the `public.profiles` table for where plan status
+lives.
 
 ## Adapters
 

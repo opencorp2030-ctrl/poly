@@ -71,14 +71,27 @@ une autre.
 
 | Commande | Fait |
 |---|---|
-| `poly install [adapter:]name[@version]` | installe, routage auto ou forcé |
+| `poly install [adapter:]name[@version] ...` | installe un ou plusieurs paquets, routage auto ou forcé |
 | `poly remove name` | désinstalle, via l'adapter qui a fait l'installation |
 | `poly list` | affiche tout ce que poly a installé, et par quel biais |
 | `poly search [adapter:]name` | vérifie l'existence et la dernière version sur tous les adapters |
-| `poly version` | affiche la version buildée de poly |
+| `poly login` / `poly logout` | connexion/déconnexion à ton compte Poly (débloque Pro) |
+| `poly version` | affiche la version buildée de poly et, si connecté, ton compte/ta formule |
 
 L'état vit dans `~/.poly/manifest.json`. Les binaires tap atterrissent
-dans `~/.poly/bin` (ajoute-le à ton `PATH`).
+dans `~/.poly/bin` (ajoute-le à ton `PATH`). Les identifiants de connexion
+vivent dans `~/.poly/credentials.json` (mode 0600).
+
+## Poly Pro
+
+Poly est et reste 100% gratuit et open source. `poly install a b c`
+(plusieurs paquets en une commande) les installe **séquentiellement** en
+version gratuite. Connecté avec une formule Pro active (`poly login`), la
+même commande les installe **en parallèle** — un vrai gain mesurable, pas
+un ralentissement artificiel de la version gratuite. Gère ton compte
+(inscription, formule) sur `site/account.html`, propulsé par Supabase
+Auth — voir `internal/account/account.go` pour la logique côté client et
+la table `public.profiles` pour où vit le statut de formule.
 
 ## Adapters
 

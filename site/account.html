@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Account · Poly</title>
+<meta name="description" content="Sign in to manage your Poly account and Pro status." />
+<style>
+  :root {
+    --ink: #14171d;
+    --ink-raised: #1b1f27;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8;
+    --text-dim: #9c9686;
+    --accent: #f0a93e;
+    --accent-ink: #14171d;
+    --danger: #e0664a;
+    --ok: #6fbf8b;
+
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --container: 920px;
+    color-scheme: dark;
+  }
+
+  :root[data-theme="light"] {
+    --ink: #eff1f4;
+    --ink-raised: #ffffff;
+    --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24;
+    --text-dim: #5b6270;
+    --accent: #a8660a;
+    --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4;
+      --ink-raised: #ffffff;
+      --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24;
+      --text-dim: #5b6270;
+      --accent: #a8660a;
+      --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: var(--container);
+    margin: 0 auto;
+    padding-left: clamp(1.25rem, 4vw, 2rem);
+    padding-right: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  header.top { border-bottom: 1px solid var(--border); }
+  header.top .wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap; min-height: 64px;
+  }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover { color: var(--accent); }
+  nav.top-links a.current { color: var(--accent); }
+
+  .lang-toggle { display: flex; gap: 0.2rem; border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem; }
+  .lang-btn {
+    font-family: var(--mono); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+    padding: 0.3rem 0.65rem; border-radius: 999px; border: none; background: transparent;
+    color: var(--text-dim); cursor: pointer;
+  }
+  .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
+
+  main { padding: clamp(3rem, 8vw, 6rem) 0; }
+  .card {
+    max-width: 420px;
+    margin: 0 auto;
+    background: var(--ink-raised);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: clamp(1.75rem, 5vw, 2.5rem);
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim); margin: 0 0 0.6rem;
+  }
+  h1 { font-family: var(--mono); font-size: 1.6rem; margin: 0 0 1.5rem; letter-spacing: -0.01em; }
+
+  .field { margin-bottom: 1.1rem; }
+  .field label {
+    display: block; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em;
+    color: var(--text-dim); margin-bottom: 0.4rem; text-transform: uppercase;
+  }
+  .field input {
+    width: 100%; padding: 0.7rem 0.85rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--ink); color: var(--text); font-family: var(--sans); font-size: 0.95rem;
+  }
+  .field input:focus { border-color: var(--accent); outline: none; }
+
+  .btn {
+    font-family: var(--mono); font-size: 0.9rem; font-weight: 600;
+    padding: 0.7rem 1.2rem; border: 1px solid var(--border); border-radius: 6px;
+    background: transparent; color: var(--text); cursor: pointer; width: 100%;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.primary:hover { opacity: 0.92; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn:not(:disabled):hover { border-color: var(--accent); }
+
+  .switch-mode {
+    text-align: center; margin-top: 1.2rem; font-size: 0.9rem; color: var(--text-dim);
+  }
+  .status {
+    font-size: 0.85rem; margin: 0 0 1rem; padding: 0.6rem 0.8rem; border-radius: 6px;
+    display: none;
+  }
+  .status.show { display: block; }
+  .status.error { background: rgba(224, 102, 74, 0.12); color: var(--danger); border: 1px solid rgba(224, 102, 74, 0.3); }
+  .status.ok { background: rgba(111, 191, 139, 0.12); color: var(--ok); border: 1px solid rgba(111, 191, 139, 0.3); }
+
+  .profile-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem;
+  }
+  .profile-row:last-of-type { border-bottom: none; }
+  .profile-row .k { color: var(--text-dim); font-family: var(--mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .profile-row .v { font-weight: 600; }
+  .plan-badge {
+    font-family: var(--mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 999px;
+  }
+  .plan-badge.free { background: var(--border); color: var(--text-dim); }
+  .plan-badge.pro { background: var(--accent); color: var(--accent-ink); }
+
+  .upgrade-note {
+    font-size: 0.82rem; color: var(--text-dim); margin-top: 0.75rem; text-align: center;
+  }
+
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links">
+      <a href="index.html#install" data-i18n="nav_install">install</a>
+      <a href="index.html#pro" data-i18n="nav_pro">pro</a>
+      <a href="account.html" class="current" data-i18n="nav_account">account</a>
+      <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
+    </nav>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="card">
+
+      <div data-view="auth" class="active">
+        <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
+        <h1 id="auth-heading">Sign in</h1>
+
+        <p class="status" id="auth-status"></p>
+
+        <form id="auth-form">
+          <div class="field">
+            <label for="email" data-i18n="field_email">Email</label>
+            <input id="email" type="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="password" data-i18n="field_password">Password</label>
+            <input id="password" type="password" required autocomplete="current-password" minlength="6" />
+          </div>
+          <button class="btn primary" type="submit" id="submit-btn" data-i18n="btn_signin">Sign in</button>
+        </form>
+
+        <p class="switch-mode">
+          <span id="switch-text" data-i18n="switch_to_signup_prompt">No account yet?</span>
+          <a href="#" id="switch-link" data-i18n="switch_to_signup_link">Create one</a>
+        </p>
+      </div>
+
+      <div data-view="profile">
+        <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
+        <h1 data-i18n="acct_title">Your account</h1>
+
+        <div class="profile-row">
+          <span class="k" data-i18n="field_email">Email</span>
+          <span class="v" id="profile-email">—</span>
+        </div>
+        <div class="profile-row">
+          <span class="k" data-i18n="field_plan">Plan</span>
+          <span class="v"><span class="plan-badge free" id="profile-plan">free</span></span>
+        </div>
+        <div class="profile-row">
+          <span class="k" data-i18n="field_since">Member since</span>
+          <span class="v" id="profile-since">—</span>
+        </div>
+
+        <button class="btn primary" id="upgrade-btn" type="button" style="margin-top:1.5rem" data-i18n="pro_cta">Get Poly Pro — €0.99</button>
+        <p class="upgrade-note" data-i18n="upgrade_note">Payments aren't wired up yet — this is a placeholder until checkout is live.</p>
+
+        <button class="btn" id="signout-btn" type="button" style="margin-top:0.75rem" data-i18n="btn_signout">Sign out</button>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const I18N = {
+    en: {
+      nav_install: "install", nav_pro: "pro", nav_account: "account", nav_github: "github",
+      acct_eyebrow: "Account",
+      field_email: "Email", field_password: "Password", field_plan: "Plan", field_since: "Member since",
+      btn_signin: "Sign in", btn_signup: "Create account", btn_signout: "Sign out",
+      switch_to_signup_prompt: "No account yet?", switch_to_signup_link: "Create one",
+      switch_to_signin_prompt: "Already have an account?", switch_to_signin_link: "Sign in",
+      acct_title: "Your account",
+      pro_cta: "Get Poly Pro — €0.99",
+      upgrade_note: "Payments aren't wired up yet — this is a placeholder until checkout is live.",
+      err_generic: "Something went wrong. Try again.",
+      ok_check_email: "Check your email to confirm your account, then sign in."
+    },
+    fr: {
+      nav_install: "installer", nav_pro: "pro", nav_account: "compte", nav_github: "github",
+      acct_eyebrow: "Compte",
+      field_email: "E-mail", field_password: "Mot de passe", field_plan: "Formule", field_since: "Membre depuis",
+      btn_signin: "Se connecter", btn_signup: "Créer un compte", btn_signout: "Se déconnecter",
+      switch_to_signup_prompt: "Pas encore de compte ?", switch_to_signup_link: "En créer un",
+      switch_to_signin_prompt: "Déjà un compte ?", switch_to_signin_link: "Se connecter",
+      acct_title: "Ton compte",
+      pro_cta: "Obtenir Poly Pro — 0,99 €",
+      upgrade_note: "Le paiement n'est pas encore branché — c'est un espace réservé en attendant.",
+      err_generic: "Un problème est survenu. Réessaie.",
+      ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi."
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    document.querySelectorAll('.lang-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.getAttribute('data-lang') === l);
+    });
+    document.getElementById('auth-heading').textContent = mode === 'signup' ? t('btn_signup') : t('btn_signin');
+    document.getElementById('submit-btn').textContent = mode === 'signup' ? t('btn_signup') : t('btn_signin');
+    document.getElementById('switch-text').textContent = mode === 'signup' ? t('switch_to_signin_prompt') : t('switch_to_signup_prompt');
+    document.getElementById('switch-link').textContent = mode === 'signup' ? t('switch_to_signin_link') : t('switch_to_signup_link');
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+  }
+
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => applyLanguage(btn.getAttribute('data-lang')));
+  });
+
+  let mode = 'signin';
+  const switchLink = document.getElementById('switch-link');
+  switchLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    mode = mode === 'signin' ? 'signup' : 'signin';
+    applyLanguage(lang());
+    setStatus('');
+  });
+
+  function setStatus(message, kind) {
+    const el = document.getElementById('auth-status');
+    el.textContent = message || '';
+    el.className = 'status' + (kind ? ' show ' + kind : '');
+  }
+
+  function showView(name) {
+    document.querySelectorAll('[data-view]').forEach((el) => {
+      el.classList.toggle('active', el.getAttribute('data-view') === name);
+    });
+  }
+
+  document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    setStatus('');
+
+    if (mode === 'signup') {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) { setStatus(error.message || t('err_generic'), 'error'); return; }
+      setStatus(t('ok_check_email'), 'ok');
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) { setStatus(error.message || t('err_generic'), 'error'); return; }
+    }
+  });
+
+  document.getElementById('signout-btn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+  });
+
+  document.getElementById('upgrade-btn').addEventListener('click', () => {
+    setStatus('');
+    alert(t('upgrade_note'));
+  });
+
+  async function renderProfile(session) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('email, plan, created_at')
+      .eq('id', session.user.id)
+      .single();
+
+    const email = (data && data.email) || session.user.email;
+    const plan = (data && data.plan) || 'free';
+    const since = data && data.created_at ? new Date(data.created_at).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US') : '—';
+
+    document.getElementById('profile-email').textContent = email;
+    document.getElementById('profile-since').textContent = since;
+    const badge = document.getElementById('profile-plan');
+    badge.textContent = plan;
+    badge.className = 'plan-badge ' + plan;
+
+    showView('profile');
+  }
+
+  supabase.auth.onAuthStateChange((_event, session) => {
+    if (session) {
+      renderProfile(session);
+    } else {
+      showView('auth');
+    }
+  });
+
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) renderProfile(data.session);
+  });
+
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+</script>
+
+</body>
+</html>
