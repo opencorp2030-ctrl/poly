@@ -269,8 +269,14 @@ poly install community:hello-world</div>
         <tbody>
           <tr><td><code>whoami</code></td><td data-i18n="mcp_tool_whoami">Confirms which account the token belongs to.</td></tr>
           <tr><td><code>search_packages</code></td><td data-i18n="mcp_tool_search">Searches the community registry — useful for checking a name is free before publishing.</td></tr>
+          <tr><td><code>search_dependencies</code></td><td data-i18n="mcp_tool_searchdeps">Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once — mirrors dependencies.html.</td></tr>
+          <tr><td><code>get_package</code></td><td data-i18n="mcp_tool_getpackage">Full detail on one community package — mirrors package.html.</td></tr>
           <tr><td><code>list_own_packages</code></td><td data-i18n="mcp_tool_list">Lists everything the token's account has already published.</td></tr>
           <tr><td><code>publish_package</code></td><td data-i18n="mcp_tool_publish">Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>.</td></tr>
+          <tr><td><code>search_members</code></td><td data-i18n="mcp_tool_searchmembers">Searches the community directory by username — mirrors community.html.</td></tr>
+          <tr><td><code>get_profile</code></td><td data-i18n="mcp_tool_getprofile">A user's public profile and published packages — mirrors profile.html.</td></tr>
+          <tr><td><code>update_profile</code></td><td data-i18n="mcp_tool_updateprofile">Updates the token's own username and/or bio.</td></tr>
+          <tr><td><code>update_avatar</code></td><td data-i18n="mcp_tool_updateavatar">Updates the token's own avatar image.</td></tr>
         </tbody>
       </table>
       <p class="note-box" data-i18n="mcp_note">Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code> — an assistant can't take over a name it doesn't already own, and can't mark anything "official". Revoking a token on your account page breaks it everywhere immediately.</p>
@@ -351,8 +357,14 @@ poly install community:hello-world</div>
       mcp_p2: "That's the config format Claude Desktop and Claude Code use for remote connectors (Settings → Connectors → Add custom connector). ChatGPT's connector UI takes the same URL and header, though the exact menu location varies by plan and changes as OpenAI iterates on it.",
       mcp_tool_whoami: "Confirms which account the token belongs to.",
       mcp_tool_search: "Searches the community registry — useful for checking a name is free before publishing.",
+      mcp_tool_searchdeps: "Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once — mirrors dependencies.html.",
+      mcp_tool_getpackage: "Full detail on one community package — mirrors package.html.",
       mcp_tool_list: "Lists everything the token's account has already published.",
       mcp_tool_publish: 'Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>.',
+      mcp_tool_searchmembers: "Searches the community directory by username — mirrors community.html.",
+      mcp_tool_getprofile: "A user's public profile and published packages — mirrors profile.html.",
+      mcp_tool_updateprofile: "Updates the token's own username and/or bio.",
+      mcp_tool_updateavatar: "Updates the token's own avatar image.",
       mcp_note: 'Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code> — an assistant can\'t take over a name it doesn\'t already own, and can\'t mark anything "official". Revoking a token on your account page breaks it everywhere immediately.',
       pro_h: "Poly Pro",
       pro_p: 'Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:',
@@ -420,8 +432,14 @@ poly install community:hello-world</div>
       mcp_p2: "C'est le format de config utilisé par Claude Desktop et Claude Code pour les connecteurs distants (Réglages → Connecteurs → Ajouter un connecteur personnalisé). L'interface de connecteurs de ChatGPT prend la même URL et le même en-tête, même si l'emplacement exact dans les menus varie selon la formule et change au fil des évolutions d'OpenAI.",
       mcp_tool_whoami: "Confirme à quel compte appartient le token.",
       mcp_tool_search: "Cherche dans le registre communautaire — utile pour vérifier qu'un nom est libre avant de publier.",
+      mcp_tool_searchdeps: "Cherche dans pip, npm, crates.io, Homebrew, le catalogue tap intégré, et le registre communautaire en même temps — reflète dependencies.html.",
+      mcp_tool_getpackage: "Détail complet d'un paquet communautaire — reflète package.html.",
       mcp_tool_list: "Liste tout ce que le compte du token a déjà publié.",
       mcp_tool_publish: 'Publie un seul fichier (encodé en base64 dans l\'appel), exactement comme <code>poly send</code>.',
+      mcp_tool_searchmembers: "Cherche dans l'annuaire communautaire par nom d'utilisateur — reflète community.html.",
+      mcp_tool_getprofile: "Le profil public d'un utilisateur et ses paquets publiés — reflète profile.html.",
+      mcp_tool_updateprofile: "Met à jour le nom d'utilisateur et/ou la bio du compte du token.",
+      mcp_tool_updateavatar: "Met à jour la photo de profil du compte du token.",
       mcp_note: 'Publier via MCP suit les mêmes règles de propriété premier-arrivé-premier-servi et la même vérification SHA-256 que <code>poly send</code> — un assistant ne peut pas s\'approprier un nom qu\'il ne possède pas déjà, ni marquer quoi que ce soit comme "officiel". Révoquer un token depuis ta page compte le casse partout, immédiatement.',
       pro_h: "Poly Pro",
       pro_p: 'Poly est et reste 100% gratuit et open source — le catalogue tap intégré est entièrement gratuit aussi. Pro (0,99 € en une fois, via Stripe Checkout depuis <a href="account.html">ta page de compte</a>) débloque :',

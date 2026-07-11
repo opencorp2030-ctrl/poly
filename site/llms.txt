@@ -47,16 +47,23 @@ formula; the entire built-in tap catalog is free.
 
 ## MCP server (for AI assistants)
 
-Poly runs a remote MCP server (Streamable HTTP transport) at
-`https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp`, hosted as a Supabase Edge
-Function, so an AI assistant (Claude, ChatGPT, or anything else that speaks MCP) can act
-as a signed-in Poly user without ever handling that user's email/password. Auth is a
-personal access token generated on account.html (shown once, revocable any time), sent
-as `Authorization: Bearer <token>`. Tools exposed: `whoami`, `search_packages`,
-`list_own_packages`, `publish_package` (base64-encoded file in the tool call args — same
-first-come-first-served ownership rules and SHA-256 verification as `poly send`; an
-assistant can never mark a package "official"). Full setup instructions, including the
-Claude Desktop/Code config JSON: https://poly.candygate.eu/docs.html#mcp
+Poly runs a remote MCP server (Streamable HTTP transport, plus OAuth 2.1 + Dynamic Client
+Registration for clients like Claude.ai/ChatGPT that only support OAuth for remote
+connectors) at `https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp`, hosted as a
+Supabase Edge Function, so an AI assistant can act as a signed-in Poly user without ever
+handling that user's email/password. Auth is a personal access token generated on
+account.html (shown once, revocable any time) -- either sent directly as `Authorization:
+Bearer <token>`, or pasted into the OAuth connect page during the "Add custom connector"
+flow (the resulting OAuth access_token IS that same personal access token). Tools
+exposed: `whoami`, `search_packages`/`search_dependencies` (community registry vs.
+pip+npm+crates.io+Homebrew+tap+community all at once), `get_package`, `list_own_packages`,
+`publish_package` (base64-encoded file in the tool call args — same first-come-first-served
+ownership rules and SHA-256 verification as `poly send`; an assistant can never mark a
+package "official"; the tool description explicitly warns against building an HTML/web
+app -- published packages are CLI scripts/binaries, not web pages), `search_members`,
+`get_profile`, `update_profile`, `update_avatar` (the last two act only on the token's own
+account). Full setup instructions, including the Claude Desktop/Code config JSON:
+https://poly.candygate.eu/docs.html#mcp
 
 ## Key files and formats
 

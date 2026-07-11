@@ -58,6 +58,28 @@ const TOOLS = [
     },
   },
   {
+    name: "search_dependencies",
+    description:
+      "Search across every ecosystem poly can install from at once (exact name): pip, npm, crates.io, Homebrew, poly's built-in tap catalog, plus a partial-name match against the community registry. " +
+      "Mirrors poly.candygate.eu/dependencies.html -- use this to check whether something already exists anywhere before deciding to publish a new community package.",
+    inputSchema: {
+      type: "object",
+      properties: { query: { type: "string", description: "Exact package name (pip/npm/cargo/brew/tap) -- community search is partial-match" } },
+      required: ["query"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "get_package",
+    description: "Get full detail on one community package: version, description, size, download count, official status, and publisher. Mirrors package.html.",
+    inputSchema: {
+      type: "object",
+      properties: { name: { type: "string", description: "Exact community package name" } },
+      required: ["name"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "list_own_packages",
     description: "List every community package published by this token's account.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
@@ -68,17 +90,68 @@ const TOOLS = [
       "Publish a single-file package to Poly's community registry under this token's account. " +
       "The file becomes installable anywhere via `poly install community:<name>`. " +
       "Package names are first-come-first-served: publishing an existing name you don't own fails. " +
-      "Publishing an existing name you do own updates it in place (new version).",
+      "Publishing an existing name you do own updates it in place (new version).\n\n" +
+      "IMPORTANT: Poly is a CLI package manager, not a web host. A published package is a single " +
+      "command-line script or small binary that a user runs from their terminal after " +
+      "`poly install community:<name>` -- e.g. a shell script that prints something, generates a " +
+      "password, rolls a die, converts a file, etc. Do NOT build an HTML/CSS/JS web app, a styled " +
+      "page, or anything meant to be opened in a browser -- that isn't installable or runnable via " +
+      "poly and isn't what this registry is for. Keep it simple: a short script is the norm.",
     inputSchema: {
       type: "object",
       properties: {
         name: { type: "string", description: "Package name, must match ^[a-zA-Z0-9_.-]{1,60}$" },
         version: { type: "string", description: "Version string, e.g. 1.0.0" },
         description: { type: "string", description: "Short description shown in search results" },
-        file_base64: { type: "string", description: "Base64-encoded file contents (max ~37MB base64, 50MB decoded)" },
+        file_base64: { type: "string", description: "Base64-encoded file contents (max ~37MB base64, 50MB decoded) -- a script or small binary, not an HTML app" },
         file_name: { type: "string", description: "Original file name, used only to infer an extension" },
       },
       required: ["name", "version", "file_base64"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "search_members",
+    description: "Search the Poly community directory by (partial) username. Mirrors community.html.",
+    inputSchema: {
+      type: "object",
+      properties: { query: { type: "string", description: "Username or partial username to search for" } },
+      required: ["query"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "get_profile",
+    description: "Get a Poly user's public profile by exact username: bio, avatar, plan, official status, member since, and their published packages. Mirrors profile.html.",
+    inputSchema: {
+      type: "object",
+      properties: { username: { type: "string", description: "Exact username" } },
+      required: ["username"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "update_profile",
+    description: "Update this token's own account: username and/or bio. Mirrors the profile form on account.html. Only fields you provide are changed.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        username: { type: "string", description: "New username, 1-30 chars, letters/digits/._- only" },
+        bio: { type: "string", description: "New bio, max 280 characters" },
+      },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "update_avatar",
+    description: "Update this token's own account avatar image. Mirrors the photo upload on account.html.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        file_base64: { type: "string", description: "Base64-encoded image bytes (max ~2.6MB base64, 2MB decoded)" },
+        file_name: { type: "string", description: "Original file name, used to infer the image extension (png/jpg/webp/gif)" },
+      },
+      required: ["file_base64"],
       additionalProperties: false,
     },
   },
@@ -140,6 +213,70 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
         `- ${r.name}@${r.version} by @${r.uploader_username}${r.is_official ? " (official ✓)" : ""} — ${r.download_count} downloads${r.description ? " — " + r.description : ""}`
       );
       return toolText(lines.join("\n"));
+    }
+
+    case "search_dependencies": {
+      const q = String(args.query ?? "");
+      if (!q) return toolText("query is required.", true);
+
+      const BUILTIN_TAPS: Record<string, { version: string; desc: string }> = {
+        ripgrep: { version: "15.1.0", desc: "Line-oriented search tool that recursively searches directories for a regex pattern" },
+        fd: { version: "10.4.2", desc: "A simple, fast and user-friendly alternative to find" },
+        jq: { version: "1.8.2", desc: "Lightweight and flexible command-line JSON processor" },
+      };
+
+      async function tryFetch(url: string): Promise<any | null> {
+        try {
+          const resp = await fetch(url);
+          if (resp.status === 404) return null;
+          if (!resp.ok) return null;
+          return await resp.json();
+        } catch {
+          return null;
+        }
+      }
+
+      const [pip, npm, cargo, brew, community] = await Promise.all([
+        tryFetch(`https://pypi.org/pypi/${encodeURIComponent(q)}/json`),
+        tryFetch(`https://registry.npmjs.org/${encodeURIComponent(q)}/latest`),
+        tryFetch(`https://crates.io/api/v1/crates/${encodeURIComponent(q)}`),
+        tryFetch(`https://formulae.brew.sh/api/formula/${encodeURIComponent(q)}.json`),
+        fetch(
+          `${SUPABASE_URL}/rest/v1/community_packages_public?name=ilike.*${encodeURIComponent(q)}*&select=name,version,description,uploader_username&order=download_count.desc&limit=5`,
+          { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } }
+        ).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      ]);
+
+      const lines: string[] = [];
+      const tap = BUILTIN_TAPS[q];
+      if (tap) lines.push(`- tap:${q}@${tap.version} — ${tap.desc}`);
+      if (pip) lines.push(`- pip:${q}@${pip.info.version} — ${pip.info.summary || ""}`);
+      if (npm) lines.push(`- npm:${q}@${npm.version} — ${npm.description || ""}`);
+      if (cargo) lines.push(`- cargo:${q}@${cargo.crate.newest_version} — ${cargo.crate.description || ""}`);
+      if (brew) lines.push(`- brew:${q}@${brew.versions?.stable || "?"} — ${brew.desc || ""}`);
+      for (const c of community) {
+        lines.push(`- community:${c.name}@${c.version} by @${c.uploader_username} — ${c.description || ""}`);
+      }
+
+      if (!lines.length) return toolText(`No matches for "${q}" in tap, pip, npm, cargo, brew, or community.`);
+      return toolText(lines.join("\n"));
+    }
+
+    case "get_package": {
+      const name = String(args.name ?? "");
+      if (!name) return toolText("name is required.", true);
+      const url = `${SUPABASE_URL}/rest/v1/community_packages_public?name=eq.${encodeURIComponent(name)}&select=name,version,description,size_bytes,download_count,is_official,updated_at,uploader_username&limit=1`;
+      const resp = await fetch(url, { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } });
+      const rows = await resp.json();
+      if (!resp.ok) return toolText(`Lookup failed: ${JSON.stringify(rows)}`, true);
+      if (!rows?.length) return toolText(`No community package named "${name}".`, true);
+      const p = rows[0];
+      return toolText(
+        `${p.name}@${p.version}${p.is_official ? " (official ✓)" : ""}\n` +
+        `${p.description || "(no description)"}\n` +
+        `Published by @${p.uploader_username} · ${p.download_count} downloads · ${p.size_bytes} bytes · updated ${p.updated_at}\n` +
+        `Install: poly install community:${p.name}`
+      );
     }
 
     case "list_own_packages": {
@@ -210,6 +347,106 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
       }
 
       return toolText(`Published ${name}@${version} (${bytes.length} bytes). Anyone can now install it with: poly install community:${name}`);
+    }
+
+    case "search_members": {
+      if (!token) return toolText("No token provided.", true);
+      const q = String(args.query ?? "");
+      const rows = await callRpc("mcp_search_members", { p_token: token, p_query: q });
+      if (!rows?.length) return toolText(`No members match "${q}".`);
+      const lines = rows.map((m: any) =>
+        `- @${m.username}${m.is_official ? " (official ✓)" : ""} — ${m.plan}${m.bio ? " — " + m.bio : ""}`
+      );
+      return toolText(lines.join("\n"));
+    }
+
+    case "get_profile": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      if (!username) return toolText("username is required.", true);
+      const rows = await callRpc("mcp_get_profile", { p_token: token, p_username: username });
+      if (!rows?.length) return toolText(`No user named "${username}".`, true);
+      const p = rows[0];
+
+      const pkgResp = await fetch(
+        `${SUPABASE_URL}/rest/v1/community_packages_public?uploader_username=eq.${encodeURIComponent(username)}&select=name,version,download_count,is_official`,
+        { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } }
+      );
+      const pkgs = pkgResp.ok ? await pkgResp.json() : [];
+
+      let text = `@${p.username}${p.is_official ? " (official ✓)" : ""} — ${p.plan} — member since ${p.created_at}\n${p.bio || "(no bio)"}`;
+      if (pkgs.length) {
+        text += "\nPublished packages:\n" + pkgs.map((pk: any) => `- ${pk.name}@${pk.version}${pk.is_official ? " (official ✓)" : ""} — ${pk.download_count} downloads`).join("\n");
+      } else {
+        text += "\nNothing published yet.";
+      }
+      return toolText(text);
+    }
+
+    case "update_profile": {
+      if (!token) return toolText("No token provided.", true);
+      const username = args.username ? String(args.username) : null;
+      const bio = args.bio ? String(args.bio) : null;
+      if (!username && !bio) return toolText("Provide at least one of username or bio.", true);
+      try {
+        const rows = await callRpc("mcp_update_profile", { p_token: token, p_username: username, p_bio: bio });
+        const p = rows?.[0];
+        return toolText(`Updated. Now @${p?.username}, bio: ${p?.bio || "(empty)"}`);
+      } catch (e) {
+        return toolText(`Update failed: ${(e as Error).message}`, true);
+      }
+    }
+
+    case "update_avatar": {
+      if (!token) return toolText("No token provided.", true);
+      const fileBase64 = String(args.file_base64 ?? "");
+      const fileName = args.file_name ? String(args.file_name) : "avatar.png";
+      if (!fileBase64) return toolText("file_base64 is required.", true);
+
+      const who = await callRpc("mcp_whoami", { p_token: token });
+      if (!who?.length) return toolText("Invalid or revoked token.", true);
+      const userId = who[0].user_id;
+
+      let bytes: Uint8Array;
+      try {
+        bytes = Uint8Array.from(atob(fileBase64), (c) => c.charCodeAt(0));
+      } catch {
+        return toolText("file_base64 is not valid base64.", true);
+      }
+      if (bytes.length > 2 * 1024 * 1024) return toolText("Image exceeds the 2MB limit.", true);
+
+      const dotIdx = fileName.lastIndexOf(".");
+      const ext = (dotIdx > 0 ? fileName.slice(dotIdx + 1) : "png").toLowerCase();
+      const storagePath = `${userId}/avatar.${ext}`;
+
+      // The avatars bucket is restricted to real image MIME types --
+      // application/octet-stream (fine for community-packages) gets a
+      // 415 here.
+      const MIME_BY_EXT: Record<string, string> = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif" };
+      const mimeType = MIME_BY_EXT[ext] || "image/png";
+
+      const uploadResp = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${storagePath}`, {
+        method: "POST",
+        headers: {
+          apikey: SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+          "Content-Type": mimeType,
+          "x-upsert": "true",
+        },
+        body: bytes,
+      });
+      if (!uploadResp.ok) {
+        const body = await uploadResp.text();
+        return toolText(`Upload failed: ${uploadResp.status} ${body}`, true);
+      }
+
+      const avatarUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${storagePath}?t=${Date.now()}`;
+      try {
+        await callRpc("mcp_update_avatar", { p_token: token, p_avatar_url: avatarUrl });
+      } catch (e) {
+        return toolText(`Saved image but failed to update profile: ${(e as Error).message}`, true);
+      }
+      return toolText(`Avatar updated: ${avatarUrl}`);
     }
 
     default:
