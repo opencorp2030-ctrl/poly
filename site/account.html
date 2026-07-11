@@ -135,6 +135,18 @@
   .official-badge { display: inline-flex; vertical-align: middle; }
   .official-badge svg { width: 0.95rem; height: 0.95rem; display: block; }
 
+  .token-box {
+    font-family: var(--mono); font-size: 0.82rem; background: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.7rem 0.9rem; cursor: pointer; margin-top: 0.5rem; overflow-x: auto;
+    white-space: nowrap; word-break: break-all;
+  }
+  .token-box:hover { border-color: var(--accent); }
+  .token-row { padding: 0.6rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .token-row:last-of-type { border-bottom: none; }
+  .token-row .tlabel { font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; }
+  .token-row .tmeta { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem; font-family: var(--mono); }
+  .token-revoked-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px; background: var(--border); color: var(--text-dim); }
+
   .cli-card .eyebrow { margin-bottom: 1.25rem; }
   .cli-tip {
     display: flex; flex-direction: column; gap: 0.2rem;
@@ -359,6 +371,19 @@
         </div>
 
         <div class="card-section">
+          <p class="section-label" data-i18n="section_mcp">AI assistants (MCP)</p>
+          <p class="community-link-note" data-i18n="mcp_note">Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you — it never sees your password, and you can revoke it any time. <a href="docs.html#mcp" data-i18n="mcp_setup_link">Setup instructions →</a></p>
+          <div id="tokens-list"></div>
+          <p class="community-link-note" id="tokens-empty" data-i18n="tokens_empty" style="display:none">No tokens yet.</p>
+          <button class="btn small" id="create-token-btn" type="button" data-i18n="btn_create_token">Generate new token</button>
+          <div id="token-reveal" style="display:none">
+            <p class="field-hint" id="token-reveal-note" style="text-align:left" data-i18n="token_reveal_note">Copy this now — it won't be shown again.</p>
+            <div class="token-box" id="token-reveal-value"></div>
+          </div>
+          <p class="status" id="token-status"></p>
+        </div>
+
+        <div class="card-section">
           <button class="btn" id="signout-btn" type="button" data-i18n="btn_signout">Sign out</button>
         </div>
       </div>
@@ -442,7 +467,21 @@
       downloads_label: "downloads",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in.",
-      official_dev: "Official developer", official_app: "Official app"
+      official_dev: "Official developer", official_app: "Official app",
+      section_mcp: "AI assistants (MCP)",
+      mcp_note: "Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you — it never sees your password, and you can revoke it any time.",
+      mcp_setup_link: "Setup instructions →",
+      tokens_empty: "No tokens yet.",
+      btn_create_token: "Generate new token",
+      token_reveal_note: "Copy this now — it won't be shown again.",
+      token_created: "created",
+      token_never_used: "never used",
+      token_last_used: "last used",
+      token_revoked: "revoked",
+      btn_revoke_token: "Revoke",
+      token_revoke_confirm: "Revoke this token? Any assistant using it will stop working immediately.",
+      token_revoked_ok: "Token revoked.",
+      token_copied: "copied ✓"
     },
     fr: {
       nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
@@ -480,7 +519,21 @@
       downloads_label: "téléchargements",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi.",
-      official_dev: "Développeur officiel", official_app: "App officielle"
+      official_dev: "Développeur officiel", official_app: "App officielle",
+      section_mcp: "Assistants IA (MCP)",
+      mcp_note: "Génère un token pour que Claude, ChatGPT, ou tout assistant compatible MCP puisse publier et parcourir des paquets en ton nom — il ne voit jamais ton mot de passe, et tu peux le révoquer à tout moment.",
+      mcp_setup_link: "Instructions d'installation →",
+      tokens_empty: "Aucun token pour l'instant.",
+      btn_create_token: "Générer un nouveau token",
+      token_reveal_note: "Copie-le maintenant — il ne sera plus jamais affiché.",
+      token_created: "créé",
+      token_never_used: "jamais utilisé",
+      token_last_used: "dernière utilisation",
+      token_revoked: "révoqué",
+      btn_revoke_token: "Révoquer",
+      token_revoke_confirm: "Révoquer ce token ? Tout assistant qui l'utilise cessera de fonctionner immédiatement.",
+      token_revoked_ok: "Token révoqué.",
+      token_copied: "copié ✓"
     }
   };
 
@@ -645,6 +698,95 @@
     `).join('');
   }
 
+  function setTokenStatus(message, kind) {
+    const el = document.getElementById('token-status');
+    el.textContent = message || '';
+    el.className = 'status' + (kind ? ' show ' + kind : '');
+  }
+
+  function formatDate(iso) {
+    return new Date(iso).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US');
+  }
+
+  async function loadTokens(userId) {
+    const list = document.getElementById('tokens-list');
+    const empty = document.getElementById('tokens-empty');
+
+    const { data, error } = await supabase
+      .from('api_tokens')
+      .select('id, label, created_at, last_used_at, revoked_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    list.innerHTML = data.map((tok) => `
+      <div class="token-row">
+        <div>
+          <div class="tlabel">${escapeHtml(tok.label)}${tok.revoked_at ? `<span class="token-revoked-badge">${escapeHtml(t('token_revoked'))}</span>` : ''}</div>
+          <div class="tmeta">${escapeHtml(t('token_created'))} ${formatDate(tok.created_at)} · ${tok.last_used_at ? escapeHtml(t('token_last_used')) + ' ' + formatDate(tok.last_used_at) : escapeHtml(t('token_never_used'))}</div>
+        </div>
+        ${!tok.revoked_at ? `<button class="btn small revoke-token-btn" data-id="${tok.id}" type="button">${escapeHtml(t('btn_revoke_token'))}</button>` : ''}
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.revoke-token-btn').forEach((btn) => {
+      btn.addEventListener('click', () => revokeToken(btn.getAttribute('data-id')));
+    });
+  }
+
+  async function revokeToken(id) {
+    if (!confirm(t('token_revoke_confirm'))) return;
+    const { error } = await supabase.from('api_tokens').update({ revoked_at: new Date().toISOString() }).eq('id', id);
+    if (error) { setTokenStatus(error.message, 'error'); return; }
+    setTokenStatus(t('token_revoked_ok'), 'ok');
+    loadTokens(currentUserId);
+  }
+
+  function randomToken() {
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+    return 'poly_pat_' + hex;
+  }
+
+  async function sha256Hex(text) {
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  document.getElementById('create-token-btn').addEventListener('click', async () => {
+    if (!currentUserId) return;
+    const { count } = await supabase.from('api_tokens').select('id', { count: 'exact', head: true }).eq('user_id', currentUserId);
+    const label = `MCP token #${(count || 0) + 1}`;
+    const token = randomToken();
+    const hash = await sha256Hex(token);
+
+    const { error } = await supabase.from('api_tokens').insert({ user_id: currentUserId, token_hash: hash, label });
+    if (error) { setTokenStatus(error.message, 'error'); return; }
+
+    document.getElementById('token-reveal-value').textContent = token;
+    document.getElementById('token-reveal').style.display = 'block';
+    setTokenStatus('', null);
+    loadTokens(currentUserId);
+  });
+
+  document.getElementById('token-reveal-value').addEventListener('click', () => {
+    const el = document.getElementById('token-reveal-value');
+    const text = el.textContent;
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const original = el.textContent;
+      el.textContent = t('token_copied');
+      setTimeout(() => { el.textContent = original; }, 1200);
+    }).catch(() => {});
+  });
+
   async function renderProfile(session) {
     currentUserId = session.user.id;
     const { data, error } = await supabase
@@ -679,6 +821,7 @@
 
     showView('profile');
     loadPublishedPackages(session.user.id);
+    loadTokens(session.user.id);
 
     const checkoutParam = new URLSearchParams(window.location.search).get('checkout');
     if (checkoutParam === 'success') {

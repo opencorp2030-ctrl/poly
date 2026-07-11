@@ -81,6 +81,9 @@
   .code-block code { background: none; padding: 0; }
   .code-block .comment { color: var(--text-dim); }
 
+  .doc-steps { max-width: 74ch; margin: 0.75rem 0 1.25rem; padding-left: 1.4rem; }
+  .doc-steps li { margin-bottom: 0.5rem; line-height: 1.5; }
+
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
   .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1.25rem; }
   th, td { text-align: left; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
@@ -123,6 +126,7 @@
     <a href="#taps" data-i18n="toc_taps">Tap formulas</a>
     <a href="#autoupdate" data-i18n="toc_autoupdate">Auto-update</a>
     <a href="#registry" data-i18n="toc_registry">Publishing</a>
+    <a href="#mcp" data-i18n="toc_mcp">AI assistants</a>
     <a href="#pro" data-i18n="toc_pro">Pro</a>
     <a href="dependencies.html" data-i18n="toc_deps">Search dependencies</a>
     <a href="llms.txt" data-i18n="toc_llms">llms.txt</a>
@@ -236,6 +240,34 @@ poly install community:hello-world</div>
       <p class="note-box" data-i18n="registry_note">There is no malware scanning. The SHA-256 recorded at publish time is verified at install time — that protects against corruption or tampering in transit, not against a malicious uploader. Only install community packages you trust.</p>
     </section>
 
+    <section class="doc-section" id="mcp">
+      <h2 data-i18n="mcp_h">AI assistants (MCP)</h2>
+      <p data-i18n="mcp_p">Poly runs a remote <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> server (Streamable HTTP, hosted as a Supabase Edge Function — no separate infrastructure) so Claude, ChatGPT, or any MCP-compatible assistant can search, browse, and publish to the community registry as you. It authenticates with a personal access token, never your email or password, and the token is scoped and revocable at any time.</p>
+      <ol class="doc-steps">
+        <li data-i18n="mcp_step1">Generate a token on <a href="account.html">your account page</a>, under "AI assistants (MCP)". It's shown once — copy it immediately.</li>
+        <li data-i18n="mcp_step2">Add a remote MCP connector pointing at the URL below, with the token as a bearer <code>Authorization</code> header.</li>
+      </ol>
+      <div class="code-block">{
+  "mcpServers": {
+    "poly": {
+      "url": "https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp",
+      "headers": { "Authorization": "Bearer &lt;your token&gt;" }
+    }
+  }
+}</div>
+      <p data-i18n="mcp_p2">That's the config format Claude Desktop and Claude Code use for remote connectors (Settings → Connectors → Add custom connector). ChatGPT's connector UI takes the same URL and header, though the exact menu location varies by plan and changes as OpenAI iterates on it.</p>
+      <table>
+        <thead><tr><th data-i18n="th_command">Tool</th><th data-i18n="th_does">Does</th></tr></thead>
+        <tbody>
+          <tr><td><code>whoami</code></td><td data-i18n="mcp_tool_whoami">Confirms which account the token belongs to.</td></tr>
+          <tr><td><code>search_packages</code></td><td data-i18n="mcp_tool_search">Searches the community registry — useful for checking a name is free before publishing.</td></tr>
+          <tr><td><code>list_own_packages</code></td><td data-i18n="mcp_tool_list">Lists everything the token's account has already published.</td></tr>
+          <tr><td><code>publish_package</code></td><td data-i18n="mcp_tool_publish">Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>.</td></tr>
+        </tbody>
+      </table>
+      <p class="note-box" data-i18n="mcp_note">Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code> — an assistant can't take over a name it doesn't already own, and can't mark anything "official". Revoking a token on your account page breaks it everywhere immediately.</p>
+    </section>
+
     <section class="doc-section" id="pro">
       <h2 data-i18n="pro_h">Poly Pro</h2>
       <p data-i18n="pro_p">Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:</p>
@@ -253,7 +285,7 @@ poly install community:hello-world</div>
     en: {
       nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
       toc_title: "On this page", toc_commands: "Commands", toc_adapters: "Adapters", toc_resolution: "Resolution order",
-      toc_lockfile: "poly.json", toc_taps: "Tap formulas", toc_autoupdate: "Auto-update", toc_registry: "Publishing", toc_pro: "Pro", toc_deps: "Search dependencies", toc_llms: "llms.txt",
+      toc_lockfile: "poly.json", toc_taps: "Tap formulas", toc_autoupdate: "Auto-update", toc_registry: "Publishing", toc_mcp: "AI assistants", toc_pro: "Pro", toc_deps: "Search dependencies", toc_llms: "llms.txt",
       nav_dependencies: "dependencies",
       eyebrow: "Documentation", title: "Everything poly does",
       lede: 'The full reference. For the pitch, see the <a href="index.html">homepage</a>.',
@@ -299,6 +331,16 @@ poly install community:hello-world</div>
       registry_p: '<code>poly send name version path</code> uploads a file or directory (auto-archived) to Poly\'s community registry under your account. <code>path</code> must contain (or be) a file named exactly <code>name</code> — that\'s what gets installed.',
       registry_p2: 'Names are first-come-first-served, like npm — only the account that first published a name can push a new version over it. Community packages are <strong>never auto-detected</strong>: they\'re only found via the explicit <code>community:</code> prefix, in <code>poly search</code>, <code>poly install</code>, and on the <a href="dependencies.html">dependencies page</a>. This is deliberate — without it, anyone could publish a package literally named <code>requests</code> or <code>ripgrep</code> and have it silently shadow the real one for someone who typed a plain <code>poly install requests</code>.',
       registry_note: 'There is no malware scanning. The SHA-256 recorded at publish time is verified at install time — that protects against corruption or tampering in transit, not against a malicious uploader. Only install community packages you trust.',
+      mcp_h: "AI assistants (MCP)",
+      mcp_p: 'Poly runs a remote <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> server (Streamable HTTP, hosted as a Supabase Edge Function — no separate infrastructure) so Claude, ChatGPT, or any MCP-compatible assistant can search, browse, and publish to the community registry as you. It authenticates with a personal access token, never your email or password, and the token is scoped and revocable at any time.',
+      mcp_step1: 'Generate a token on <a href="account.html">your account page</a>, under "AI assistants (MCP)". It\'s shown once — copy it immediately.',
+      mcp_step2: 'Add a remote MCP connector pointing at the URL below, with the token as a bearer <code>Authorization</code> header.',
+      mcp_p2: "That's the config format Claude Desktop and Claude Code use for remote connectors (Settings → Connectors → Add custom connector). ChatGPT's connector UI takes the same URL and header, though the exact menu location varies by plan and changes as OpenAI iterates on it.",
+      mcp_tool_whoami: "Confirms which account the token belongs to.",
+      mcp_tool_search: "Searches the community registry — useful for checking a name is free before publishing.",
+      mcp_tool_list: "Lists everything the token's account has already published.",
+      mcp_tool_publish: 'Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>.',
+      mcp_note: 'Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code> — an assistant can\'t take over a name it doesn\'t already own, and can\'t mark anything "official". Revoking a token on your account page breaks it everywhere immediately.',
       pro_h: "Poly Pro",
       pro_p: 'Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:',
       pro_li1: "Concurrent installs when you name more than one package at once.",
@@ -307,7 +349,7 @@ poly install community:hello-world</div>
     fr: {
       nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
       toc_title: "Sur cette page", toc_commands: "Commandes", toc_adapters: "Adapters", toc_resolution: "Ordre de résolution",
-      toc_lockfile: "poly.json", toc_taps: "Formules tap", toc_autoupdate: "Auto-update", toc_registry: "Publier", toc_pro: "Pro", toc_deps: "Chercher des dépendances", toc_llms: "llms.txt",
+      toc_lockfile: "poly.json", toc_taps: "Formules tap", toc_autoupdate: "Auto-update", toc_registry: "Publier", toc_mcp: "Assistants IA", toc_pro: "Pro", toc_deps: "Chercher des dépendances", toc_llms: "llms.txt",
       nav_dependencies: "dépendances",
       eyebrow: "Documentation", title: "Tout ce que fait poly",
       lede: 'La référence complète. Pour le pitch, voir la <a href="index.html">page d\'accueil</a>.',
@@ -353,6 +395,16 @@ poly install community:hello-world</div>
       registry_p: '<code>poly send nom version chemin</code> envoie un fichier ou un dossier (auto-archivé) vers le registre communautaire de Poly, sous ton compte. <code>chemin</code> doit contenir (ou être) un fichier nommé exactement <code>nom</code> — c\'est ce qui sera installé.',
       registry_p2: 'Les noms sont premier arrivé premier servi, comme npm — seul le compte qui a publié un nom en premier peut y pousser une nouvelle version. Les paquets communautaires ne sont <strong>jamais détectés automatiquement</strong> : on ne les trouve que via le préfixe explicite <code>community:</code>, dans <code>poly search</code>, <code>poly install</code>, et sur la <a href="dependencies.html">page dépendances</a>. C\'est volontaire — sans ça, n\'importe qui pourrait publier un paquet nommé littéralement <code>requests</code> ou <code>ripgrep</code> et masquer silencieusement le vrai pour quelqu\'un qui tape un simple <code>poly install requests</code>.',
       registry_note: 'Il n\'y a pas de scan anti-malware. Le SHA-256 enregistré à la publication est vérifié à l\'installation — ça protège contre la corruption ou l\'altération en transit, pas contre un uploader malveillant. N\'installe que des paquets communautaires en qui tu as confiance.',
+      mcp_h: "Assistants IA (MCP)",
+      mcp_p: 'Poly fait tourner un serveur <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> distant (Streamable HTTP, hébergé comme fonction Supabase Edge — aucune infra séparée) pour que Claude, ChatGPT, ou tout assistant compatible MCP puisse chercher, parcourir et publier dans le registre communautaire en ton nom. L\'authentification se fait via un token d\'accès personnel, jamais ton e-mail ou mot de passe, et le token est révocable à tout moment.',
+      mcp_step1: 'Génère un token sur <a href="account.html">ta page compte</a>, section "Assistants IA (MCP)". Il n\'est affiché qu\'une fois — copie-le tout de suite.',
+      mcp_step2: 'Ajoute un connecteur MCP distant pointant vers l\'URL ci-dessous, avec le token comme en-tête <code>Authorization</code> bearer.',
+      mcp_p2: "C'est le format de config utilisé par Claude Desktop et Claude Code pour les connecteurs distants (Réglages → Connecteurs → Ajouter un connecteur personnalisé). L'interface de connecteurs de ChatGPT prend la même URL et le même en-tête, même si l'emplacement exact dans les menus varie selon la formule et change au fil des évolutions d'OpenAI.",
+      mcp_tool_whoami: "Confirme à quel compte appartient le token.",
+      mcp_tool_search: "Cherche dans le registre communautaire — utile pour vérifier qu'un nom est libre avant de publier.",
+      mcp_tool_list: "Liste tout ce que le compte du token a déjà publié.",
+      mcp_tool_publish: 'Publie un seul fichier (encodé en base64 dans l\'appel), exactement comme <code>poly send</code>.',
+      mcp_note: 'Publier via MCP suit les mêmes règles de propriété premier-arrivé-premier-servi et la même vérification SHA-256 que <code>poly send</code> — un assistant ne peut pas s\'approprier un nom qu\'il ne possède pas déjà, ni marquer quoi que ce soit comme "officiel". Révoquer un token depuis ta page compte le casse partout, immédiatement.',
       pro_h: "Poly Pro",
       pro_p: 'Poly est et reste 100% gratuit et open source — le catalogue tap intégré est entièrement gratuit aussi. Pro (0,99 € en une fois, via Stripe Checkout depuis <a href="account.html">ta page de compte</a>) débloque :',
       pro_li1: "Les installs en parallèle quand tu nommes plusieurs paquets d'un coup.",
