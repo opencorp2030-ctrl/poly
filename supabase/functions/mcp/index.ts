@@ -155,6 +155,21 @@ const TOOLS = [
       additionalProperties: false,
     },
   },
+  {
+    name: "delete_package",
+    description: "Permanently delete a community package this token's account published -- removes both the database entry and the stored file. Cannot be undone, and cannot delete another account's package.",
+    inputSchema: {
+      type: "object",
+      properties: { name: { type: "string", description: "Exact name of the package to delete" } },
+      required: ["name"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "get_stats",
+    description: "Get Poly's live public stats: total members and pro members. Mirrors the numbers shown on community.html.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
 ];
 
 function jsonRpcResult(id: unknown, result: unknown) {
@@ -447,6 +462,38 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
         return toolText(`Saved image but failed to update profile: ${(e as Error).message}`, true);
       }
       return toolText(`Avatar updated: ${avatarUrl}`);
+    }
+
+    case "delete_package": {
+      if (!token) return toolText("No token provided.", true);
+      const name = String(args.name ?? "");
+      if (!name) return toolText("name is required.", true);
+
+      let storagePath: string | undefined;
+      try {
+        const rows = await callRpc("mcp_delete_package", { p_token: token, p_name: name });
+        storagePath = rows?.[0]?.storage_path;
+      } catch (e) {
+        return toolText(`Delete failed: ${(e as Error).message}`, true);
+      }
+
+      if (storagePath) {
+        const delResp = await fetch(`${SUPABASE_URL}/storage/v1/object/community-packages/${storagePath}`, {
+          method: "DELETE",
+          headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
+        });
+        if (!delResp.ok) {
+          return toolText(`Deleted ${name} from the registry, but couldn't remove the stored file (${delResp.status}). Not installable anymore either way.`);
+        }
+      }
+      return toolText(`Deleted ${name}. It's no longer installable via poly install community:${name}.`);
+    }
+
+    case "get_stats": {
+      const rows = await callRpc("community_stats", {});
+      const s = rows?.[0];
+      if (!s) return toolText("Stats unavailable.", true);
+      return toolText(`${s.total_members} members, ${s.pro_members} on Pro.`);
     }
 
     default:

@@ -132,6 +132,8 @@
   .pkg-row:last-of-type { border-bottom: none; }
   .pkg-row .pname { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
   .pkg-row .pmeta { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; font-family: var(--mono); }
+  .pkg-row .delete-pkg-btn { margin-top: 0.5rem; font-size: 0.72rem; padding: 0.3rem 0.6rem; color: var(--danger); border-color: var(--danger); }
+  .pkg-row .delete-pkg-btn:hover { background: rgba(224, 102, 74, 0.1); }
   .official-badge { display: inline-flex; vertical-align: middle; }
   .official-badge svg { width: 0.95rem; height: 0.95rem; display: block; }
 
@@ -465,6 +467,9 @@
       packages_eyebrow: "Your published packages",
       packages_empty: "Nothing published yet — see the docs for poly send.",
       downloads_label: "downloads",
+      btn_delete_package: "Delete",
+      confirm_delete_package: "Delete {name}? This can't be undone — it stops being installable immediately.",
+      package_deleted_ok: "Package deleted.",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in.",
       official_dev: "Official developer", official_app: "Official app",
@@ -517,6 +522,9 @@
       packages_eyebrow: "Tes paquets publiés",
       packages_empty: "Rien publié pour l'instant — voir la doc pour poly send.",
       downloads_label: "téléchargements",
+      btn_delete_package: "Supprimer",
+      confirm_delete_package: "Supprimer {name} ? Impossible à annuler — il cesse d'être installable immédiatement.",
+      package_deleted_ok: "Paquet supprimé.",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi.",
       official_dev: "Développeur officiel", official_app: "App officielle",
@@ -694,8 +702,25 @@
       <div class="pkg-row">
         <div class="pname">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''}</div>
         <div class="pmeta">v${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
+        <button class="btn small delete-pkg-btn" data-name="${escapeHtml(p.name)}" type="button">${escapeHtml(t('btn_delete_package'))}</button>
       </div>
     `).join('');
+
+    list.querySelectorAll('.delete-pkg-btn').forEach((btn) => {
+      btn.addEventListener('click', () => deletePackage(btn.getAttribute('data-name'), userId));
+    });
+  }
+
+  async function deletePackage(name, userId) {
+    if (!confirm(t('confirm_delete_package').replace('{name}', name))) return;
+    const { data, error } = await supabase.rpc('delete_package', { p_name: name });
+    if (error) { setProfileStatus(error.message || t('err_generic'), 'error'); return; }
+    const storagePath = data?.[0]?.storage_path;
+    if (storagePath) {
+      await supabase.storage.from('community-packages').remove([storagePath]);
+    }
+    setProfileStatus(t('package_deleted_ok'), 'ok');
+    loadPublishedPackages(userId);
   }
 
   function setTokenStatus(message, kind) {

@@ -61,8 +61,12 @@ pip+npm+crates.io+Homebrew+tap+community all at once), `get_package`, `list_own_
 ownership rules and SHA-256 verification as `poly send`; an assistant can never mark a
 package "official"; the tool description explicitly warns against building an HTML/web
 app -- published packages are CLI scripts/binaries, not web pages), `search_members`,
-`get_profile`, `update_profile`, `update_avatar` (the last two act only on the token's own
-account). Full setup instructions, including the Claude Desktop/Code config JSON:
+`get_profile`, `update_profile`, `update_avatar`, `delete_package`, `get_stats`
+(`update_profile`/`update_avatar`/`delete_package` act only on the token's own account/
+packages; `delete_package` removes both the DB entry and the stored file and cannot be
+undone). Deliberately NOT exposed via MCP: creating, listing, or revoking personal access
+tokens -- an assistant can use the access it's given but never grant or manage its own.
+Full setup instructions, including the Claude Desktop/Code config JSON:
 https://poly.candygate.eu/docs.html#mcp
 
 ## Key files and formats

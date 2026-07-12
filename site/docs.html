@@ -277,6 +277,8 @@ poly install community:hello-world</div>
           <tr><td><code>get_profile</code></td><td data-i18n="mcp_tool_getprofile">A user's public profile and published packages — mirrors profile.html.</td></tr>
           <tr><td><code>update_profile</code></td><td data-i18n="mcp_tool_updateprofile">Updates the token's own username and/or bio.</td></tr>
           <tr><td><code>update_avatar</code></td><td data-i18n="mcp_tool_updateavatar">Updates the token's own avatar image.</td></tr>
+          <tr><td><code>delete_package</code></td><td data-i18n="mcp_tool_deletepackage">Permanently deletes a community package the token's account published. Cannot delete another account's package.</td></tr>
+          <tr><td><code>get_stats</code></td><td data-i18n="mcp_tool_getstats">Live public member/Pro counts, mirrors community.html.</td></tr>
         </tbody>
       </table>
       <p class="note-box" data-i18n="mcp_note">Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code> — an assistant can't take over a name it doesn't already own, and can't mark anything "official". Revoking a token on your account page breaks it everywhere immediately.</p>
@@ -365,7 +367,9 @@ poly install community:hello-world</div>
       mcp_tool_getprofile: "A user's public profile and published packages — mirrors profile.html.",
       mcp_tool_updateprofile: "Updates the token's own username and/or bio.",
       mcp_tool_updateavatar: "Updates the token's own avatar image.",
-      mcp_note: 'Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code> — an assistant can\'t take over a name it doesn\'t already own, and can\'t mark anything "official". Revoking a token on your account page breaks it everywhere immediately.',
+      mcp_tool_deletepackage: "Permanently deletes a community package the token's account published. Cannot delete another account's package.",
+      mcp_tool_getstats: "Live public member/Pro counts, mirrors community.html.",
+      mcp_note: 'Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code> — an assistant can\'t take over a name it doesn\'t already own, and can\'t mark anything "official". Revoking a token on your account page breaks it everywhere immediately. Deliberately not exposed via MCP: creating, listing, or revoking tokens — an assistant should never be able to grant or manage its own access, only use the access you\'ve already given it.',
       pro_h: "Poly Pro",
       pro_p: 'Poly is and stays 100% free and open source — the built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:',
       pro_li1: "Concurrent installs when you name more than one package at once.",
@@ -440,7 +444,9 @@ poly install community:hello-world</div>
       mcp_tool_getprofile: "Le profil public d'un utilisateur et ses paquets publiés — reflète profile.html.",
       mcp_tool_updateprofile: "Met à jour le nom d'utilisateur et/ou la bio du compte du token.",
       mcp_tool_updateavatar: "Met à jour la photo de profil du compte du token.",
-      mcp_note: 'Publier via MCP suit les mêmes règles de propriété premier-arrivé-premier-servi et la même vérification SHA-256 que <code>poly send</code> — un assistant ne peut pas s\'approprier un nom qu\'il ne possède pas déjà, ni marquer quoi que ce soit comme "officiel". Révoquer un token depuis ta page compte le casse partout, immédiatement.',
+      mcp_tool_deletepackage: "Supprime définitivement un paquet communautaire publié par le compte du token. Impossible de supprimer le paquet d'un autre compte.",
+      mcp_tool_getstats: "Nombre de membres/Pro en direct, reflète community.html.",
+      mcp_note: 'Publier via MCP suit les mêmes règles de propriété premier-arrivé-premier-servi et la même vérification SHA-256 que <code>poly send</code> — un assistant ne peut pas s\'approprier un nom qu\'il ne possède pas déjà, ni marquer quoi que ce soit comme "officiel". Révoquer un token depuis ta page compte le casse partout, immédiatement. Volontairement absent du MCP : créer, lister ou révoquer des tokens — un assistant ne doit jamais pouvoir s\'accorder ou gérer son propre accès, seulement utiliser celui que tu lui as déjà donné.',
       pro_h: "Poly Pro",
       pro_p: 'Poly est et reste 100% gratuit et open source — le catalogue tap intégré est entièrement gratuit aussi. Pro (0,99 € en une fois, via Stripe Checkout depuis <a href="account.html">ta page de compte</a>) débloque :',
       pro_li1: "Les installs en parallèle quand tu nommes plusieurs paquets d'un coup.",
