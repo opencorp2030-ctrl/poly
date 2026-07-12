@@ -113,26 +113,29 @@
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover { color: var(--accent); }
 
-  .lang-toggle {
-    display: flex;
-    gap: 0.2rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 0.2rem;
+  .user-menu { position: relative; }
+  .user-menu-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
   }
-  .lang-btn {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 0.3rem 0.65rem;
-    border-radius: 999px;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    cursor: pointer;
+  .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
+  .user-menu-dropdown {
+    position: absolute; top: calc(100% + 0.5rem); right: 0; min-width: 190px;
+    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.4rem; display: none; flex-direction: column; gap: 0.1rem; z-index: 50;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
   }
-  .lang-btn.active { background: var(--accent); color: var(--accent-ink); }
+  .user-menu-dropdown.open { display: flex; }
+  .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
+  .user-menu-item {
+    display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer;
+    font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px;
+    text-decoration: none; box-sizing: border-box;
+  }
+  .user-menu-item:hover { background: var(--ink); }
+  .user-menu-item.danger { color: var(--danger); }
 
   section { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(3rem, 7vw, 5.5rem); }
   section + section { border-top: 1px solid var(--border); }
@@ -528,9 +531,17 @@
       <a href="account.html" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
-    <div class="lang-toggle" role="group" aria-label="Language">
-      <button type="button" class="lang-btn" data-lang="en">EN</button>
-      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+    <div class="user-menu" id="user-menu" style="display:none">
+      <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+        <span class="initial" id="user-menu-avatar">?</span>
+      </button>
+      <div class="user-menu-dropdown" id="user-menu-dropdown">
+        <div class="user-menu-name" id="user-menu-name">—</div>
+        <a href="account.html" class="user-menu-item">Account</a>
+        <a href="community.html" class="user-menu-item">Community</a>
+        <a href="docs.html" class="user-menu-item">Docs</a>
+        <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
+      </div>
     </div>
   </div>
 </header>
@@ -985,11 +996,6 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       var key = node.getAttribute('data-i18n');
       if (I18N[lang][key] !== undefined) node.innerHTML = I18N[lang][key];
     });
-    document.querySelectorAll('.lang-btn').forEach(function (btn) {
-      var isActive = btn.getAttribute('data-lang') === lang;
-      btn.classList.toggle('active', isActive);
-      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    });
     splitHeroTitle();
     try { localStorage.setItem('poly-lang', lang); } catch (e) {}
   }
@@ -1000,10 +1006,6 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
     var browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
     applyLanguage(saved || browserLang);
     splitWordmark();
-
-    document.querySelectorAll('.lang-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () { applyLanguage(btn.getAttribute('data-lang')); });
-    });
 
     var copyBtn = document.getElementById('copy-install');
     var copyLabel = copyBtn ? copyBtn.querySelector('[data-i18n="cta_primary_label"]') : null;
@@ -1085,6 +1087,45 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
     }
   });
 })();
+</script>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const supabase = createClient('https://iuymslcbbrbahxbfuzrr.supabase.co', 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD');
+
+  async function renderUserMenu(session) {
+    const menu = document.getElementById('user-menu');
+    if (!session) { menu.style.display = 'none'; return; }
+
+    const { data } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', session.user.id).single();
+    const avatarSlot = document.getElementById('user-menu-avatar');
+    if (data && data.avatar_url) {
+      const img = document.createElement('img');
+      img.id = 'user-menu-avatar';
+      img.src = data.avatar_url;
+      img.alt = '';
+      avatarSlot.replaceWith(img);
+    } else {
+      avatarSlot.textContent = ((data && data.username) || session.user.email || '?').charAt(0).toUpperCase();
+    }
+    document.getElementById('user-menu-name').textContent = data && data.username ? '@' + data.username : session.user.email;
+    menu.style.display = 'block';
+  }
+
+  document.getElementById('user-menu-btn').addEventListener('click', () => {
+    document.getElementById('user-menu-dropdown').classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('user-menu');
+    if (!menu.contains(e.target)) document.getElementById('user-menu-dropdown').classList.remove('open');
+  });
+  document.getElementById('user-menu-signout').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  });
+
+  supabase.auth.onAuthStateChange((_event, session) => renderUserMenu(session));
+  supabase.auth.getSession().then(({ data }) => renderUserMenu(data.session));
 </script>
 
 </body>
