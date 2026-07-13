@@ -53,7 +53,10 @@
   }
   :root[data-theme="light"] .term { box-shadow: 0 20px 50px rgba(20,23,29,0.14); }
 
-  .term-bar { display: flex; align-items: center; gap: 0.4rem; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
+  .term { position: relative; transition: box-shadow 0.15s ease; }
+  .term.dragging { transition: none; box-shadow: 0 28px 70px rgba(0,0,0,0.45); cursor: grabbing; user-select: none; }
+  .term-bar { display: flex; align-items: center; gap: 0.4rem; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); cursor: grab; touch-action: none; }
+  .term-bar:active { cursor: grabbing; }
   .term-dot { width: 10px; height: 10px; border-radius: 50%; }
   .term-dot.red { background: #ec6a5e; }
   .term-dot.yellow { background: #f4bf4f; }
@@ -128,6 +131,42 @@
 
     const path = window.location.pathname.replace(/^\//, '') || 'unknown';
     document.getElementById('term-cmd').textContent = 'poly install page:/' + path.slice(0, 40);
+
+    (function () {
+      var term = document.querySelector('.term');
+      var bar = document.querySelector('.term-bar');
+      if (!term || !bar) return;
+      var dragging = false, startX = 0, startY = 0, origX = 0, origY = 0;
+
+      function onDown(clientX, clientY) {
+        dragging = true;
+        var rect = term.getBoundingClientRect();
+        term.style.position = 'fixed';
+        term.style.left = rect.left + 'px';
+        term.style.top = rect.top + 'px';
+        term.style.margin = '0';
+        origX = rect.left; origY = rect.top;
+        startX = clientX; startY = clientY;
+        term.classList.add('dragging');
+      }
+      function onMove(clientX, clientY) {
+        if (!dragging) return;
+        term.style.left = (origX + (clientX - startX)) + 'px';
+        term.style.top = (origY + (clientY - startY)) + 'px';
+      }
+      function onUp() {
+        dragging = false;
+        term.classList.remove('dragging');
+      }
+
+      bar.addEventListener('mousedown', function (e) { onDown(e.clientX, e.clientY); });
+      window.addEventListener('mousemove', function (e) { onMove(e.clientX, e.clientY); });
+      window.addEventListener('mouseup', onUp);
+
+      bar.addEventListener('touchstart', function (e) { onDown(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+      window.addEventListener('touchmove', function (e) { onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+      window.addEventListener('touchend', onUp);
+    })();
   </script>
 </body>
 </html>
