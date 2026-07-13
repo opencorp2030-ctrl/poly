@@ -18,7 +18,9 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"poly/internal/account"
+	"poly/internal/cache"
 	"poly/internal/registry/embedded"
+	"poly/internal/ui"
 )
 
 // Tap installs prebuilt binaries directly from upstream release URLs,
@@ -94,6 +96,21 @@ func loadFormula(name string) (f formula, found bool, err error) {
 }
 
 func (t Tap) Install(name, version string) (installedVersion string, err error) {
+	binDir, err := polyBinDir()
+	if err != nil {
+		return "", err
+	}
+	return t.installTo(name, version, binDir)
+}
+
+// InstallTo is like Install but writes the binary into destDir instead
+// of ~/.poly/bin. Used by `poly exec`/`poly x` to run a tap formula
+// once, from a throwaway directory, without persisting an install.
+func (t Tap) InstallTo(name, version, destDir string) (installedVersion string, err error) {
+	return t.installTo(name, version, destDir)
+}
+
+func (t Tap) installTo(name, version, destDir string) (installedVersion string, err error) {
 	f, found, err := loadFormula(name)
 	if err != nil {
 		return "", err
@@ -118,7 +135,6 @@ func (t Tap) Install(name, version string) (installedVersion string, err error) 
 	if err != nil {
 		return "", fmt.Errorf("downloading %s: %w", name, err)
 	}
-	defer os.Remove(archivePath)
 
 	if err := verifySHA256(archivePath, artifact.SHA256); err != nil {
 		return "", fmt.Errorf("checksum verification failed for %s: %w", name, err)
@@ -144,20 +160,31 @@ func (t Tap) Install(name, version string) (installedVersion string, err error) 
 		return "", fmt.Errorf("could not find %s inside downloaded archive: %w", binName, err)
 	}
 
-	binDir, err := polyBinDir()
-	if err != nil {
-		return "", err
-	}
-	if err := os.MkdirAll(binDir, 0o755); err != nil {
+	if err := os.MkdirAll(destDir, 0o755); err != nil {
 		return "", err
 	}
 
-	destPath := filepath.Join(binDir, binName)
+	destPath := filepath.Join(destDir, binName)
 	if err := copyFile(srcPath, destPath, 0o755); err != nil {
 		return "", err
 	}
 
 	return f.Version, nil
+}
+
+// ArtifactInfo returns the download URL and sha256 checksum for name's
+// prebuilt binary on the current platform, for recording in poly.lock.
+func ArtifactInfo(name string) (url, sha256 string, found bool) {
+	f, ok, err := loadFormula(name)
+	if err != nil || !ok {
+		return "", "", false
+	}
+	key := runtime.GOOS + "_" + runtime.GOARCH
+	artifact, ok := f.Artifacts[key]
+	if !ok {
+		return "", "", false
+	}
+	return artifact.URL, artifact.SHA256, true
 }
 
 func (t Tap) Remove(name string) error {
@@ -205,7 +232,18 @@ func BinDir() (string, error) {
 	return polyBinDir()
 }
 
+// downloadToTemp fetches url into poly's persistent download cache
+// (~/.poly/cache), keyed by a hash of the URL, and returns that cache
+// path. A cache hit skips the network entirely; either way the caller
+// re-verifies the sha256 checksum, so a corrupted or tampered cache
+// entry is caught exactly like a corrupted download would be.
 func downloadToTemp(url, label string) (string, error) {
+	key := cache.KeyFor(url)
+	if cachedPath, found, err := cache.Lookup(key); err == nil && found {
+		fmt.Println(ui.Dim("using cached download for " + label))
+		return cachedPath, nil
+	}
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
@@ -226,7 +264,18 @@ func downloadToTemp(url, label string) (string, error) {
 		os.Remove(tmp.Name())
 		return "", err
 	}
-	return tmp.Name(), nil
+
+	destPath, err := cache.Path(key)
+	if err != nil {
+		return tmp.Name(), nil
+	}
+	if err := os.Rename(tmp.Name(), destPath); err != nil {
+		if err := copyFile(tmp.Name(), destPath, 0o644); err != nil {
+			return tmp.Name(), nil
+		}
+		os.Remove(tmp.Name())
+	}
+	return destPath, nil
 }
 
 func verifySHA256(path, expected string) error {

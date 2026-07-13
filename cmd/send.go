@@ -12,8 +12,9 @@ import (
 var sendDescription string
 
 var sendCmd = &cobra.Command{
-	Use:   "send name version path",
-	Short: "Publish your own package to the Poly community registry",
+	Use:     "send name version path",
+	Aliases: []string{"publish"},
+	Short:   "Publish your own package to the Poly community registry",
 	Long: `Publish a file or directory to Poly's community registry under your account.
 
 path can be a single binary/archive, or a directory (it gets tar.gz'd

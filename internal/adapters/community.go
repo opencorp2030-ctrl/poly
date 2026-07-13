@@ -97,6 +97,21 @@ func (c Community) Search(name string) (SearchResult, error) {
 }
 
 func (c Community) Install(name, version string) (installedVersion string, err error) {
+	binDir, err := polyBinDir()
+	if err != nil {
+		return "", err
+	}
+	return c.installTo(name, version, binDir)
+}
+
+// InstallTo is like Install but writes the binary into destDir instead
+// of ~/.poly/bin. Used by `poly exec`/`poly x` to run a community
+// package once, from a throwaway directory, without persisting an install.
+func (c Community) InstallTo(name, version, destDir string) (installedVersion string, err error) {
+	return c.installTo(name, version, destDir)
+}
+
+func (c Community) installTo(name, version, destDir string) (installedVersion string, err error) {
 	row, found, err := fetchCommunityPackage(name)
 	if err != nil {
 		return "", err
@@ -114,7 +129,6 @@ func (c Community) Install(name, version string) (installedVersion string, err e
 	if err != nil {
 		return "", fmt.Errorf("downloading %s: %w", name, err)
 	}
-	defer os.Remove(archivePath)
 
 	if err := verifySHA256(archivePath, row.SHA256); err != nil {
 		return "", fmt.Errorf("checksum verification failed for %s: %w", name, err)
@@ -136,15 +150,11 @@ func (c Community) Install(name, version string) (installedVersion string, err e
 		return "", fmt.Errorf("published package for %s didn't contain a file named %q: %w", name, binName, err)
 	}
 
-	binDir, err := polyBinDir()
-	if err != nil {
-		return "", err
-	}
-	if err := os.MkdirAll(binDir, 0o755); err != nil {
+	if err := os.MkdirAll(destDir, 0o755); err != nil {
 		return "", err
 	}
 
-	destPath := filepath.Join(binDir, binName)
+	destPath := filepath.Join(destDir, binName)
 	if err := copyFile(srcPath, destPath, 0o755); err != nil {
 		return "", err
 	}
@@ -152,6 +162,16 @@ func (c Community) Install(name, version string) (installedVersion string, err e
 	recordCommunityDownload(name) // best-effort; a failed counter bump shouldn't fail the install
 
 	return row.Version, nil
+}
+
+// ArtifactInfo returns the download URL and sha256 checksum currently
+// published for name, for recording in poly.lock.
+func CommunityArtifactInfo(name string) (url, sha256 string, found bool) {
+	row, ok, err := fetchCommunityPackage(name)
+	if err != nil || !ok {
+		return "", "", false
+	}
+	return supabaseURL + "/storage/v1/object/public/community-packages/" + row.StoragePath, row.SHA256, true
 }
 
 func recordCommunityDownload(name string) {

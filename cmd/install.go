@@ -150,8 +150,45 @@ Examples:
 			}
 		}
 
+		if err := updateLock(results); err != nil {
+			return err
+		}
+
 		return firstErr
 	},
+}
+
+// updateLock records exact resolved versions (and, for tap/community,
+// the checksum and source URL) for successful results into poly.lock --
+// but only if this directory is already a poly project (has a
+// poly.json). A bare `poly install somepkg` outside a project doesn't
+// spontaneously create project files.
+func updateLock(results []installResult) error {
+	if !lockfile.Exists() {
+		return nil
+	}
+	l, _, err := lockfile.LoadLock()
+	if err != nil {
+		return err
+	}
+	for _, r := range results {
+		if r.err != nil {
+			continue
+		}
+		entry := lockfile.LockEntry{Adapter: r.a.Name(), Version: r.installedVersion}
+		switch r.a.Name() {
+		case "tap":
+			if url, sha, ok := adapters.ArtifactInfo(r.name); ok {
+				entry.URL, entry.SHA256 = url, sha
+			}
+		case "community":
+			if url, sha, ok := adapters.CommunityArtifactInfo(r.name); ok {
+				entry.URL, entry.SHA256 = url, sha
+			}
+		}
+		l.Packages[r.name] = entry
+	}
+	return lockfile.SaveLock(l)
 }
 
 func init() {
