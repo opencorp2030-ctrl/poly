@@ -225,6 +225,7 @@
       <a href="docs.html" class="current" data-i18n="nav_docs">docs</a>
       <a href="index.html#pro" data-i18n="nav_pro">pro</a>
       <a href="community.html" data-i18n="nav_community">community</a>
+<a href="integrations.html" data-i18n="nav_integrations">integrations</a>
       <a href="account.html" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
@@ -443,7 +444,7 @@ poly install community:hello-world</div>
           <tr><td><code>search_dependencies</code></td><td data-i18n="mcp_tool_searchdeps">Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once. Mirrors dependencies.html.</td></tr>
           <tr><td><code>get_package</code></td><td data-i18n="mcp_tool_getpackage">Full detail on one community package. Mirrors package.html.</td></tr>
           <tr><td><code>list_own_packages</code></td><td data-i18n="mcp_tool_list">Lists everything the token's account has already published.</td></tr>
-          <tr><td><code>publish_package</code></td><td data-i18n="mcp_tool_publish">Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>.</td></tr>
+          <tr><td><code>publish_package</code></td><td data-i18n="mcp_tool_publish">Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>. Optional <code>category: "integration"</code> lists it on integrations.html.</td></tr>
           <tr><td><code>search_members</code></td><td data-i18n="mcp_tool_searchmembers">Searches the community directory by username. Mirrors community.html.</td></tr>
           <tr><td><code>get_profile</code></td><td data-i18n="mcp_tool_getprofile">A user's public profile and published packages. Mirrors profile.html.</td></tr>
           <tr><td><code>update_profile</code></td><td data-i18n="mcp_tool_updateprofile">Updates the token's own username and/or bio.</td></tr>
@@ -540,6 +541,7 @@ poly install community:hello-world</div>
   var I18N = {
     en: {
       nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
+      nav_integrations: "integrations",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
       toc_title: "On this page", toc_commands: "Commands", toc_adapters: "Adapters", toc_resolution: "Resolution order",
@@ -604,7 +606,7 @@ poly install community:hello-world</div>
       mcp_tool_searchdeps: "Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once. Mirrors dependencies.html.",
       mcp_tool_getpackage: "Full detail on one community package. Mirrors package.html.",
       mcp_tool_list: "Lists everything the token's account has already published.",
-      mcp_tool_publish: 'Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>.',
+      mcp_tool_publish: 'Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>. Optional category: "integration" lists it on integrations.html.',
       mcp_tool_searchmembers: "Searches the community directory by username. Mirrors community.html.",
       mcp_tool_getprofile: "A user's public profile and published packages. Mirrors profile.html.",
       mcp_tool_updateprofile: "Updates the token's own username and/or bio.",
@@ -662,6 +664,7 @@ poly install community:hello-world</div>
     },
     fr: {
       nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      nav_integrations: "intégrations",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
       toc_title: "Sur cette page", toc_commands: "Commandes", toc_adapters: "Adapters", toc_resolution: "Ordre de résolution",
@@ -726,7 +729,7 @@ poly install community:hello-world</div>
       mcp_tool_searchdeps: "Cherche dans pip, npm, crates.io, Homebrew, le catalogue tap intégré, et le registre communautaire en même temps. Reflète dependencies.html.",
       mcp_tool_getpackage: "Détail complet d'un paquet communautaire. Reflète package.html.",
       mcp_tool_list: "Liste tout ce que le compte du token a déjà publié.",
-      mcp_tool_publish: 'Publie un seul fichier (encodé en base64 dans l\'appel), exactement comme <code>poly send</code>.',
+      mcp_tool_publish: 'Publie un seul fichier (encodé en base64 dans l\'appel), exactement comme <code>poly send</code>. category: "integration" (optionnel) le liste sur integrations.html.',
       mcp_tool_searchmembers: "Cherche dans l'annuaire communautaire par nom d'utilisateur. Reflète community.html.",
       mcp_tool_getprofile: "Le profil public d'un utilisateur et ses paquets publiés. Reflète profile.html.",
       mcp_tool_updateprofile: "Met à jour le nom d'utilisateur et/ou la bio du compte du token.",

@@ -60,7 +60,8 @@ pip+npm+crates.io+Homebrew+tap+community all at once), `get_package`, `list_own_
 `publish_package` (base64-encoded file in the tool call args — same first-come-first-served
 ownership rules and SHA-256 verification as `poly send`; an assistant can never mark a
 package "official"; the tool description explicitly warns against building an HTML/web
-app -- published packages are CLI scripts/binaries, not web pages), `search_members`,
+app -- published packages are CLI scripts/binaries, not web pages; an optional `category:
+"integration"` argument lists the package on poly.candygate.eu/integrations.html), `search_members`,
 `get_profile`, `update_profile`, `update_avatar`, `delete_package`, `get_stats`
 (`update_profile`/`update_avatar`/`delete_package` act only on the token's own account/
 packages; `delete_package` removes both the DB entry and the stored file and cannot be
@@ -82,6 +83,14 @@ no bypass) -- an assistant can use the access it's given but never grant or mana
 Full setup instructions, including the Claude Desktop/Code config JSON:
 https://poly.candygate.eu/docs.html#mcp
 
+poly.candygate.eu/integrations.html lets a signed-in user describe an integration in plain
+language (e.g. "an Alexa skill that reads out my package's weekly downloads"); the page
+saves the request and opens Claude.ai with a ready-made prompt (also shown as copyable text
+for Claude Code/Desktop/any other MCP client) instructing the assistant to search the
+registry, build a CLI package, and publish it via `publish_package` with `category:
+"integration"` -- no separate AI infrastructure on Poly's side, it just hands your own
+already-connected assistant a well-formed task.
+
 ## Key files and formats
 
 - `poly.json` (project-local, written by `poly init`): `{"packages": ["tap:ripgrep@15.1.0", "npm:eslint@9.2.0"]}`. `poly install` with no arguments reads this.
@@ -96,6 +105,7 @@ https://poly.candygate.eu/docs.html#mcp
 - Full docs: https://poly.candygate.eu/docs.html
 - Account (sign up / manage plan): https://poly.candygate.eu/account.html
 - Community directory + live download/member stats: https://poly.candygate.eu/community.html
+- Integrations: describe one in plain language, your connected AI assistant builds and publishes it: https://poly.candygate.eu/integrations.html
 - Cross-ecosystem dependency search (pip/npm/crates.io/Homebrew/community, live): https://poly.candygate.eu/dependencies.html
 - Public user profiles: https://poly.candygate.eu/profile.html?u=<username>
 - Public package detail pages: https://poly.candygate.eu/package.html?name=<package>

@@ -3,20 +3,19 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Notifications · Poly</title>
+<title>Integrations · Poly</title>
 <link rel="icon" href="logo.png" />
-<meta name="description" content="Your Poly notifications: follows, friend requests, downloads, and staff announcements." />
+<meta name="description" content="Describe an integration in plain language and your AI assistant builds and publishes it as a real poly package." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Poly" />
-<meta property="og:title" content="Notifications · Poly" />
-<meta property="og:description" content="Your Poly notifications: follows, friend requests, downloads, and staff announcements." />
+<meta property="og:title" content="Integrations · Poly" />
+<meta property="og:description" content="Describe an integration in plain language and your AI assistant builds and publishes it as a real poly package." />
 <meta property="og:image" content="https://poly.candygate.eu/logo.png" />
-<meta property="og:url" content="https://poly.candygate.eu/notifications.html" />
+<meta property="og:url" content="https://poly.candygate.eu/integrations.html" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Notifications · Poly" />
-<meta name="twitter:description" content="Your Poly notifications: follows, friend requests, downloads, and staff announcements." />
+<meta name="twitter:title" content="Integrations · Poly" />
+<meta name="twitter:description" content="Describe an integration in plain language and your AI assistant builds and publishes it as a real poly package." />
 <meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
-<meta name="robots" content="noindex, nofollow" />
 <style>
   :root {
     --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
@@ -24,7 +23,7 @@
     --danger: #e0664a; --ok: #6fbf8b;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --container: 720px;
+    --container: 860px;
     color-scheme: dark;
   }
   :root[data-theme="light"] {
@@ -44,7 +43,7 @@
   body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
 
@@ -55,6 +54,7 @@
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover { color: var(--accent); }
+  nav.top-links a.current { color: var(--accent); }
 
   .nav-toggle {
     display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
@@ -134,7 +134,67 @@
   .user-menu-item:hover { background: var(--ink); }
   .user-menu-item.danger { color: var(--danger); }
 
+  main { padding: clamp(2.5rem, 6vw, 4rem) 0 5rem; }
+
+  .hero { margin-bottom: 3rem; max-width: 62ch; }
+  .eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem; }
+  .hero h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 0.9rem; line-height: 1.2; }
+  .hero p { color: var(--text-dim); font-size: 1.02rem; margin: 0; }
+  .hero code { font-family: var(--mono); background: var(--ink-raised); border: 1px solid var(--border); border-radius: 4px; padding: 0.1rem 0.4rem; }
+
+  .panel { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 12px; padding: clamp(1.5rem, 4vw, 2rem); margin-bottom: 3rem; }
+  .panel h2 { font-size: 1.1rem; margin: 0 0 1.1rem; }
+  .field { margin-bottom: 1.1rem; }
+  .field label { display: block; font-size: 0.82rem; color: var(--text-dim); margin-bottom: 0.4rem; font-family: var(--mono); }
+  .field textarea, .field input[type="text"] {
+    width: 100%; padding: 0.7rem 0.85rem; background: var(--ink); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: var(--sans); font-size: 0.95rem; resize: vertical;
+  }
+  .field textarea { min-height: 110px; line-height: 1.5; }
+  .char-count { text-align: right; font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem; }
+
+  .btn { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; padding: 0.75rem 1.4rem; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .btn:hover { opacity: 0.9; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn.secondary { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn.secondary:hover { border-color: var(--accent); opacity: 1; }
+
+  .status { font-size: 0.88rem; margin-top: 1rem; display: none; }
+  .status.show { display: block; }
+  .status.ok { color: var(--ok); }
+  .status.error { color: var(--danger); }
+
+  .result-box { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: none; }
+  .result-box.show { display: block; }
+  .result-box .label { font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .prompt-box {
+    font-family: var(--mono); font-size: 0.82rem; white-space: pre-wrap; background: var(--ink);
+    border: 1px solid var(--border); border-radius: 8px; padding: 1rem; max-height: 260px; overflow-y: auto; margin-bottom: 1rem;
+  }
+  .result-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+  .signedout-note { color: var(--text-dim); font-size: 0.95rem; }
+  .signedout-note a { color: var(--accent); }
+
+  .library-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .library-head h2 { font-size: 1.2rem; margin: 0; }
+  .library-empty { color: var(--text-dim); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+  .int-card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .int-card .int-name { font-family: var(--mono); font-weight: 700; font-size: 1rem; }
+  .int-card .int-desc { color: var(--text-dim); font-size: 0.85rem; flex: 1; }
+  .int-card .int-meta { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-dim); }
+  .int-card .avatar { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; background: var(--ink); }
+  .int-card .install { font-family: var(--mono); font-size: 0.72rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; padding: 0.45rem 0.6rem; overflow-x: auto; white-space: nowrap; }
+
   footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
 
   .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
   .cookie-banner.show { display: block; }
@@ -145,54 +205,6 @@
   .cookie-actions a:hover { color: var(--accent); }
   .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
   .cookie-actions button:hover { opacity: 0.9; }
-  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
-  footer.site-footer .footer-brand a:hover { color: var(--accent); }
-  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
-  footer.site-footer .footer-links a { color: var(--text-dim); }
-  footer.site-footer .footer-links a:hover { color: var(--accent); }
-
-  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
-
-  .page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
-  .page-title { font-family: var(--mono); font-weight: 700; font-size: 1.6rem; }
-  .page-mark-all { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; }
-
-  [data-view] { display: none; }
-  [data-view].active { display: block; }
-
-  .empty-note { color: var(--text-dim); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
-
-  .n-full-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .n-row { display: block; background: var(--ink-raised); padding: 1rem 1.1rem; text-decoration: none; color: var(--text); cursor: pointer; position: relative; }
-  .n-row:hover { background: var(--ink); text-decoration: none; }
-  .n-row.unread::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
-  .n-row .n-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.25rem; }
-  .n-row .n-row-title { font-weight: 700; font-size: 0.95rem; }
-  .n-row .n-row-time { font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); flex-shrink: 0; }
-  .n-row .n-row-body { font-size: 0.85rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .n-row .n-row-type { display: inline-block; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); margin-top: 0.35rem; }
-
-  .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.75rem; display: inline-block; }
-
-  .detail-card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 12px; padding: clamp(1.5rem, 4vw, 2.25rem); }
-  .detail-type { display: inline-block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem 0.6rem; margin-bottom: 1rem; }
-  .detail-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.6rem; line-height: 1.35; }
-  .detail-meta { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.4rem; color: var(--text-dim); font-size: 0.85rem; }
-  .detail-from-avatar {
-    width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
-    background: var(--ink); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim);
-  }
-  .detail-from-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
-  .detail-from-name { color: var(--text); font-weight: 600; }
-  .detail-time { font-family: var(--mono); }
-  .detail-body { font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem; word-wrap: break-word; }
-  .detail-body p:first-child { margin-top: 0; }
-  .detail-body p:last-child { margin-bottom: 0; }
-  .detail-view-link { display: inline-block; padding: 0.6rem 1.1rem; background: var(--accent); color: var(--accent-ink); border-radius: 8px; font-weight: 700; font-size: 0.85rem; }
-  .detail-view-link:hover { text-decoration: none; opacity: 0.9; }
 </style>
 </head>
 <body>
@@ -204,7 +216,7 @@
       <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs.html" data-i18n="nav_docs">docs</a>
       <a href="community.html" data-i18n="nav_community">community</a>
-<a href="integrations.html" data-i18n="nav_integrations">integrations</a>
+      <a href="integrations.html" class="current" data-i18n="nav_integrations">integrations</a>
       <a href="account.html" data-i18n="nav_account">account</a>
     </nav>
     <div class="header-actions">
@@ -220,7 +232,7 @@
         <div class="notif-dropdown-head">
           <span class="title">Notifications</span>
           <div class="head-actions">
-            <a class="notif-see-all" href="notifications.html" data-i18n="see_all">See all</a>
+            <a class="notif-see-all" href="notifications.html">See all</a>
             <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
           </div>
         </div>
@@ -256,40 +268,53 @@
     var open = links.classList.toggle('open');
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  links.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    });
-  });
 })();
 </script>
 
 <main>
   <div class="wrap">
 
-    <div data-view="list">
-      <div class="page-head">
-        <span class="page-title" data-i18n="page_title">Notifications</span>
-        <button type="button" class="page-mark-all" id="page-mark-all" data-i18n="mark_all">Mark all read</button>
-      </div>
-      <div id="full-list"></div>
+    <div class="hero">
+      <p class="eyebrow" data-i18n="eyebrow">Integrations</p>
+      <h1 data-i18n="title">Describe it. Your AI assistant builds it.</h1>
+      <p data-i18n="lede">Connect an AI assistant to your Poly account once (via a personal access token — see <a href="docs.html#mcp">AI assistants</a>), then describe any integration in plain language here. It gets sent to your own assistant, which can search the registry, build a real CLI package, and publish it under <code>category: integration</code> — installable anywhere with <code>poly install community:&lt;name&gt;</code>.</p>
     </div>
 
-    <div data-view="detail">
-      <a href="notifications.html" class="back-link" data-i18n="back">← Back to notifications</a>
-      <div class="detail-card">
-        <span class="detail-type" id="detail-type"></span>
-        <h1 class="detail-title" id="detail-title"></h1>
-        <div class="detail-meta" id="detail-meta"></div>
-        <div class="detail-body" id="detail-body"></div>
-        <a class="detail-view-link" id="detail-view-link" href="#" style="display:none" data-i18n="view_link">View</a>
+    <div class="panel" id="request-panel">
+      <h2 data-i18n="form_title">Request an integration</h2>
+
+      <div id="signedout-note" class="signedout-note" data-i18n="signin_required" style="display:none">
+        Sign in to request an integration — <a href="account.html">go to account</a>.
+      </div>
+
+      <form id="request-form">
+        <div class="field">
+          <label for="prompt-input" data-i18n="field_prompt">What do you want to build?</label>
+          <textarea id="prompt-input" maxlength="4000" placeholder="e.g. An Alexa skill that reads out the download count of my published package every morning."></textarea>
+          <div class="char-count"><span id="prompt-count">0</span>/4000</div>
+        </div>
+        <div class="field">
+          <label for="name-input" data-i18n="field_name">Package name (optional)</label>
+          <input type="text" id="name-input" placeholder="alexa-download-report" />
+        </div>
+        <button type="submit" class="btn" id="submit-btn" data-i18n="submit_btn">Send to my AI assistant</button>
+        <p class="status" id="request-status"></p>
+      </form>
+
+      <div class="result-box" id="result-box">
+        <p class="label" data-i18n="result_label">Prompt for your assistant</p>
+        <div class="prompt-box" id="prompt-output"></div>
+        <div class="result-actions">
+          <a class="btn" id="open-claude-link" href="#" target="_blank" rel="noopener" data-i18n="open_claude">Open in Claude.ai →</a>
+          <button type="button" class="btn secondary" id="copy-prompt-btn" data-i18n="copy_btn">Copy prompt</button>
+        </div>
       </div>
     </div>
 
-    <div data-view="signedout">
-      <p class="empty-note" data-i18n="signin_required">Sign in to see your notifications.</p>
+    <div class="library-head">
+      <h2 data-i18n="library_title">Published integrations</h2>
     </div>
+    <div id="library-grid"></div>
 
   </div>
 </main>
@@ -305,7 +330,16 @@
   </div>
 </footer>
 
-<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
   const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
@@ -314,50 +348,61 @@
 
   const I18N = {
     en: {
-      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
-      nav_integrations: "integrations",
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_integrations: "integrations", nav_account: "account",
+      eyebrow: "Integrations",
+      title: "Describe it. Your AI assistant builds it.",
+      lede: 'Connect an AI assistant to your Poly account once (via a personal access token — see <a href="docs.html#mcp">AI assistants</a>), then describe any integration in plain language here. It gets sent to your own assistant, which can search the registry, build a real CLI package, and publish it under <code>category: integration</code> — installable anywhere with <code>poly install community:&lt;name&gt;</code>.',
+      form_title: "Request an integration",
+      signin_required: 'Sign in to request an integration — <a href="account.html">go to account</a>.',
+      field_prompt: "What do you want to build?",
+      field_name: "Package name (optional)",
+      submit_btn: "Send to my AI assistant",
+      result_label: "Prompt for your assistant",
+      open_claude: "Open in Claude.ai →",
+      copy_btn: "Copy prompt",
+      copied_ok: "Copied ✓",
+      library_title: "Published integrations",
+      library_empty: "No integrations published yet — be the first to request one.",
+      err_too_short: "Describe what you want in a bit more detail (at least 10 characters).",
+      err_generic: "Something went wrong. Try again.",
+      submitted_ok: "Request saved. Prompt ready below.",
+      published_by: "by",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
-      see_all: "See all",
-      page_title: "Notifications",
-      mark_all: "Mark all read",
-      back: "← Back to notifications",
-      view_link: "View →",
-      signin_required: "Sign in to see your notifications.",
-      empty: "No notifications yet.",
-      not_found: "Notification not found.",
-      type_follow: "Follow", type_download: "Download", type_friend_request: "Friend request",
-      type_friend_accept: "Friend accepted", type_staff_broadcast: "Staff announcement",
-      type_admin_message: "Message from admin", type_system: "System",
     },
     fr: {
-      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
-      nav_integrations: "intégrations",
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_integrations: "intégrations", nav_account: "compte",
+      eyebrow: "Intégrations",
+      title: "Décris-la. Ton assistant IA la construit.",
+      lede: 'Connecte un assistant IA à ton compte Poly une seule fois (via un token d\'accès personnel — voir <a href="docs.html#mcp">Assistants IA</a>), puis décris n\'importe quelle intégration en langage simple ici. Ça part vers ton propre assistant, qui peut chercher dans le registre, construire un vrai paquet CLI, et le publier avec <code>category: integration</code> — installable partout avec <code>poly install community:&lt;nom&gt;</code>.',
+      form_title: "Demander une intégration",
+      signin_required: 'Connecte-toi pour demander une intégration — <a href="account.html">aller au compte</a>.',
+      field_prompt: "Qu'est-ce que tu veux construire ?",
+      field_name: "Nom du paquet (optionnel)",
+      submit_btn: "Envoyer à mon assistant IA",
+      result_label: "Prompt pour ton assistant",
+      open_claude: "Ouvrir dans Claude.ai →",
+      copy_btn: "Copier le prompt",
+      copied_ok: "Copié ✓",
+      library_title: "Intégrations publiées",
+      library_empty: "Aucune intégration publiée pour l'instant — sois le premier à en demander une.",
+      err_too_short: "Décris ce que tu veux avec un peu plus de détails (au moins 10 caractères).",
+      err_generic: "Un problème est survenu. Réessaie.",
+      submitted_ok: "Demande enregistrée. Le prompt est prêt ci-dessous.",
+      published_by: "par",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
-      see_all: "Tout voir",
-      page_title: "Notifications",
-      mark_all: "Tout marquer comme lu",
-      back: "← Retour aux notifications",
-      view_link: "Voir →",
-      signin_required: "Connecte-toi pour voir tes notifications.",
-      empty: "Aucune notification pour l'instant.",
-      not_found: "Notification introuvable.",
-      type_follow: "Abonnement", type_download: "Téléchargement", type_friend_request: "Demande d'ami",
-      type_friend_accept: "Ami accepté", type_staff_broadcast: "Annonce du staff",
-      type_admin_message: "Message de l'admin", type_system: "Système",
     }
   };
 
   function lang() { return document.documentElement.lang || 'en'; }
   function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
-
   function applyLanguage(l) {
     if (!I18N[l]) l = 'en';
     document.documentElement.lang = l;
     document.querySelectorAll('[data-i18n]').forEach((node) => {
       const key = node.getAttribute('data-i18n');
-      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+      if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
     });
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
   }
@@ -367,102 +412,100 @@
     div.textContent = s == null ? '' : String(s);
     return div.innerHTML;
   }
-  function timeAgo(iso) {
-    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (diff < 60) return 'now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-    return Math.floor(diff / 86400) + 'd';
-  }
-  function typeLabel(type) {
-    return t('type_' + type) !== 'type_' + type ? t('type_' + type) : type;
-  }
-  function showView(name) {
-    document.querySelectorAll('[data-view]').forEach((el) => el.classList.toggle('active', el.getAttribute('data-view') === name));
+
+  function buildPrompt(description, nameHint) {
+    let p = `I'm using Poly (a CLI package manager) through its MCP connector, which you should already have access to. Using the poly MCP tools, please build and publish a new package that does the following:\n\n"${description}"\n\n`;
+    if (nameHint) p += `Suggested package name: ${nameHint}\n\n`;
+    p += `Steps:\n1. Use search_packages / search_dependencies to check whether a similar package or name already exists.\n2. Write it as a single runnable CLI script or small binary (per publish_package's own guidance) — not a web app.\n3. Publish it with publish_package, setting category to "integration".\n4. Reply with the exact "poly install community:<name>" command so I can install it.`;
+    return p;
   }
 
-  const notifId = new URLSearchParams(window.location.search).get('id');
-
-  async function loadFullList() {
-    const { data } = await supabase.from('notifications')
-      .select('id, type, title, body_html, link_url, is_service, created_at, read_at')
-      .order('created_at', { ascending: false })
-      .limit(100);
-    const rows = data || [];
-    const container = document.getElementById('full-list');
-    if (!rows.length) {
-      container.innerHTML = `<div style="text-align:center"><lottie-player src="lottie/empty-bell.json" background="transparent" speed="1" style="width:110px;height:110px;margin:0 auto" loop autoplay></lottie-player><p class="empty-note">${t('empty')}</p></div>`;
-      return;
-    }
-    container.innerHTML = `<div class="n-full-list">${rows.map((n) => `
-      <a class="n-row ${n.read_at ? '' : 'unread'}" href="notifications.html?id=${encodeURIComponent(n.id)}">
-        <div class="n-row-top">
-          <span class="n-row-title">${escapeHtml(n.title)}</span>
-          <span class="n-row-time">${timeAgo(n.created_at)}</span>
-        </div>
-        ${n.body_html ? `<div class="n-row-body">${n.body_html}</div>` : ''}
-        <div class="n-row-type">${escapeHtml(typeLabel(n.type))}</div>
-      </a>
-    `).join('')}</div>`;
-  }
-
-  document.getElementById('page-mark-all').addEventListener('click', async () => {
-    await supabase.rpc('mark_all_notifications_read');
-    loadFullList();
+  document.getElementById('prompt-input').addEventListener('input', (e) => {
+    document.getElementById('prompt-count').textContent = String(e.target.value.length);
   });
 
-  async function loadDetail(id) {
-    const { data: rows } = await supabase.from('notifications')
-      .select('id, type, title, body_html, link_url, from_user_id, created_at, read_at')
-      .eq('id', id)
-      .limit(1);
-    const n = rows && rows[0];
-    if (!n) {
-      document.getElementById('detail-title').textContent = t('not_found');
-      document.getElementById('detail-type').style.display = 'none';
-      document.getElementById('detail-meta').innerHTML = '';
-      document.getElementById('detail-body').innerHTML = '';
-      showView('detail');
+  let currentUserId = null;
+
+  document.getElementById('request-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const statusEl = document.getElementById('request-status');
+    statusEl.className = 'status';
+
+    if (!currentUserId) { statusEl.textContent = t('signin_required').replace(/<[^>]+>/g, ''); statusEl.className = 'status show error'; return; }
+
+    const promptText = document.getElementById('prompt-input').value.trim();
+    const nameHint = document.getElementById('name-input').value.trim();
+
+    if (promptText.length < 10) {
+      statusEl.textContent = t('err_too_short');
+      statusEl.className = 'status show error';
       return;
     }
 
-    if (!n.read_at) await supabase.rpc('mark_notification_read', { p_id: n.id });
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    const { error } = await supabase.rpc('submit_integration_request', { p_prompt: promptText, p_name_hint: nameHint || null });
+    btn.disabled = false;
 
-    document.getElementById('detail-type').textContent = typeLabel(n.type);
-    document.getElementById('detail-type').style.display = 'inline-block';
-    document.getElementById('detail-title').textContent = n.title;
-    document.getElementById('detail-body').innerHTML = n.body_html || '';
-
-    const metaEl = document.getElementById('detail-meta');
-    const dateStr = new Date(n.created_at).toLocaleString(lang() === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
-    metaEl.innerHTML = `<span class="detail-time">${escapeHtml(dateStr)}</span>`;
-
-    if (n.from_user_id) {
-      const { data: fromProf } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', n.from_user_id).maybeSingle();
-      if (fromProf) {
-        const avatarHtml = fromProf.avatar_url
-          ? `<img src="${escapeHtml(fromProf.avatar_url)}" alt="">`
-          : escapeHtml((fromProf.username || '?').charAt(0).toUpperCase());
-        metaEl.innerHTML = `
-          <a href="profile.html?u=${encodeURIComponent(fromProf.username)}" class="detail-from-avatar">${avatarHtml}</a>
-          <a href="profile.html?u=${encodeURIComponent(fromProf.username)}" class="detail-from-name">@${escapeHtml(fromProf.username)}</a>
-          <span>·</span>
-          <span class="detail-time">${escapeHtml(dateStr)}</span>
-        `;
-      }
+    if (error) {
+      statusEl.textContent = error.message || t('err_generic');
+      statusEl.className = 'status show error';
+      return;
     }
 
-    const viewLink = document.getElementById('detail-view-link');
-    if (n.link_url) { viewLink.href = n.link_url; viewLink.style.display = 'inline-block'; }
-    else { viewLink.style.display = 'none'; }
+    statusEl.textContent = t('submitted_ok');
+    statusEl.className = 'status show ok';
 
-    showView('detail');
+    const fullPrompt = buildPrompt(promptText, nameHint);
+    document.getElementById('prompt-output').textContent = fullPrompt;
+    document.getElementById('open-claude-link').href = 'https://claude.ai/new?q=' + encodeURIComponent(fullPrompt);
+    document.getElementById('result-box').classList.add('show');
+    window.open('https://claude.ai/new?q=' + encodeURIComponent(fullPrompt), '_blank', 'noopener');
+  });
+
+  document.getElementById('copy-prompt-btn').addEventListener('click', () => {
+    const text = document.getElementById('prompt-output').textContent;
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-prompt-btn');
+      const original = btn.textContent;
+      btn.textContent = t('copied_ok');
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    });
+  });
+
+  function avatarHtml(url) {
+    if (url) return `<img class="avatar" src="${escapeHtml(url)}" alt="">`;
+    return '<span class="avatar"></span>';
+  }
+
+  async function loadLibrary() {
+    const { data } = await supabase
+      .from('community_packages_public')
+      .select('name, version, description, download_count, uploader_username, uploader_avatar_url')
+      .eq('category', 'integration')
+      .order('download_count', { ascending: false })
+      .limit(60);
+
+    const grid = document.getElementById('library-grid');
+    if (!data || !data.length) {
+      grid.innerHTML = `<p class="library-empty">${t('library_empty')}</p>`;
+      return;
+    }
+
+    grid.innerHTML = `<div class="grid">${data.map((p) => `
+      <div class="int-card">
+        <span class="int-name">${escapeHtml(p.name)}</span>
+        <span class="int-desc">${escapeHtml(p.description || '')}</span>
+        <span class="int-meta">${avatarHtml(p.uploader_avatar_url)} ${t('published_by')} <a href="profile.html?u=${encodeURIComponent(p.uploader_username)}">@${escapeHtml(p.uploader_username)}</a> · ${p.download_count} ↓</span>
+        <span class="install">poly install community:${escapeHtml(p.name)}</span>
+      </div>
+    `).join('')}</div>`;
   }
 
   async function renderUserMenu(session) {
     const menu = document.getElementById('user-menu');
     if (!session) { menu.style.display = 'none'; return; }
-
     const { data } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', session.user.id).single();
     const avatarSlot = document.getElementById('user-menu-avatar');
     if (data && data.avatar_url) {
@@ -499,6 +542,13 @@
   const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
   let notifCache = [];
   let notifPollInterval = null;
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+    return Math.floor(diff / 86400) + 'd';
+  }
   async function loadNotifications() {
     const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
     notifCache = data || [];
@@ -532,7 +582,6 @@
   document.getElementById('notif-mark-all').addEventListener('click', async () => {
     await supabase.rpc('mark_all_notifications_read');
     loadNotifications();
-    if (!notifId) loadFullList();
   });
   document.getElementById('notif-staff-send').addEventListener('click', async () => {
     const input = document.getElementById('notif-staff-input');
@@ -553,50 +602,32 @@
     notifPollInterval = setInterval(loadNotifications, 60000);
   }
 
-  async function initPage(session) {
-    if (!session) { showView('signedout'); return; }
-    if (notifId) await loadDetail(notifId);
-    else { showView('list'); await loadFullList(); }
+  function updateSignedInState(session) {
+    currentUserId = session ? session.user.id : null;
+    document.getElementById('signedout-note').style.display = session ? 'none' : 'block';
+    document.getElementById('submit-btn').style.display = session ? 'inline-flex' : 'none';
   }
 
   let saved = null;
   try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
   const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
   applyLanguage(saved || browserLang);
+  loadLibrary();
 
-  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); });
-  supabase.auth.getSession().then(({ data }) => {
-    renderUserMenu(data.session);
-    checkBan(data.session);
-    initNotifBell(data.session);
-    initPage(data.session);
-  });
-</script>
+  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); updateSignedInState(session); });
+  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); updateSignedInState(data.session); });
 
-<div class="cookie-banner" id="cookie-banner">
-  <div class="wrap cookie-banner-inner">
-    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
-    <div class="cookie-actions">
-      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
-      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
-    </div>
-  </div>
-</div>
-
-<script>
-(function () {
-  var KEY = 'poly-cookie-notice-dismissed';
-  var banner = document.getElementById('cookie-banner');
-  if (!banner) return;
-  var dismissed = false;
-  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
-  if (!dismissed) banner.classList.add('show');
-  var btn = document.getElementById('cookie-dismiss');
-  if (btn) btn.addEventListener('click', function () {
-    banner.classList.remove('show');
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
-  });
-})();
+  (function () {
+    var KEY = 'poly-cookie-notice-dismissed';
+    var banner = document.getElementById('cookie-banner');
+    var dismissed = false;
+    try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+    if (!dismissed) banner.classList.add('show');
+    document.getElementById('cookie-dismiss').addEventListener('click', function () {
+      banner.classList.remove('show');
+      try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    });
+  })();
 </script>
 
 </body>

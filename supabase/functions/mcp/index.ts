@@ -96,7 +96,9 @@ const TOOLS = [
       "`poly install community:<name>` -- e.g. a shell script that prints something, generates a " +
       "password, rolls a die, converts a file, etc. Do NOT build an HTML/CSS/JS web app, a styled " +
       "page, or anything meant to be opened in a browser -- that isn't installable or runnable via " +
-      "poly and isn't what this registry is for. Keep it simple: a short script is the norm.",
+      "poly and isn't what this registry is for. Keep it simple: a short script is the norm.\n\n" +
+      "If this is fulfilling a request submitted on poly.candygate.eu/integrations.html, set " +
+      "category to \"integration\" so it's listed in the site's Integrations library.",
     inputSchema: {
       type: "object",
       properties: {
@@ -105,6 +107,7 @@ const TOOLS = [
         description: { type: "string", description: "Short description shown in search results" },
         file_base64: { type: "string", description: "Base64-encoded file contents (max ~37MB base64, 50MB decoded) -- a script or small binary, not an HTML app" },
         file_name: { type: "string", description: "Original file name, used only to infer an extension" },
+        category: { type: "string", description: "Optional. Set to \"integration\" if this fulfills a poly.candygate.eu/integrations.html request, so it's listed there." },
       },
       required: ["name", "version", "file_base64"],
       additionalProperties: false,
@@ -552,6 +555,7 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
           p_sha256: sha256Hex,
           p_size_bytes: bytes.length,
           p_description: description,
+          p_category: args.category ? String(args.category) : null,
         });
       } catch (e) {
         return toolText(`Publish failed: ${(e as Error).message}`, true);
