@@ -11,6 +11,7 @@
   :root {
     --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
     --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
+    --danger: #e0664a;
     --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color-scheme: dark;
@@ -31,25 +32,83 @@
   html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
   body {
     min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 2rem;
+    padding: 2rem; position: relative; overflow-x: hidden;
   }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.3rem; margin-bottom: 2.5rem; color: var(--text); }
+
+  .glow {
+    position: fixed; top: 50%; left: 50%; width: 900px; height: 900px;
+    background: radial-gradient(circle, rgba(240, 169, 62, 0.16) 0%, rgba(240, 169, 62, 0) 62%);
+    transform: translate(-50%, -50%); pointer-events: none; z-index: 0;
+  }
+  :root[data-theme="light"] .glow { background: radial-gradient(circle, rgba(168, 102, 10, 0.10) 0%, rgba(168, 102, 10, 0) 62%); }
+
+  .content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; margin-bottom: 2rem; color: var(--text); }
   .wordmark span { color: var(--accent); }
-  .code { font-family: var(--mono); font-size: 5rem; font-weight: 700; color: var(--accent); line-height: 1; margin: 0.5rem 0 1rem; }
-  .msg { font-size: 1.1rem; color: var(--text-dim); margin: 0 0 2rem; max-width: 40ch; }
-  .prompt { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.2rem; margin-bottom: 2rem; }
-  .home-link { font-family: var(--mono); font-size: 0.9rem; }
+
+  .term {
+    width: 100%; max-width: 460px; background: var(--ink-raised); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] .term { box-shadow: 0 20px 50px rgba(20,23,29,0.14); }
+
+  .term-bar { display: flex; align-items: center; gap: 0.4rem; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
+  .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .term-dot.red { background: #ec6a5e; }
+  .term-dot.yellow { background: #f4bf4f; }
+  .term-dot.green { background: #61c454; }
+  .term-title { flex: 1; text-align: center; font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); margin-right: 2.4rem; }
+
+  .term-body { padding: 1.4rem 1.3rem 1.6rem; font-family: var(--mono); font-size: 0.86rem; line-height: 1.75; text-align: left; }
+  .term-line { opacity: 0; animation: term-in 0.4s ease forwards; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .term-line.cmd::before { content: "$ "; color: var(--text-dim); }
+  .term-line.err { color: var(--danger); }
+  .term-line.dim { color: var(--text-dim); }
+  .term-line:nth-child(1) { animation-delay: 0.05s; }
+  .term-line:nth-child(2) { animation-delay: 0.35s; }
+  .term-line:nth-child(3) { animation-delay: 0.6s; }
+  .term-line:nth-child(4) { animation-delay: 0.85s; }
+  @keyframes term-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .term-line { animation: none; opacity: 1; }
+  }
+
+  .term-anim { display: flex; justify-content: center; margin: 0.3rem 0 0.1rem; }
+
+  .cursor { display: inline-block; width: 7px; height: 1em; background: var(--accent); vertical-align: text-bottom; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .home-btn {
+    margin-top: 1.75rem; font-family: var(--mono); font-size: 0.85rem; font-weight: 700;
+    color: var(--accent-ink); background: var(--accent); border: 1px solid var(--accent);
+    border-radius: 8px; padding: 0.7rem 1.4rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .home-btn:hover { opacity: 0.9; text-decoration: none; }
 </style>
 </head>
 <body>
-  <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
-  <lottie-player src="lottie/404-lost.json" background="transparent" speed="1" style="width:140px;height:140px" loop autoplay></lottie-player>
-  <p class="code">404</p>
-  <p class="msg" data-i18n="msg">This page doesn't exist, or moved.</p>
-  <p class="prompt">$ poly search &lt;this-page&gt;<br>no matches found</p>
-  <a href="index.html" class="home-link" data-i18n="home">← Back to poly.candygate.eu</a>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="content">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span>
+        <span class="term-title">poly — zsh</span>
+      </div>
+      <div class="term-body">
+        <p class="term-line cmd" id="term-cmd">poly install page:/</p>
+        <div class="term-anim">
+          <lottie-player src="lottie/404-lost.json" background="transparent" speed="1" style="width:110px;height:110px" loop autoplay></lottie-player>
+        </div>
+        <p class="term-line err">✗ 404 Not Found</p>
+        <p class="term-line dim" data-i18n="msg">This page doesn't exist, or moved.<span class="cursor"></span></p>
+      </div>
+    </div>
+
+    <a href="index.html" class="home-btn" data-i18n="home">← Back to poly.candygate.eu</a>
+  </div>
 
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <script>
@@ -64,8 +123,11 @@
     document.documentElement.lang = l;
     document.querySelectorAll('[data-i18n]').forEach((node) => {
       const key = node.getAttribute('data-i18n');
-      if (I18N[l][key]) node.textContent = I18N[l][key];
+      if (I18N[l][key]) node.firstChild.textContent = I18N[l][key];
     });
+
+    const path = window.location.pathname.replace(/^\//, '') || 'unknown';
+    document.getElementById('term-cmd').textContent = 'poly install page:/' + path.slice(0, 40);
   </script>
 </body>
 </html>
