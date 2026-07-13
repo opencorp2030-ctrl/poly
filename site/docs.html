@@ -11,7 +11,7 @@
 <meta property="og:title" content="Docs · Poly" />
 <meta property="og:description" content="Full command reference, adapter details, poly.json and tap formula formats for Poly." />
 <meta property="og:image" content="https://poly.candygate.eu/logo.png" />
-<meta property="og:url" content="https://poly.candygate.eu/docs.html" />
+<meta property="og:url" content="https://poly.candygate.eu/docs" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Docs · Poly" />
 <meta name="twitter:description" content="Full command reference, adapter details, poly.json and tap formula formats for Poly." />
@@ -219,14 +219,14 @@
 
 <header class="top">
   <div class="wrap">
-    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <a href="/" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links" id="top-links">
-      <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
-      <a href="docs.html" class="current" data-i18n="nav_docs">docs</a>
-      <a href="index.html#pro" data-i18n="nav_pro">pro</a>
-      <a href="community.html" data-i18n="nav_community">community</a>
-<a href="integrations.html" data-i18n="nav_integrations">integrations</a>
-      <a href="account.html" data-i18n="nav_account">account</a>
+      <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs" class="current" data-i18n="nav_docs">docs</a>
+      <a href="/#pro" data-i18n="nav_pro">pro</a>
+      <a href="community" data-i18n="nav_community">community</a>
+<a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="account" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
     <div class="header-actions">
@@ -242,7 +242,7 @@
         <div class="notif-dropdown-head">
           <span class="title">Notifications</span>
           <div class="head-actions">
-            <a class="notif-see-all" href="notifications.html">See all</a>
+            <a class="notif-see-all" href="notifications">See all</a>
             <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
           </div>
         </div>
@@ -259,9 +259,9 @@
       </button>
       <div class="user-menu-dropdown" id="user-menu-dropdown">
         <div class="user-menu-name" id="user-menu-name">…</div>
-        <a href="account.html" class="user-menu-item">Account</a>
-        <a href="community.html" class="user-menu-item">Community</a>
-        <a href="docs.html" class="user-menu-item">Docs</a>
+        <a href="account" class="user-menu-item">Account</a>
+        <a href="community" class="user-menu-item">Community</a>
+        <a href="docs" class="user-menu-item">Docs</a>
         <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
       </div>
     </div>
@@ -300,14 +300,14 @@
     <a href="#mcp" data-i18n="toc_mcp">AI assistants</a>
     <a href="#pro" data-i18n="toc_pro">Pro</a>
     <a href="#faq" data-i18n="toc_faq">FAQ</a>
-    <a href="dependencies.html" data-i18n="toc_deps">Search dependencies</a>
+    <a href="dependencies" data-i18n="toc_deps">Search dependencies</a>
     <a href="llms.txt" data-i18n="toc_llms">llms.txt</a>
   </nav>
 
   <main>
     <p class="eyebrow" style="font-family:var(--mono);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin:0 0 0.75rem" data-i18n="eyebrow">Documentation</p>
     <h1 data-i18n="title">Everything poly does</h1>
-    <p class="lede" data-i18n="lede">The full reference. For the pitch, see the <a href="index.html">homepage</a>.</p>
+    <p class="lede" data-i18n="lede">The full reference. For the pitch, see the <a href="/">homepage</a>.</p>
 
     <section class="doc-section" id="commands">
       <h2 data-i18n="commands_h">Commands</h2>
@@ -408,7 +408,7 @@ artifacts:
 poly send hello-world 1.0.0 ./dist/hello-world --description "a demo tool"
 <span class="comment"># anyone can now run:</span>
 poly install community:hello-world</div>
-      <p data-i18n="registry_p2">Names are first-come-first-served, like npm: only the account that first published a name can push a new version over it. Community packages are <strong>never auto-detected</strong>: they're only found via the explicit <code>community:</code> prefix, in <code>poly search</code>, <code>poly install</code>, and on the <a href="dependencies.html">dependencies page</a>. This is deliberate. Without it, anyone could publish a package literally named <code>requests</code> or <code>ripgrep</code> and have it silently shadow the real one for someone who typed a plain <code>poly install requests</code>.</p>
+      <p data-i18n="registry_p2">Names are first-come-first-served, like npm: only the account that first published a name can push a new version over it. Community packages are <strong>never auto-detected</strong>: they're only found via the explicit <code>community:</code> prefix, in <code>poly search</code>, <code>poly install</code>, and on the <a href="dependencies">dependencies page</a>. This is deliberate. Without it, anyone could publish a package literally named <code>requests</code> or <code>ripgrep</code> and have it silently shadow the real one for someone who typed a plain <code>poly install requests</code>.</p>
       <p class="note-box" data-i18n="registry_note">There is no malware scanning. The SHA-256 recorded at publish time is verified at install time: that protects against corruption or tampering in transit, not against a malicious uploader. Only install community packages you trust.</p>
     </section>
 
@@ -422,7 +422,7 @@ poly install community:hello-world</div>
       </ol>
       <div class="code-block">https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp</div>
       <ol class="doc-steps" start="2">
-        <li data-i18n="mcp_ui_step2">Connecting opens a Poly-branded page asking for a personal access token. Generate one on <a href="account.html">your account page</a>, under "AI assistants (MCP)" (shown once, copy it immediately), paste it there, and authorize.</li>
+        <li data-i18n="mcp_ui_step2">Connecting opens a Poly-branded page asking for a personal access token. Generate one on <a href="account">your account page</a>, under "AI assistants (MCP)" (shown once, copy it immediately), paste it there, and authorize.</li>
       </ol>
       <p data-i18n="mcp_ui_note">This uses standard OAuth with Dynamic Client Registration under the hood. The token you paste becomes what the assistant holds, so revoking it on your account page still breaks the connection everywhere, immediately.</p>
 
@@ -441,16 +441,16 @@ poly install community:hello-world</div>
         <tbody>
           <tr><td><code>whoami</code></td><td data-i18n="mcp_tool_whoami">Confirms which account the token belongs to.</td></tr>
           <tr><td><code>search_packages</code></td><td data-i18n="mcp_tool_search">Searches the community registry: useful for checking a name is free before publishing.</td></tr>
-          <tr><td><code>search_dependencies</code></td><td data-i18n="mcp_tool_searchdeps">Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once. Mirrors dependencies.html.</td></tr>
-          <tr><td><code>get_package</code></td><td data-i18n="mcp_tool_getpackage">Full detail on one community package. Mirrors package.html.</td></tr>
+          <tr><td><code>search_dependencies</code></td><td data-i18n="mcp_tool_searchdeps">Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once. Mirrors dependencies.</td></tr>
+          <tr><td><code>get_package</code></td><td data-i18n="mcp_tool_getpackage">Full detail on one community package. Mirrors package.</td></tr>
           <tr><td><code>list_own_packages</code></td><td data-i18n="mcp_tool_list">Lists everything the token's account has already published.</td></tr>
-          <tr><td><code>publish_package</code></td><td data-i18n="mcp_tool_publish">Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>. Optional <code>category: "integration"</code> lists it on integrations.html.</td></tr>
-          <tr><td><code>search_members</code></td><td data-i18n="mcp_tool_searchmembers">Searches the community directory by username. Mirrors community.html.</td></tr>
-          <tr><td><code>get_profile</code></td><td data-i18n="mcp_tool_getprofile">A user's public profile and published packages. Mirrors profile.html.</td></tr>
+          <tr><td><code>publish_package</code></td><td data-i18n="mcp_tool_publish">Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>. Optional <code>category: "integration"</code> lists it on integrations.</td></tr>
+          <tr><td><code>search_members</code></td><td data-i18n="mcp_tool_searchmembers">Searches the community directory by username. Mirrors community.</td></tr>
+          <tr><td><code>get_profile</code></td><td data-i18n="mcp_tool_getprofile">A user's public profile and published packages. Mirrors profile.</td></tr>
           <tr><td><code>update_profile</code></td><td data-i18n="mcp_tool_updateprofile">Updates the token's own username and/or bio.</td></tr>
           <tr><td><code>update_avatar</code></td><td data-i18n="mcp_tool_updateavatar">Updates the token's own avatar image.</td></tr>
           <tr><td><code>delete_package</code></td><td data-i18n="mcp_tool_deletepackage">Permanently deletes a community package the token's account published. Cannot delete another account's package.</td></tr>
-          <tr><td><code>get_stats</code></td><td data-i18n="mcp_tool_getstats">Live public member/Pro counts, mirrors community.html.</td></tr>
+          <tr><td><code>get_stats</code></td><td data-i18n="mcp_tool_getstats">Live public member/Pro counts, mirrors community.</td></tr>
           <tr><td><code>follow_user</code></td><td data-i18n="mcp_tool_follow">Follows a user with the token's account.</td></tr>
           <tr><td><code>unfollow_user</code></td><td data-i18n="mcp_tool_unfollow">Unfollows a user.</td></tr>
           <tr><td><code>list_followers</code></td><td data-i18n="mcp_tool_listfollowers">Lists a user's followers.</td></tr>
@@ -488,7 +488,7 @@ poly install community:hello-world</div>
 
     <section class="doc-section" id="pro">
       <h2 data-i18n="pro_h">Poly Pro</h2>
-      <p data-i18n="pro_p">Poly is and stays 100% free and open source. The built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:</p>
+      <p data-i18n="pro_p">Poly is and stays 100% free and open source. The built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account">your account page</a>) unlocks:</p>
       <ul class="plain">
         <li data-i18n="pro_li1">Concurrent installs when you name more than one package at once.</li>
         <li data-i18n="pro_li2">Automatic background package upgrades (see above), instead of only on demand.</li>
@@ -528,8 +528,8 @@ poly install community:hello-world</div>
   <div class="wrap">
     <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
     <nav class="footer-links">
-      <a href="terms.html" data-i18n="footer_terms">Terms</a>
-      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="terms" data-i18n="footer_terms">Terms</a>
+      <a href="privacy" data-i18n="footer_privacy">Privacy</a>
       <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
     </nav>
   </div>
@@ -548,7 +548,7 @@ poly install community:hello-world</div>
       toc_lockfile: "poly.json", toc_taps: "Tap formulas", toc_autoupdate: "Auto-update", toc_registry: "Publishing", toc_mcp: "AI assistants", toc_pro: "Pro", toc_faq: "FAQ", toc_deps: "Search dependencies", toc_llms: "llms.txt",
       nav_dependencies: "dependencies",
       eyebrow: "Documentation", title: "Everything poly does",
-      lede: 'The full reference. For the pitch, see the <a href="index.html">homepage</a>.',
+      lede: 'The full reference. For the pitch, see the <a href="/">homepage</a>.',
       commands_h: "Commands", th_command: "Command", th_does: "Does",
       cmd_install: 'Install one or more packages, auto-routed across adapters or forced with a prefix. Multiple names install sequentially (free) or concurrently (Pro). No arguments installs everything listed in <code>./poly.json</code>.',
       cmd_remove: "Uninstall, via whichever adapter poly recorded as having installed it.",
@@ -589,30 +589,30 @@ poly install community:hello-world</div>
       au_p: 'Both log to <code>~/.poly/auto-update.log</code> so you can see what happened. Throttle state lives in <code>~/.poly/last-selfupdate-check</code> and <code>~/.poly/last-autoupgrade-check</code>.',
       registry_h: "Publishing your own package",
       registry_p: '<code>poly send name version path</code> uploads a file or directory (auto-archived) to Poly\'s community registry under your account. <code>path</code> must contain (or be) a file named exactly <code>name</code>: that\'s what gets installed.',
-      registry_p2: 'Names are first-come-first-served, like npm: only the account that first published a name can push a new version over it. Community packages are <strong>never auto-detected</strong>: they\'re only found via the explicit <code>community:</code> prefix, in <code>poly search</code>, <code>poly install</code>, and on the <a href="dependencies.html">dependencies page</a>. This is deliberate. Without it, anyone could publish a package literally named <code>requests</code> or <code>ripgrep</code> and have it silently shadow the real one for someone who typed a plain <code>poly install requests</code>.',
+      registry_p2: 'Names are first-come-first-served, like npm: only the account that first published a name can push a new version over it. Community packages are <strong>never auto-detected</strong>: they\'re only found via the explicit <code>community:</code> prefix, in <code>poly search</code>, <code>poly install</code>, and on the <a href="dependencies">dependencies page</a>. This is deliberate. Without it, anyone could publish a package literally named <code>requests</code> or <code>ripgrep</code> and have it silently shadow the real one for someone who typed a plain <code>poly install requests</code>.',
       registry_note: 'There is no malware scanning. The SHA-256 recorded at publish time is verified at install time: that protects against corruption or tampering in transit, not against a malicious uploader. Only install community packages you trust.',
       mcp_h: "AI assistants (MCP)",
       mcp_p: 'Poly runs a remote <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> server (Streamable HTTP, hosted as a Supabase Edge Function, no separate infrastructure) so Claude, ChatGPT, or any MCP-compatible assistant can search, browse, and publish to the community registry as you. It authenticates with a personal access token, never your email or password, and the token is scoped and revocable at any time.',
       mcp_h_ui: "Claude.ai / ChatGPT (Add custom connector)",
       mcp_ui_step1: "In Settings → Connectors → Add custom connector, paste this URL, leave everything else blank:",
-      mcp_ui_step2: 'Connecting opens a Poly-branded page asking for a personal access token. Generate one on <a href="account.html">your account page</a>, under "AI assistants (MCP)" (shown once, copy it immediately), paste it there, and authorize.',
+      mcp_ui_step2: 'Connecting opens a Poly-branded page asking for a personal access token. Generate one on <a href="account">your account page</a>, under "AI assistants (MCP)" (shown once, copy it immediately), paste it there, and authorize.',
       mcp_ui_note: "This uses standard OAuth with Dynamic Client Registration under the hood. The token you paste becomes what the assistant holds, so revoking it on your account page still breaks the connection everywhere, immediately.",
       mcp_h_manual: "Claude Desktop / Claude Code (config file)",
-      mcp_step1: 'Generate a token on <a href="account.html">your account page</a>, under "AI assistants (MCP)". It\'s shown once, copy it immediately.',
+      mcp_step1: 'Generate a token on <a href="account">your account page</a>, under "AI assistants (MCP)". It\'s shown once, copy it immediately.',
       mcp_step2: 'Add a remote MCP connector pointing at the URL below, with the token as a bearer <code>Authorization</code> header.',
       mcp_p2: "That's the config format Claude Desktop and Claude Code use for remote connectors (Settings → Connectors → Add custom connector). ChatGPT's connector UI takes the same URL and header, though the exact menu location varies by plan and changes as OpenAI iterates on it.",
       mcp_tool_whoami: "Confirms which account the token belongs to.",
       mcp_tool_search: "Searches the community registry: useful for checking a name is free before publishing.",
-      mcp_tool_searchdeps: "Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once. Mirrors dependencies.html.",
-      mcp_tool_getpackage: "Full detail on one community package. Mirrors package.html.",
+      mcp_tool_searchdeps: "Searches pip, npm, crates.io, Homebrew, the built-in tap catalog, and the community registry at once. Mirrors dependencies.",
+      mcp_tool_getpackage: "Full detail on one community package. Mirrors package.",
       mcp_tool_list: "Lists everything the token's account has already published.",
-      mcp_tool_publish: 'Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>. Optional category: "integration" lists it on integrations.html.',
-      mcp_tool_searchmembers: "Searches the community directory by username. Mirrors community.html.",
-      mcp_tool_getprofile: "A user's public profile and published packages. Mirrors profile.html.",
+      mcp_tool_publish: 'Publishes a single file (base64-encoded in the tool call), exactly like <code>poly send</code>. Optional category: "integration" lists it on integrations.',
+      mcp_tool_searchmembers: "Searches the community directory by username. Mirrors community.",
+      mcp_tool_getprofile: "A user's public profile and published packages. Mirrors profile.",
       mcp_tool_updateprofile: "Updates the token's own username and/or bio.",
       mcp_tool_updateavatar: "Updates the token's own avatar image.",
       mcp_tool_deletepackage: "Permanently deletes a community package the token's account published. Cannot delete another account's package.",
-      mcp_tool_getstats: "Live public member/Pro counts, mirrors community.html.",
+      mcp_tool_getstats: "Live public member/Pro counts, mirrors community.",
       mcp_tool_follow: "Follows a user with the token's account.",
       mcp_tool_unfollow: "Unfollows a user.",
       mcp_tool_listfollowers: "Lists a user's followers.",
@@ -645,7 +645,7 @@ poly install community:hello-world</div>
       mcp_tool_adminlistblocked: "[Admin/staff only] Lists all currently blocked packages.",
       mcp_note: 'Publishing through MCP goes through the same first-come-first-served ownership rules and SHA-256 verification as <code>poly send</code>: an assistant can\'t take over a name it doesn\'t already own, and can\'t mark anything "official". Revoking a token on your account page breaks it everywhere immediately. Deliberately not exposed via MCP: creating, listing, or revoking tokens; an assistant should never be able to grant or manage its own access, only use the access you\'ve already given it.',
       pro_h: "Poly Pro",
-      pro_p: 'Poly is and stays 100% free and open source. The built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account.html">your account page</a>) unlocks:',
+      pro_p: 'Poly is and stays 100% free and open source. The built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account">your account page</a>) unlocks:',
       pro_li1: "Concurrent installs when you name more than one package at once.",
       pro_li2: "Automatic background package upgrades (see above), instead of only on demand.",
       pro_li3: 'Priority support: email <a href="mailto:open.corp.2030@gmail.com?subject=Poly%20Pro%20support">open.corp.2030@gmail.com</a> and mention your username, Pro accounts get answered first.',
@@ -671,7 +671,7 @@ poly install community:hello-world</div>
       toc_lockfile: "poly.json", toc_taps: "Formules tap", toc_autoupdate: "Auto-update", toc_registry: "Publier", toc_mcp: "Assistants IA", toc_pro: "Pro", toc_faq: "FAQ", toc_deps: "Chercher des dépendances", toc_llms: "llms.txt",
       nav_dependencies: "dépendances",
       eyebrow: "Documentation", title: "Tout ce que fait poly",
-      lede: 'La référence complète. Pour le pitch, voir la <a href="index.html">page d\'accueil</a>.',
+      lede: 'La référence complète. Pour le pitch, voir la <a href="/">page d\'accueil</a>.',
       commands_h: "Commandes", th_command: "Commande", th_does: "Fait",
       cmd_install: 'Installe un ou plusieurs paquets, routage auto entre adapters ou forcé avec un préfixe. Plusieurs noms s\'installent séquentiellement (gratuit) ou en parallèle (Pro). Sans argument, installe tout ce qui est listé dans <code>./poly.json</code>.',
       cmd_remove: "Désinstalle, via l'adapter que poly a enregistré comme ayant fait l'installation.",
@@ -712,30 +712,30 @@ poly install community:hello-world</div>
       au_p: 'Les deux logguent dans <code>~/.poly/auto-update.log</code> pour que tu voies ce qui s\'est passé. L\'état du throttle vit dans <code>~/.poly/last-selfupdate-check</code> et <code>~/.poly/last-autoupgrade-check</code>.',
       registry_h: "Publier ton propre paquet",
       registry_p: '<code>poly send nom version chemin</code> envoie un fichier ou un dossier (auto-archivé) vers le registre communautaire de Poly, sous ton compte. <code>chemin</code> doit contenir (ou être) un fichier nommé exactement <code>nom</code> : c\'est ce qui sera installé.',
-      registry_p2: 'Les noms sont premier arrivé premier servi, comme npm : seul le compte qui a publié un nom en premier peut y pousser une nouvelle version. Les paquets communautaires ne sont <strong>jamais détectés automatiquement</strong> : on ne les trouve que via le préfixe explicite <code>community:</code>, dans <code>poly search</code>, <code>poly install</code>, et sur la <a href="dependencies.html">page dépendances</a>. C\'est volontaire. Sans ça, n\'importe qui pourrait publier un paquet nommé littéralement <code>requests</code> ou <code>ripgrep</code> et masquer silencieusement le vrai pour quelqu\'un qui tape un simple <code>poly install requests</code>.',
+      registry_p2: 'Les noms sont premier arrivé premier servi, comme npm : seul le compte qui a publié un nom en premier peut y pousser une nouvelle version. Les paquets communautaires ne sont <strong>jamais détectés automatiquement</strong> : on ne les trouve que via le préfixe explicite <code>community:</code>, dans <code>poly search</code>, <code>poly install</code>, et sur la <a href="dependencies">page dépendances</a>. C\'est volontaire. Sans ça, n\'importe qui pourrait publier un paquet nommé littéralement <code>requests</code> ou <code>ripgrep</code> et masquer silencieusement le vrai pour quelqu\'un qui tape un simple <code>poly install requests</code>.',
       registry_note: 'Il n\'y a pas de scan anti-malware. Le SHA-256 enregistré à la publication est vérifié à l\'installation : ça protège contre la corruption ou l\'altération en transit, pas contre un uploader malveillant. N\'installe que des paquets communautaires en qui tu as confiance.',
       mcp_h: "Assistants IA (MCP)",
       mcp_p: 'Poly fait tourner un serveur <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> distant (Streamable HTTP, hébergé comme fonction Supabase Edge, aucune infra séparée) pour que Claude, ChatGPT, ou tout assistant compatible MCP puisse chercher, parcourir et publier dans le registre communautaire en ton nom. L\'authentification se fait via un token d\'accès personnel, jamais ton e-mail ou mot de passe, et le token est révocable à tout moment.',
       mcp_h_ui: "Claude.ai / ChatGPT (Ajouter un connecteur personnalisé)",
       mcp_ui_step1: "Dans Réglages → Connecteurs → Ajouter un connecteur personnalisé, colle cette URL, laisse le reste vide :",
-      mcp_ui_step2: 'La connexion ouvre une page aux couleurs de Poly qui demande un token d\'accès personnel. Génères-en un sur <a href="account.html">ta page compte</a>, section "Assistants IA (MCP)" (affiché une seule fois, copie-le tout de suite), colle-le là, et autorise.',
+      mcp_ui_step2: 'La connexion ouvre une page aux couleurs de Poly qui demande un token d\'accès personnel. Génères-en un sur <a href="account">ta page compte</a>, section "Assistants IA (MCP)" (affiché une seule fois, copie-le tout de suite), colle-le là, et autorise.',
       mcp_ui_note: "Ça passe par un OAuth standard avec Dynamic Client Registration en coulisses. Le token que tu colles devient ce que l'assistant détient, donc le révoquer depuis ta page compte casse la connexion partout, immédiatement.",
       mcp_h_manual: "Claude Desktop / Claude Code (fichier de config)",
-      mcp_step1: 'Génère un token sur <a href="account.html">ta page compte</a>, section "Assistants IA (MCP)". Il n\'est affiché qu\'une fois, copie-le tout de suite.',
+      mcp_step1: 'Génère un token sur <a href="account">ta page compte</a>, section "Assistants IA (MCP)". Il n\'est affiché qu\'une fois, copie-le tout de suite.',
       mcp_step2: 'Ajoute un connecteur MCP distant pointant vers l\'URL ci-dessous, avec le token comme en-tête <code>Authorization</code> bearer.',
       mcp_p2: "C'est le format de config utilisé par Claude Desktop et Claude Code pour les connecteurs distants (Réglages → Connecteurs → Ajouter un connecteur personnalisé). L'interface de connecteurs de ChatGPT prend la même URL et le même en-tête, même si l'emplacement exact dans les menus varie selon la formule et change au fil des évolutions d'OpenAI.",
       mcp_tool_whoami: "Confirme à quel compte appartient le token.",
       mcp_tool_search: "Cherche dans le registre communautaire : utile pour vérifier qu'un nom est libre avant de publier.",
-      mcp_tool_searchdeps: "Cherche dans pip, npm, crates.io, Homebrew, le catalogue tap intégré, et le registre communautaire en même temps. Reflète dependencies.html.",
-      mcp_tool_getpackage: "Détail complet d'un paquet communautaire. Reflète package.html.",
+      mcp_tool_searchdeps: "Cherche dans pip, npm, crates.io, Homebrew, le catalogue tap intégré, et le registre communautaire en même temps. Reflète dependencies.",
+      mcp_tool_getpackage: "Détail complet d'un paquet communautaire. Reflète package.",
       mcp_tool_list: "Liste tout ce que le compte du token a déjà publié.",
-      mcp_tool_publish: 'Publie un seul fichier (encodé en base64 dans l\'appel), exactement comme <code>poly send</code>. category: "integration" (optionnel) le liste sur integrations.html.',
-      mcp_tool_searchmembers: "Cherche dans l'annuaire communautaire par nom d'utilisateur. Reflète community.html.",
-      mcp_tool_getprofile: "Le profil public d'un utilisateur et ses paquets publiés. Reflète profile.html.",
+      mcp_tool_publish: 'Publie un seul fichier (encodé en base64 dans l\'appel), exactement comme <code>poly send</code>. category: "integration" (optionnel) le liste sur integrations.',
+      mcp_tool_searchmembers: "Cherche dans l'annuaire communautaire par nom d'utilisateur. Reflète community.",
+      mcp_tool_getprofile: "Le profil public d'un utilisateur et ses paquets publiés. Reflète profile.",
       mcp_tool_updateprofile: "Met à jour le nom d'utilisateur et/ou la bio du compte du token.",
       mcp_tool_updateavatar: "Met à jour la photo de profil du compte du token.",
       mcp_tool_deletepackage: "Supprime définitivement un paquet communautaire publié par le compte du token. Impossible de supprimer le paquet d'un autre compte.",
-      mcp_tool_getstats: "Nombre de membres/Pro en direct, reflète community.html.",
+      mcp_tool_getstats: "Nombre de membres/Pro en direct, reflète community.",
       mcp_tool_follow: "Suit un utilisateur avec le compte du token.",
       mcp_tool_unfollow: "Ne suit plus un utilisateur.",
       mcp_tool_listfollowers: "Liste les abonnés d'un utilisateur.",
@@ -768,7 +768,7 @@ poly install community:hello-world</div>
       mcp_tool_adminlistblocked: "[Admin/staff uniquement] Liste tous les paquets actuellement bloqués.",
       mcp_note: 'Publier via MCP suit les mêmes règles de propriété premier-arrivé-premier-servi et la même vérification SHA-256 que <code>poly send</code> : un assistant ne peut pas s\'approprier un nom qu\'il ne possède pas déjà, ni marquer quoi que ce soit comme "officiel". Révoquer un token depuis ta page compte le casse partout, immédiatement. Volontairement absent du MCP : créer, lister ou révoquer des tokens ; un assistant ne doit jamais pouvoir s\'accorder ou gérer son propre accès, seulement utiliser celui que tu lui as déjà donné.',
       pro_h: "Poly Pro",
-      pro_p: 'Poly est et reste 100% gratuit et open source. Le catalogue tap intégré est entièrement gratuit aussi. Pro (0,99 € en une fois, via Stripe Checkout depuis <a href="account.html">ta page de compte</a>) débloque :',
+      pro_p: 'Poly est et reste 100% gratuit et open source. Le catalogue tap intégré est entièrement gratuit aussi. Pro (0,99 € en une fois, via Stripe Checkout depuis <a href="account">ta page de compte</a>) débloque :',
       pro_li1: "Les installs en parallèle quand tu nommes plusieurs paquets d'un coup.",
       pro_li2: "Les mises à jour automatiques des paquets en arrière-plan (voir plus haut), au lieu de seulement à la demande.",
       pro_li3: 'Support prioritaire : écris à <a href="mailto:open.corp.2030@gmail.com?subject=Poly%20Pro%20support">open.corp.2030@gmail.com</a> en précisant ton nom d\'utilisateur, les comptes Pro sont répondus en premier.',
@@ -842,7 +842,7 @@ poly install community:hello-world</div>
   async function checkBan(session) {
     if (!session) return;
     const { data } = await supabase.rpc('check_banned');
-    if (data && data[0] && data[0].banned) window.location.href = 'banned.html';
+    if (data && data[0] && data[0].banned) window.location.href = 'banned';
   }
 
   const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
@@ -885,7 +885,7 @@ poly install community:hello-world</div>
         const id = el.getAttribute('data-id');
         const n = notifCache.find((x) => x.id === id);
         await supabase.rpc('mark_notification_read', { p_id: id });
-        window.location.href = 'notifications.html?id=' + encodeURIComponent(id);
+        window.location.href = 'notifications?id=' + encodeURIComponent(id);
       });
     });
   }
@@ -934,7 +934,7 @@ poly install community:hello-world</div>
   <div class="wrap cookie-banner-inner">
     <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
     <div class="cookie-actions">
-      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
       <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
     </div>
   </div>

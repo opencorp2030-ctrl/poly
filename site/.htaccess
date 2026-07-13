@@ -1,1 +1,22 @@
 ErrorDocument 404 /404.html
+
+RewriteEngine On
+
+# Canonicalize: anyone hitting the old *.html URL (bookmarks, search
+# index, external links) gets redirected to the clean version. The
+# Google Search Console verification file is excluded -- it must stay
+# reachable at its exact literal filename.
+RewriteCond %{THE_REQUEST} \s/+index\.html[\s?] [NC]
+RewriteRule ^ / [R=301,L]
+
+RewriteCond %{REQUEST_URI} !^/google614f6138587aa433\.html$
+RewriteCond %{THE_REQUEST} \s/+([^.\s]+)\.html[\s?] [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# Serve the matching .html file for a clean, extension-less request
+# (the URL bar keeps showing the clean path -- this is an internal
+# rewrite, not a redirect).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.*)$ $1.html [L]

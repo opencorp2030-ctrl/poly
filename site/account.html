@@ -11,7 +11,7 @@
 <meta property="og:title" content="Account · Poly" />
 <meta property="og:description" content="Sign in to manage your Poly account and Pro status." />
 <meta property="og:image" content="https://poly.candygate.eu/logo.png" />
-<meta property="og:url" content="https://poly.candygate.eu/account.html" />
+<meta property="og:url" content="https://poly.candygate.eu/account" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Account · Poly" />
 <meta name="twitter:description" content="Sign in to manage your Poly account and Pro status." />
@@ -432,15 +432,15 @@
 
 <header class="top">
   <div class="wrap">
-    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <a href="/" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links" id="top-links">
-      <a href="index.html#install" data-i18n="nav_install">install</a>
-      <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
-      <a href="docs.html" data-i18n="nav_docs">docs</a>
-      <a href="index.html#pro" data-i18n="nav_pro">pro</a>
-      <a href="community.html" data-i18n="nav_community">community</a>
-<a href="integrations.html" data-i18n="nav_integrations">integrations</a>
-      <a href="account.html" class="current" data-i18n="nav_account">account</a>
+      <a href="/#install" data-i18n="nav_install">install</a>
+      <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs" data-i18n="nav_docs">docs</a>
+      <a href="/#pro" data-i18n="nav_pro">pro</a>
+      <a href="community" data-i18n="nav_community">community</a>
+<a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="account" class="current" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
     <div class="header-actions">
@@ -456,7 +456,7 @@
         <div class="notif-dropdown-head">
           <span class="title">Notifications</span>
           <div class="head-actions">
-            <a class="notif-see-all" href="notifications.html">See all</a>
+            <a class="notif-see-all" href="notifications">See all</a>
             <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
           </div>
         </div>
@@ -473,9 +473,9 @@
       </button>
       <div class="user-menu-dropdown" id="user-menu-dropdown">
         <div class="user-menu-name" id="user-menu-name">…</div>
-        <a href="account.html" class="user-menu-item">Account</a>
-        <a href="community.html" class="user-menu-item">Community</a>
-        <a href="docs.html" class="user-menu-item">Docs</a>
+        <a href="account" class="user-menu-item">Account</a>
+        <a href="community" class="user-menu-item">Community</a>
+        <a href="docs" class="user-menu-item">Docs</a>
         <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
       </div>
     </div>
@@ -647,7 +647,7 @@ window.addEventListener('unhandledrejection', function (e) {
 
         <div class="card-section">
           <p class="section-label" data-i18n="section_mcp">AI assistants (MCP)</p>
-          <p class="community-link-note" data-i18n="mcp_note">Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you. It never sees your password, and you can revoke it any time. <a href="docs.html#mcp" data-i18n="mcp_setup_link">Setup instructions →</a></p>
+          <p class="community-link-note" data-i18n="mcp_note">Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you. It never sees your password, and you can revoke it any time. <a href="docs#mcp" data-i18n="mcp_setup_link">Setup instructions →</a></p>
           <div id="tokens-list"></div>
           <p class="community-link-note" id="tokens-empty" data-i18n="tokens_empty" style="display:none">No tokens yet.</p>
           <button class="btn small" id="create-token-btn" type="button" data-i18n="btn_create_token">Generate new token</button>
@@ -715,7 +715,7 @@ window.addEventListener('unhandledrejection', function (e) {
         <div class="card search-card">
           <p class="eyebrow" data-i18n="search_eyebrow">Find people</p>
           <p class="community-link-note" data-i18n="community_link_note">Search and browse everyone on Poly from the community page.</p>
-          <a class="btn primary" href="community.html" data-i18n="community_link_cta">Browse the community →</a>
+          <a class="btn primary" href="community" data-i18n="community_link_cta">Browse the community →</a>
         </div>
 
         <div class="card packages-card" id="packages-card" style="display:none">
@@ -750,8 +750,8 @@ window.addEventListener('unhandledrejection', function (e) {
   <div class="wrap">
     <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
     <nav class="footer-links">
-      <a href="terms.html" data-i18n="footer_terms">Terms</a>
-      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="terms" data-i18n="footer_terms">Terms</a>
+      <a href="privacy" data-i18n="footer_privacy">Privacy</a>
       <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
     </nav>
   </div>
@@ -1227,7 +1227,7 @@ window.addEventListener('unhandledrejection', function (e) {
     const email = document.getElementById('forgot-email').value.trim();
     const statusEl = document.getElementById('forgot-status');
     statusEl.textContent = '';
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/account.html' });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/account' });
     if (error) { statusEl.textContent = error.message || t('err_generic'); statusEl.className = 'status show error'; return; }
     statusEl.textContent = t('forgot_sent');
     statusEl.className = 'status show ok';
@@ -1256,7 +1256,7 @@ window.addEventListener('unhandledrejection', function (e) {
     const { error } = await supabase.rpc('delete_own_account');
     if (error) { setProfileStatus(error.message || t('err_generic'), 'error'); return; }
     await supabase.auth.signOut();
-    window.location.href = 'index.html';
+    window.location.href = '/';
   });
 
   document.getElementById('user-menu-btn').addEventListener('click', () => {
@@ -1752,7 +1752,7 @@ window.addEventListener('unhandledrejection', function (e) {
   async function checkBan(session) {
     if (!session) return;
     const { data } = await supabase.rpc('check_banned');
-    if (data && data[0] && data[0].banned) window.location.href = 'banned.html';
+    if (data && data[0] && data[0].banned) window.location.href = 'banned';
   }
 
   const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
@@ -1790,7 +1790,7 @@ window.addEventListener('unhandledrejection', function (e) {
         const id = el.getAttribute('data-id');
         const n = notifCache.find((x) => x.id === id);
         await supabase.rpc('mark_notification_read', { p_id: id });
-        window.location.href = 'notifications.html?id=' + encodeURIComponent(id);
+        window.location.href = 'notifications?id=' + encodeURIComponent(id);
       });
     });
   }
@@ -1854,7 +1854,7 @@ window.addEventListener('unhandledrejection', function (e) {
   <div class="wrap cookie-banner-inner">
     <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
     <div class="cookie-actions">
-      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
       <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
     </div>
   </div>

@@ -11,7 +11,7 @@
 <meta property="og:title" content="Package · Poly" />
 <meta property="og:description" content="Details for a package published to the Poly community registry: publisher, downloads, and how to install it." />
 <meta property="og:image" content="https://poly.candygate.eu/logo.png" />
-<meta property="og:url" content="https://poly.candygate.eu/package.html" />
+<meta property="og:url" content="https://poly.candygate.eu/package" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Package · Poly" />
 <meta name="twitter:description" content="Details for a package published to the Poly community registry: publisher, downloads, and how to install it." />
@@ -205,13 +205,13 @@
 
 <header class="top">
   <div class="wrap">
-    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <a href="/" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links" id="top-links">
-      <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
-      <a href="docs.html" data-i18n="nav_docs">docs</a>
-      <a href="community.html" data-i18n="nav_community">community</a>
-<a href="integrations.html" data-i18n="nav_integrations">integrations</a>
-      <a href="account.html" data-i18n="nav_account">account</a>
+      <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs" data-i18n="nav_docs">docs</a>
+      <a href="community" data-i18n="nav_community">community</a>
+<a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="account" data-i18n="nav_account">account</a>
     </nav>
     <div class="header-actions">
     <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
@@ -226,7 +226,7 @@
         <div class="notif-dropdown-head">
           <span class="title">Notifications</span>
           <div class="head-actions">
-            <a class="notif-see-all" href="notifications.html">See all</a>
+            <a class="notif-see-all" href="notifications">See all</a>
             <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
           </div>
         </div>
@@ -243,9 +243,9 @@
       </button>
       <div class="user-menu-dropdown" id="user-menu-dropdown">
         <div class="user-menu-name" id="user-menu-name">…</div>
-        <a href="account.html" class="user-menu-item">Account</a>
-        <a href="community.html" class="user-menu-item">Community</a>
-        <a href="docs.html" class="user-menu-item">Docs</a>
+        <a href="account" class="user-menu-item">Account</a>
+        <a href="community" class="user-menu-item">Community</a>
+        <a href="docs" class="user-menu-item">Docs</a>
         <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
       </div>
     </div>
@@ -273,7 +273,7 @@
 
 <main>
   <div class="wrap">
-    <a href="dependencies.html" class="back-link" data-i18n="back">← Back to dependencies</a>
+    <a href="dependencies" class="back-link" data-i18n="back">← Back to dependencies</a>
 
     <div data-view="notfound">
       <p class="notfound-note" data-i18n="not_found">No community package with that name.</p>
@@ -311,8 +311,8 @@
   <div class="wrap">
     <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
     <nav class="footer-links">
-      <a href="terms.html" data-i18n="footer_terms">Terms</a>
-      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="terms" data-i18n="footer_terms">Terms</a>
+      <a href="privacy" data-i18n="footer_privacy">Privacy</a>
       <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
     </nav>
   </div>
@@ -424,7 +424,7 @@
 
     const link = document.getElementById('publisher-link');
     link.textContent = '@' + p.uploader_username;
-    link.href = 'profile.html?u=' + encodeURIComponent(p.uploader_username);
+    link.href = 'profile?u=' + encodeURIComponent(p.uploader_username);
 
     showView('package');
   }
@@ -481,7 +481,7 @@
   async function checkBan(session) {
     if (!session) return;
     const { data } = await supabase.rpc('check_banned');
-    if (data && data[0] && data[0].banned) window.location.href = 'banned.html';
+    if (data && data[0] && data[0].banned) window.location.href = 'banned';
   }
 
   const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
@@ -519,7 +519,7 @@
         const id = el.getAttribute('data-id');
         const n = notifCache.find((x) => x.id === id);
         await supabase.rpc('mark_notification_read', { p_id: id });
-        window.location.href = 'notifications.html?id=' + encodeURIComponent(id);
+        window.location.href = 'notifications?id=' + encodeURIComponent(id);
       });
     });
   }
@@ -564,7 +564,7 @@
   <div class="wrap cookie-banner-inner">
     <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
     <div class="cookie-actions">
-      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
       <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
     </div>
   </div>

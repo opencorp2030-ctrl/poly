@@ -6,32 +6,37 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://poly.candygate.eu/dependencies.html</loc>
+    <loc>https://poly.candygate.eu/dependencies</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://poly.candygate.eu/docs.html</loc>
+    <loc>https://poly.candygate.eu/docs</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://poly.candygate.eu/community.html</loc>
+    <loc>https://poly.candygate.eu/community</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://poly.candygate.eu/account.html</loc>
+    <loc>https://poly.candygate.eu/integrations</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://poly.candygate.eu/account</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://poly.candygate.eu/terms.html</loc>
+    <loc>https://poly.candygate.eu/terms</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://poly.candygate.eu/privacy.html</loc>
+    <loc>https://poly.candygate.eu/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>

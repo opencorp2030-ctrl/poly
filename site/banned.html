@@ -75,11 +75,11 @@
 
   async function load() {
     const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData.session) { window.location.href = 'account.html'; return; }
+    if (!sessionData.session) { window.location.href = 'account'; return; }
 
     const { data } = await supabase.rpc('check_banned');
     const row = data && data[0];
-    if (!row || !row.banned) { window.location.href = 'account.html'; return; }
+    if (!row || !row.banned) { window.location.href = 'account'; return; }
 
     if (row.banned_until) {
       document.getElementById('title').textContent = 'Your account is temporarily suspended';
@@ -96,7 +96,7 @@
 
   document.getElementById('signout-btn').addEventListener('click', async () => {
     await supabase.auth.signOut();
-    window.location.href = 'account.html';
+    window.location.href = 'account';
   });
 </script>
 

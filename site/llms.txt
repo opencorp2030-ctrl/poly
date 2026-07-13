@@ -52,7 +52,7 @@ Registration for clients like Claude.ai/ChatGPT that only support OAuth for remo
 connectors) at `https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp`, hosted as a
 Supabase Edge Function, so an AI assistant can act as a signed-in Poly user without ever
 handling that user's email/password. Auth is a personal access token generated on
-account.html (shown once, revocable any time) -- either sent directly as `Authorization:
+account (shown once, revocable any time) -- either sent directly as `Authorization:
 Bearer <token>`, or pasted into the OAuth connect page during the "Add custom connector"
 flow (the resulting OAuth access_token IS that same personal access token). Tools
 exposed: `whoami`, `search_packages`/`search_dependencies` (community registry vs.
@@ -61,7 +61,7 @@ pip+npm+crates.io+Homebrew+tap+community all at once), `get_package`, `list_own_
 ownership rules and SHA-256 verification as `poly send`; an assistant can never mark a
 package "official"; the tool description explicitly warns against building an HTML/web
 app -- published packages are CLI scripts/binaries, not web pages; an optional `category:
-"integration"` argument lists the package on poly.candygate.eu/integrations.html), `search_members`,
+"integration"` argument lists the package on poly.candygate.eu/integrations), `search_members`,
 `get_profile`, `update_profile`, `update_avatar`, `delete_package`, `get_stats`
 (`update_profile`/`update_avatar`/`delete_package` act only on the token's own account/
 packages; `delete_package` removes both the DB entry and the stored file and cannot be
@@ -72,7 +72,7 @@ notifications (`list_notifications`, `mark_notification_read`,
 `mark_all_notifications_read`, `delete_notification`, `get_notification_prefs`,
 `update_notification_prefs`), profile extras (`update_bio_rich` — up to 3500 chars, light
 HTML formatting; `update_bio_photo` — base64 image into one of 2 photo slots; `set_dev_mode`;
-`check_banned`), and admin/staff-only tools mirroring the hidden admin.html page
+`check_banned`), and admin/staff-only tools mirroring the hidden admin page
 (`admin_ban_user`, `admin_unban_user`, `admin_block_package`, `admin_unblock_package`,
 `admin_search_users`, `admin_search_packages`, `admin_send_notification`,
 `admin_list_banned_users`, `admin_list_blocked_packages` — authorization is enforced
@@ -81,9 +81,9 @@ account can target specific usernames or ban/block anything). Deliberately NOT e
 MCP: creating, listing, or revoking personal access tokens, and badges (admin-SQL-only,
 no bypass) -- an assistant can use the access it's given but never grant or manage its own.
 Full setup instructions, including the Claude Desktop/Code config JSON:
-https://poly.candygate.eu/docs.html#mcp
+https://poly.candygate.eu/docs#mcp
 
-poly.candygate.eu/integrations.html lets a signed-in user describe an integration in plain
+poly.candygate.eu/integrations lets a signed-in user describe an integration in plain
 language (e.g. "an Alexa skill that reads out my package's weekly downloads"); the page
 saves the request and opens Claude.ai with a ready-made prompt (also shown as copyable text
 for Claude Code/Desktop/any other MCP client) instructing the assistant to search the
@@ -102,11 +102,11 @@ already-connected assistant a well-formed task.
 ## Site
 
 - Homepage: https://poly.candygate.eu/
-- Full docs: https://poly.candygate.eu/docs.html
-- Account (sign up / manage plan): https://poly.candygate.eu/account.html
-- Community directory + live download/member stats: https://poly.candygate.eu/community.html
-- Integrations: describe one in plain language, your connected AI assistant builds and publishes it: https://poly.candygate.eu/integrations.html
-- Cross-ecosystem dependency search (pip/npm/crates.io/Homebrew/community, live): https://poly.candygate.eu/dependencies.html
-- Public user profiles: https://poly.candygate.eu/profile.html?u=<username>
-- Public package detail pages: https://poly.candygate.eu/package.html?name=<package>
+- Full docs: https://poly.candygate.eu/docs
+- Account (sign up / manage plan): https://poly.candygate.eu/account
+- Community directory + live download/member stats: https://poly.candygate.eu/community
+- Integrations: describe one in plain language, your connected AI assistant builds and publishes it: https://poly.candygate.eu/integrations
+- Cross-ecosystem dependency search (pip/npm/crates.io/Homebrew/community, live): https://poly.candygate.eu/dependencies
+- Public user profiles: https://poly.candygate.eu/profile?u=<username>
+- Public package detail pages: https://poly.candygate.eu/package?name=<package>
 - Source code, issues: https://github.com/opencorp2030-ctrl/poly

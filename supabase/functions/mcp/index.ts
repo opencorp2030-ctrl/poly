@@ -15,7 +15,7 @@
 //     form; the OAuth access_token these clients end up holding on the
 //     other side of the dance IS that same Poly PAT, single-use code in
 //     between. No separate trust model, no separate revocation path --
-//     revoking the token on account.html still kills it everywhere.
+//     revoking the token on account still kills it everywhere.
 //
 // Auth resolution for tool calls happens entirely inside Postgres, via
 // the mcp_* SECURITY DEFINER functions (see migrations
@@ -61,7 +61,7 @@ const TOOLS = [
     name: "search_dependencies",
     description:
       "Search across every ecosystem poly can install from at once (exact name): pip, npm, crates.io, Homebrew, poly's built-in tap catalog, plus a partial-name match against the community registry. " +
-      "Mirrors poly.candygate.eu/dependencies.html -- use this to check whether something already exists anywhere before deciding to publish a new community package.",
+      "Mirrors poly.candygate.eu/dependencies -- use this to check whether something already exists anywhere before deciding to publish a new community package.",
     inputSchema: {
       type: "object",
       properties: { query: { type: "string", description: "Exact package name (pip/npm/cargo/brew/tap) -- community search is partial-match" } },
@@ -71,7 +71,7 @@ const TOOLS = [
   },
   {
     name: "get_package",
-    description: "Get full detail on one community package: version, description, size, download count, official status, and publisher. Mirrors package.html.",
+    description: "Get full detail on one community package: version, description, size, download count, official status, and publisher. Mirrors package.",
     inputSchema: {
       type: "object",
       properties: { name: { type: "string", description: "Exact community package name" } },
@@ -97,7 +97,7 @@ const TOOLS = [
       "password, rolls a die, converts a file, etc. Do NOT build an HTML/CSS/JS web app, a styled " +
       "page, or anything meant to be opened in a browser -- that isn't installable or runnable via " +
       "poly and isn't what this registry is for. Keep it simple: a short script is the norm.\n\n" +
-      "If this is fulfilling a request submitted on poly.candygate.eu/integrations.html, set " +
+      "If this is fulfilling a request submitted on poly.candygate.eu/integrations, set " +
       "category to \"integration\" so it's listed in the site's Integrations library.",
     inputSchema: {
       type: "object",
@@ -107,7 +107,7 @@ const TOOLS = [
         description: { type: "string", description: "Short description shown in search results" },
         file_base64: { type: "string", description: "Base64-encoded file contents (max ~37MB base64, 50MB decoded) -- a script or small binary, not an HTML app" },
         file_name: { type: "string", description: "Original file name, used only to infer an extension" },
-        category: { type: "string", description: "Optional. Set to \"integration\" if this fulfills a poly.candygate.eu/integrations.html request, so it's listed there." },
+        category: { type: "string", description: "Optional. Set to \"integration\" if this fulfills a poly.candygate.eu/integrations request, so it's listed there." },
       },
       required: ["name", "version", "file_base64"],
       additionalProperties: false,
@@ -115,7 +115,7 @@ const TOOLS = [
   },
   {
     name: "search_members",
-    description: "Search the Poly community directory by (partial) username. Mirrors community.html.",
+    description: "Search the Poly community directory by (partial) username. Mirrors community.",
     inputSchema: {
       type: "object",
       properties: { query: { type: "string", description: "Username or partial username to search for" } },
@@ -125,7 +125,7 @@ const TOOLS = [
   },
   {
     name: "get_profile",
-    description: "Get a Poly user's public profile by exact username: bio, avatar, plan, official status, badges, member since, and their published packages. Mirrors profile.html.",
+    description: "Get a Poly user's public profile by exact username: bio, avatar, plan, official status, badges, member since, and their published packages. Mirrors profile.",
     inputSchema: {
       type: "object",
       properties: { username: { type: "string", description: "Exact username" } },
@@ -135,7 +135,7 @@ const TOOLS = [
   },
   {
     name: "update_profile",
-    description: "Update this token's own account: username and/or bio. Mirrors the profile form on account.html. Only fields you provide are changed.",
+    description: "Update this token's own account: username and/or bio. Mirrors the profile form on account. Only fields you provide are changed.",
     inputSchema: {
       type: "object",
       properties: {
@@ -147,7 +147,7 @@ const TOOLS = [
   },
   {
     name: "update_avatar",
-    description: "Update this token's own account avatar image. Mirrors the photo upload on account.html.",
+    description: "Update this token's own account avatar image. Mirrors the photo upload on account.",
     inputSchema: {
       type: "object",
       properties: {
@@ -170,7 +170,7 @@ const TOOLS = [
   },
   {
     name: "get_stats",
-    description: "Get Poly's live public stats: total members and pro members. Mirrors the numbers shown on community.html.",
+    description: "Get Poly's live public stats: total members and pro members. Mirrors the numbers shown on community.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   },
 
@@ -294,7 +294,7 @@ const TOOLS = [
   },
   {
     name: "set_dev_mode",
-    description: "Enable or disable developer mode on this account (shows advanced account details on account.html).",
+    description: "Enable or disable developer mode on this account (shows advanced account details on account).",
     inputSchema: { type: "object", properties: { enabled: { type: "boolean" } }, required: ["enabled"], additionalProperties: false },
   },
   {
@@ -304,7 +304,7 @@ const TOOLS = [
   },
 
   // --- Admin / staff only (server-side authorization, same rules as
-  // the website's hidden /admin.html page) ---
+  // the website's hidden /admin page) ---
   {
     name: "admin_ban_user",
     description: "[Admin/staff only] Ban or temporarily suspend a user.",
@@ -408,7 +408,7 @@ async function callRpc(fn: string, body: Record<string, unknown>, key = ANON_KEY
 async function handleToolCall(name: string, args: Record<string, unknown>, token: string | null) {
   switch (name) {
     case "whoami": {
-      if (!token) return toolText("No token provided. Configure a Poly personal access token (from account.html) as this connector's Authorization header.", true);
+      if (!token) return toolText("No token provided. Configure a Poly personal access token (from account) as this connector's Authorization header.", true);
       const rows = await callRpc("mcp_whoami", { p_token: token });
       if (!rows?.length) return toolText("Token did not resolve to an account.", true);
       const p = rows[0];
@@ -1203,7 +1203,7 @@ async function handleRegister(req: Request): Promise<Response> {
 // your token" form) as a static page on poly.candygate.eu instead,
 // which has no such restriction. This function only ever returns JSON
 // or redirects, never HTML.
-const CONNECT_PAGE_URL = "https://poly.candygate.eu/mcp-connect.html";
+const CONNECT_PAGE_URL = "https://poly.candygate.eu/mcp-connect";
 
 function oauthMetadata(baseUrl: string) {
   return {
