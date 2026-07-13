@@ -37,7 +37,7 @@
   a:hover { text-decoration: underline; }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.3rem; margin-bottom: 2.5rem; color: var(--text); }
   .wordmark span { color: var(--accent); }
-  .code { font-family: var(--mono); font-size: 5rem; font-weight: 700; color: var(--accent); line-height: 1; margin: 0 0 1rem; }
+  .code { font-family: var(--mono); font-size: 5rem; font-weight: 700; color: var(--accent); line-height: 1; margin: 0.5rem 0 1rem; }
   .msg { font-size: 1.1rem; color: var(--text-dim); margin: 0 0 2rem; max-width: 40ch; }
   .prompt { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.2rem; margin-bottom: 2rem; }
   .home-link { font-family: var(--mono); font-size: 0.9rem; }
@@ -45,11 +45,13 @@
 </head>
 <body>
   <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+  <lottie-player src="lottie/404-lost.json" background="transparent" speed="1" style="width:140px;height:140px" loop autoplay></lottie-player>
   <p class="code">404</p>
   <p class="msg" data-i18n="msg">This page doesn't exist, or moved.</p>
   <p class="prompt">$ poly search &lt;this-page&gt;<br>no matches found</p>
   <a href="index.html" class="home-link" data-i18n="home">← Back to poly.candygate.eu</a>
 
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <script>
     const I18N = {
       en: { msg: "This page doesn't exist, or moved.", home: "← Back to poly.candygate.eu" },

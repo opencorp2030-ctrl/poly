@@ -144,6 +144,16 @@
   .user-menu-item.danger { color: var(--danger); }
 
   footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+
+  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
+  .cookie-banner.show { display: block; }
+  .cookie-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding: 1rem clamp(1.25rem, 4vw, 2rem); }
+  .cookie-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dim); max-width: 60ch; }
+  .cookie-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+  .cookie-actions a { font-size: 0.82rem; color: var(--text-dim); }
+  .cookie-actions a:hover { color: var(--accent); }
+  .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
+  .cookie-actions button:hover { opacity: 0.9; }
   footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
   footer.site-footer .footer-brand a:hover { color: var(--accent); }
@@ -531,6 +541,7 @@ poly install community:hello-world</div>
     en: {
       nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+      cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
       toc_title: "On this page", toc_commands: "Commands", toc_adapters: "Adapters", toc_resolution: "Resolution order",
       toc_lockfile: "poly.json", toc_taps: "Tap formulas", toc_autoupdate: "Auto-update", toc_registry: "Publishing", toc_mcp: "AI assistants", toc_pro: "Pro", toc_faq: "FAQ", toc_deps: "Search dependencies", toc_llms: "llms.txt",
       nav_dependencies: "dependencies",
@@ -652,6 +663,7 @@ poly install community:hello-world</div>
     fr: {
       nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+      cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
       toc_title: "Sur cette page", toc_commands: "Commandes", toc_adapters: "Adapters", toc_resolution: "Ordre de résolution",
       toc_lockfile: "poly.json", toc_taps: "Formules tap", toc_autoupdate: "Auto-update", toc_registry: "Publier", toc_mcp: "Assistants IA", toc_pro: "Pro", toc_faq: "FAQ", toc_deps: "Chercher des dépendances", toc_llms: "llms.txt",
       nav_dependencies: "dépendances",
@@ -913,6 +925,32 @@ poly install community:hello-world</div>
   document.querySelectorAll('.faq-list .accordion-head').forEach((head) => {
     head.addEventListener('click', () => head.closest('.accordion-item').classList.toggle('open'));
   });
+</script>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'poly-cookie-notice-dismissed';
+  var banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  var dismissed = false;
+  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (!dismissed) banner.classList.add('show');
+  var btn = document.getElementById('cookie-dismiss');
+  if (btn) btn.addEventListener('click', function () {
+    banner.classList.remove('show');
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
+})();
 </script>
 
 </body>

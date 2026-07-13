@@ -176,6 +176,16 @@
   .user-menu-item.danger { color: var(--danger); }
 
   footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+
+  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
+  .cookie-banner.show { display: block; }
+  .cookie-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding: 1rem clamp(1.25rem, 4vw, 2rem); }
+  .cookie-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dim); max-width: 60ch; }
+  .cookie-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+  .cookie-actions a { font-size: 0.82rem; color: var(--text-dim); }
+  .cookie-actions a:hover { color: var(--accent); }
+  .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
+  .cookie-actions button:hover { opacity: 0.9; }
   footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
   footer.site-footer .footer-brand a:hover { color: var(--accent); }
@@ -621,6 +631,7 @@ window.addEventListener('unhandledrejection', function (e) {
             <span class="v" id="profile-since">…</span>
           </div>
 
+          <lottie-player id="checkout-success-anim" src="lottie/success-check.json" background="transparent" speed="1" style="width:100px;height:100px;margin:0 auto;display:none"></lottie-player>
           <p class="status" id="profile-status"></p>
 
           <div id="upgrade-block">
@@ -745,6 +756,7 @@ window.addEventListener('unhandledrejection', function (e) {
   </div>
 </footer>
 
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -756,6 +768,7 @@ window.addEventListener('unhandledrejection', function (e) {
     en: {
       nav_install: "install", nav_pro: "pro", nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account", nav_github: "github",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+      cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
       acct_eyebrow: "Account",
       field_email: "Email", field_password: "Password", field_plan: "Plan", field_since: "Member since",
       btn_signin: "Sign in", btn_signup: "Create account", btn_signout: "Sign out",
@@ -853,6 +866,7 @@ window.addEventListener('unhandledrejection', function (e) {
     fr: {
       nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+      cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
       acct_eyebrow: "Compte",
       field_email: "E-mail", field_password: "Mot de passe", field_plan: "Formule", field_since: "Membre depuis",
       btn_signin: "Se connecter", btn_signup: "Créer un compte", btn_signout: "Se déconnecter",
@@ -1606,6 +1620,9 @@ window.addEventListener('unhandledrejection', function (e) {
 
     const checkoutParam = new URLSearchParams(window.location.search).get('checkout');
     if (checkoutParam === 'success') {
+      const anim = document.getElementById('checkout-success-anim');
+      anim.style.display = 'block';
+      anim.play();
       setProfileStatus(t('checkout_success'), 'ok');
       // The Stripe webhook updates the plan asynchronously, so it may not
       // have landed yet at redirect time -- poll briefly for it.
@@ -1828,6 +1845,32 @@ window.addEventListener('unhandledrejection', function (e) {
   try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
   const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
   applyLanguage(saved || browserLang);
+</script>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'poly-cookie-notice-dismissed';
+  var banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  var dismissed = false;
+  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (!dismissed) banner.classList.add('show');
+  var btn = document.getElementById('cookie-dismiss');
+  if (btn) btn.addEventListener('click', function () {
+    banner.classList.remove('show');
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
+})();
 </script>
 
 </body>

@@ -527,6 +527,16 @@
   footer .footer-links a { color: var(--text-dim); }
   footer .footer-links a:hover { color: var(--accent); }
 
+  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
+  .cookie-banner.show { display: block; }
+  .cookie-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding: 1rem clamp(1.25rem, 4vw, 2rem); }
+  .cookie-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dim); max-width: 60ch; }
+  .cookie-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+  .cookie-actions a { font-size: 0.82rem; color: var(--text-dim); }
+  .cookie-actions a:hover { color: var(--accent); }
+  .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
+  .cookie-actions button:hover { opacity: 0.9; }
+
   /* custom cursor, active only over the hero section */
   .cursor-ring-outline {
     position: fixed;
@@ -963,6 +973,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       docs_note: "Full reference, including the poly.json format and how to write a tap formula, is on the <a href=\"docs.html\">docs page</a>.",
       footer_text: "poly is open source on <a href=\"https://github.com/opencorp2030-ctrl/poly\">GitHub</a>, under the MIT license. <code>~/.poly/manifest.json</code> tracks every install.",
       footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+      cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
       pro_eyebrow: "Poly Pro",
       pro_title: "Support poly, install faster",
       pro_lede: "Poly is and stays 100% free and open source. Pro is a small optional pack: real perks, not a paywall on features that already work.",
@@ -1074,6 +1085,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       pro_cta: "Obtenir Poly Pro (0,99 €)",
       footer_text: "poly est open source sur <a href=\"https://github.com/opencorp2030-ctrl/poly\">GitHub</a>, sous licence MIT. <code>~/.poly/manifest.json</code> garde une trace de chaque installation.",
       footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+      cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
       cursor_pill: "Essayer poly",
       copied_label: "copié ✓"
     }
@@ -1337,6 +1349,32 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
 
   supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); });
   supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); });
+</script>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy.html" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'poly-cookie-notice-dismissed';
+  var banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  var dismissed = false;
+  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (!dismissed) banner.classList.add('show');
+  var btn = document.getElementById('cookie-dismiss');
+  if (btn) btn.addEventListener('click', function () {
+    banner.classList.remove('show');
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
+})();
 </script>
 
 </body>
