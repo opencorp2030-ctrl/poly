@@ -1,0 +1,12 @@
+{
+  "name": "Poly",
+  "short_name": "Poly",
+  "description": "One command, every package manager.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14171d",
+  "theme_color": "#f0a93e",
+  "icons": [
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

@@ -108,6 +108,7 @@ const TOOLS = [
         file_base64: { type: "string", description: "Base64-encoded file contents (max ~37MB base64, 50MB decoded) -- a script or small binary, not an HTML app" },
         file_name: { type: "string", description: "Original file name, used only to infer an extension" },
         category: { type: "string", description: "Optional. Set to \"integration\" if this fulfills a poly.candygate.eu/integrations request, so it's listed there." },
+        readme: { type: "string", description: "Optional. Longer-form plain text shown on the package's page (usage examples, options, etc). Rendered as plain text, not HTML/markdown." },
       },
       required: ["name", "version", "file_base64"],
       additionalProperties: false,
@@ -556,6 +557,7 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
           p_size_bytes: bytes.length,
           p_description: description,
           p_category: args.category ? String(args.category) : null,
+          p_readme: args.readme ? String(args.readme).slice(0, 20000) : null,
         });
       } catch (e) {
         return toolText(`Publish failed: ${(e as Error).message}`, true);

@@ -109,4 +109,13 @@ already-connected assistant a well-formed task.
 - Cross-ecosystem dependency search (pip/npm/crates.io/Homebrew/community, live): https://poly.candygate.eu/dependencies
 - Public user profiles: https://poly.candygate.eu/profile?u=<username>
 - Public package detail pages: https://poly.candygate.eu/package?name=<package>
+- Changelog: https://poly.candygate.eu/changelog
+- Roadmap: https://poly.candygate.eu/roadmap
+- System status: https://poly.candygate.eu/status
+- Poly vs. Homebrew/npm/cargo/uv/Scoop: https://poly.candygate.eu/compare
+- Leaderboard (top publishers, most-followed members): https://poly.candygate.eu/leaderboard
+- Badge glossary: https://poly.candygate.eu/badges
+- Contact: https://poly.candygate.eu/contact
+- Press/brand kit: https://poly.candygate.eu/press
+- Site directory (every page not in the main nav): https://poly.candygate.eu/search
 - Source code, issues: https://github.com/opencorp2030-ctrl/poly

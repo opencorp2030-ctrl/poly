@@ -1,0 +1,14 @@
+/* TEAM */
+Built by: the Poly team
+Contact: open.corp.2030@gmail.com
+From: Earth
+
+/* THANKS */
+Everyone who filed a bug, published a package, or sent a friend request.
+
+/* SITE */
+Language: HTML, CSS, JavaScript
+Backend: Supabase (Postgres, Auth, Storage, Edge Functions)
+CLI: Go
+Hosting: Hostinger
+Last update: 2026-07-13

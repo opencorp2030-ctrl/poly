@@ -3,23 +3,22 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Notifications · Poly</title>
+<title>Search · Poly</title>
 <link rel="icon" href="logo.png" />
 <link rel="apple-touch-icon" href="logo.png" />
 <link rel="manifest" href="site.webmanifest" />
-<meta name="description" content="Your Poly notifications: follows, friend requests, downloads, and staff announcements." />
-<link rel="canonical" href="https://poly.candygate.eu/notifications" />
+<meta name="description" content="Find any page on the Poly site." />
+<link rel="canonical" href="https://poly.candygate.eu/search" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Poly" />
-<meta property="og:title" content="Notifications · Poly" />
-<meta property="og:description" content="Your Poly notifications: follows, friend requests, downloads, and staff announcements." />
+<meta property="og:title" content="Search · Poly" />
+<meta property="og:description" content="Find any page on the Poly site." />
 <meta property="og:image" content="https://poly.candygate.eu/logo.png" />
-<meta property="og:url" content="https://poly.candygate.eu/notifications" />
+<meta property="og:url" content="https://poly.candygate.eu/search" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Notifications · Poly" />
-<meta name="twitter:description" content="Your Poly notifications: follows, friend requests, downloads, and staff announcements." />
+<meta name="twitter:title" content="Search · Poly" />
+<meta name="twitter:description" content="Find any page on the Poly site." />
 <meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
-<meta name="robots" content="noindex, nofollow" />
 <style>
   :root {
     --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
@@ -47,7 +46,7 @@
   body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
   .skip-link:focus { left: 0; }
 
@@ -60,6 +59,7 @@
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover { color: var(--accent); }
+  nav.top-links a.current { color: var(--accent); }
 
   .nav-toggle {
     display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
@@ -139,7 +139,20 @@
   .user-menu-item:hover { background: var(--ink); }
   .user-menu-item.danger { color: var(--danger); }
 
+  main { padding: clamp(2.5rem, 6vw, 4rem) 0 5rem; }
+
+  .hero { margin-bottom: 2.5rem; max-width: 68ch; }
+  .eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem; }
+  .hero h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 0.9rem; line-height: 1.2; }
+  .hero p { color: var(--text-dim); font-size: 1.02rem; margin: 0; }
+
   footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
 
   .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
   .cookie-banner.show { display: block; }
@@ -150,54 +163,16 @@
   .cookie-actions a:hover { color: var(--accent); }
   .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
   .cookie-actions button:hover { opacity: 0.9; }
-  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
-  footer.site-footer .footer-brand a:hover { color: var(--accent); }
-  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
-  footer.site-footer .footer-links a { color: var(--text-dim); }
-  footer.site-footer .footer-links a:hover { color: var(--accent); }
 
-  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+  .search-box { margin-bottom: 2rem; }
+  .search-box input { width: 100%; padding: 0.85rem 1.1rem; background: var(--ink-raised); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 1rem; font-family: var(--sans); }
+  .page-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .page-row { background: var(--ink-raised); padding: 1rem 1.2rem; display: block; text-decoration: none; color: var(--text); }
+  .page-row:hover { background: var(--ink); text-decoration: none; }
+  .page-row .p-name { font-weight: 700; font-size: 0.95rem; }
+  .page-row .p-desc { font-size: 0.82rem; color: var(--text-dim); margin-top: 0.15rem; }
+  .no-results { color: var(--text-dim); font-size: 0.9rem; padding: 1.5rem 0; text-align: center; }
 
-  .page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
-  .page-title { font-family: var(--mono); font-weight: 700; font-size: 1.6rem; }
-  .page-mark-all { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; }
-
-  [data-view] { display: none; }
-  [data-view].active { display: block; }
-
-  .empty-note { color: var(--text-dim); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
-
-  .n-full-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-  .n-row { display: block; background: var(--ink-raised); padding: 1rem 1.1rem; text-decoration: none; color: var(--text); cursor: pointer; position: relative; }
-  .n-row:hover { background: var(--ink); text-decoration: none; }
-  .n-row.unread::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
-  .n-row .n-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.25rem; }
-  .n-row .n-row-title { font-weight: 700; font-size: 0.95rem; }
-  .n-row .n-row-time { font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); flex-shrink: 0; }
-  .n-row .n-row-body { font-size: 0.85rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .n-row .n-row-type { display: inline-block; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-dim); margin-top: 0.35rem; }
-
-  .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.75rem; display: inline-block; }
-
-  .detail-card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 12px; padding: clamp(1.5rem, 4vw, 2.25rem); }
-  .detail-type { display: inline-block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem 0.6rem; margin-bottom: 1rem; }
-  .detail-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.6rem; line-height: 1.35; }
-  .detail-meta { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.4rem; color: var(--text-dim); font-size: 0.85rem; }
-  .detail-from-avatar {
-    width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
-    background: var(--ink); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim);
-  }
-  .detail-from-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
-  .detail-from-name { color: var(--text); font-weight: 600; }
-  .detail-time { font-family: var(--mono); }
-  .detail-body { font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem; word-wrap: break-word; }
-  .detail-body p:first-child { margin-top: 0; }
-  .detail-body p:last-child { margin-bottom: 0; }
-  .detail-view-link { display: inline-block; padding: 0.6rem 1.1rem; background: var(--accent); color: var(--accent-ink); border-radius: 8px; font-weight: 700; font-size: 0.85rem; }
-  .detail-view-link:hover { text-decoration: none; opacity: 0.9; }
 </style>
 </head>
 <body>
@@ -210,8 +185,8 @@
       <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs" data-i18n="nav_docs">docs</a>
       <a href="community" data-i18n="nav_community">community</a>
-<a href="integrations" data-i18n="nav_integrations">integrations</a>
-<a href="search" data-i18n="nav_search">search</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
       <a href="account" data-i18n="nav_account">account</a>
     </nav>
     <div class="header-actions">
@@ -227,7 +202,7 @@
         <div class="notif-dropdown-head">
           <span class="title">Notifications</span>
           <div class="head-actions">
-            <a class="notif-see-all" href="notifications" data-i18n="see_all">See all</a>
+            <a class="notif-see-all" href="notifications">See all</a>
             <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
           </div>
         </div>
@@ -263,41 +238,21 @@
     var open = links.classList.toggle('open');
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  links.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    });
-  });
 })();
 </script>
 
 <main id="main">
   <div class="wrap">
-
-    <div data-view="list">
-      <div class="page-head">
-        <span class="page-title" data-i18n="page_title">Notifications</span>
-        <button type="button" class="page-mark-all" id="page-mark-all" data-i18n="mark_all">Mark all read</button>
-      </div>
-      <div id="full-list"></div>
+    <div class="hero">
+      <p class="eyebrow" data-i18n="eyebrow">Search</p>
+      <h1 data-i18n="title">Find a page</h1>
+      <p data-i18n="lede">Everything on the site that isn't already in the top navigation.</p>
     </div>
-
-    <div data-view="detail">
-      <a href="notifications" class="back-link" data-i18n="back">← Back to notifications</a>
-      <div class="detail-card">
-        <span class="detail-type" id="detail-type"></span>
-        <h1 class="detail-title" id="detail-title"></h1>
-        <div class="detail-meta" id="detail-meta"></div>
-        <div class="detail-body" id="detail-body"></div>
-        <a class="detail-view-link" id="detail-view-link" href="#" style="display:none" data-i18n="view_link">View</a>
-      </div>
+    <div class="search-box">
+      <input type="text" id="filter-input" data-i18n-placeholder="filter_placeholder" placeholder="Filter pages..." />
     </div>
-
-    <div data-view="signedout">
-      <p class="empty-note" data-i18n="signin_required">Sign in to see your notifications.</p>
-    </div>
-
+    <div class="page-list" id="page-list"></div>
+    <p class="no-results" id="no-results" style="display:none" data-i18n="no_results">No pages match that.</p>
   </div>
 </main>
 
@@ -312,166 +267,115 @@
   </div>
 </footer>
 
-<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
   const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const I18N = {
-    en: {
-      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
-      nav_integrations: "integrations",
-      nav_search: "search",
-      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
-      cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
-      see_all: "See all",
-      page_title: "Notifications",
-      mark_all: "Mark all read",
-      back: "← Back to notifications",
-      view_link: "View →",
-      signin_required: "Sign in to see your notifications.",
-      empty: "No notifications yet.",
-      not_found: "Notification not found.",
-      type_follow: "Follow", type_download: "Download", type_friend_request: "Friend request",
-      type_friend_accept: "Friend accepted", type_staff_broadcast: "Staff announcement",
-      type_admin_message: "Message from admin", type_system: "System",
-    },
-    fr: {
-      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
-      nav_integrations: "intégrations",
-      nav_search: "recherche",
-      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
-      cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
-      see_all: "Tout voir",
-      page_title: "Notifications",
-      mark_all: "Tout marquer comme lu",
-      back: "← Retour aux notifications",
-      view_link: "Voir →",
-      signin_required: "Connecte-toi pour voir tes notifications.",
-      empty: "Aucune notification pour l'instant.",
-      not_found: "Notification introuvable.",
-      type_follow: "Abonnement", type_download: "Téléchargement", type_friend_request: "Demande d'ami",
-      type_friend_accept: "Ami accepté", type_staff_broadcast: "Annonce du staff",
-      type_admin_message: "Message de l'admin", type_system: "Système",
-    }
-  };
-
-  function lang() { return document.documentElement.lang || 'en'; }
-  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
-
-  function applyLanguage(l) {
-    if (!I18N[l]) l = 'en';
-    document.documentElement.lang = l;
-    document.querySelectorAll('[data-i18n]').forEach((node) => {
-      const key = node.getAttribute('data-i18n');
-      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
-    });
-    try { localStorage.setItem('poly-lang', l); } catch (e) {}
-  }
-
   function escapeHtml(s) {
     const div = document.createElement('div');
     div.textContent = s == null ? '' : String(s);
     return div.innerHTML;
   }
-  function timeAgo(iso) {
-    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (diff < 60) return 'now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-    return Math.floor(diff / 86400) + 'd';
-  }
-  function typeLabel(type) {
-    return t('type_' + type) !== 'type_' + type ? t('type_' + type) : type;
-  }
-  function showView(name) {
-    document.querySelectorAll('[data-view]').forEach((el) => el.classList.toggle('active', el.getAttribute('data-view') === name));
-  }
 
-  const notifId = new URLSearchParams(window.location.search).get('id');
+  const PAGES = [
+    { slug: 'changelog', nameKey: 'p_changelog', descKey: 'd_changelog' },
+    { slug: 'roadmap', nameKey: 'p_roadmap', descKey: 'd_roadmap' },
+    { slug: 'status', nameKey: 'p_status', descKey: 'd_status' },
+    { slug: 'compare', nameKey: 'p_compare', descKey: 'd_compare' },
+    { slug: 'leaderboard', nameKey: 'p_leaderboard', descKey: 'd_leaderboard' },
+    { slug: 'badges', nameKey: 'p_badges', descKey: 'd_badges' },
+    { slug: 'contact', nameKey: 'p_contact', descKey: 'd_contact' },
+    { slug: 'press', nameKey: 'p_press', descKey: 'd_press' },
+    { slug: 'terms', nameKey: 'p_terms', descKey: 'd_terms' },
+    { slug: 'privacy', nameKey: 'p_privacy', descKey: 'd_privacy' },
+  ];
 
-  async function loadFullList() {
-    const { data } = await supabase.from('notifications')
-      .select('id, type, title, body_html, link_url, is_service, created_at, read_at')
-      .order('created_at', { ascending: false })
-      .limit(100);
-    const rows = data || [];
-    const container = document.getElementById('full-list');
-    if (!rows.length) {
-      container.innerHTML = `<div style="text-align:center"><lottie-player src="lottie/empty-bell.json" background="transparent" speed="1" style="width:110px;height:110px;margin:0 auto" loop autoplay></lottie-player><p class="empty-note">${t('empty')}</p></div>`;
-      return;
-    }
-    container.innerHTML = `<div class="n-full-list">${rows.map((n) => `
-      <a class="n-row ${n.read_at ? '' : 'unread'}" href="notifications?id=${encodeURIComponent(n.id)}">
-        <div class="n-row-top">
-          <span class="n-row-title">${escapeHtml(n.title)}</span>
-          <span class="n-row-time">${timeAgo(n.created_at)}</span>
-        </div>
-        ${n.body_html ? `<div class="n-row-body">${n.body_html}</div>` : ''}
-        <div class="n-row-type">${escapeHtml(typeLabel(n.type))}</div>
+  function renderPages(filter) {
+    const q = (filter || '').trim().toLowerCase();
+    const list = document.getElementById('page-list');
+    const filtered = PAGES.filter((p) => !q || t(p.nameKey).toLowerCase().includes(q) || t(p.descKey).toLowerCase().includes(q) || p.slug.includes(q));
+    document.getElementById('no-results').style.display = filtered.length ? 'none' : 'block';
+    list.innerHTML = filtered.map((p) => `
+      <a class="page-row" href="${p.slug}">
+        <div class="p-name">${escapeHtml(t(p.nameKey))}</div>
+        <div class="p-desc">${escapeHtml(t(p.descKey))}</div>
       </a>
-    `).join('')}</div>`;
+    `).join('');
   }
+  document.getElementById('filter-input').addEventListener('input', (e) => renderPages(e.target.value));
 
-  document.getElementById('page-mark-all').addEventListener('click', async () => {
-    await supabase.rpc('mark_all_notifications_read');
-    loadFullList();
-  });
 
-  async function loadDetail(id) {
-    const { data: rows } = await supabase.from('notifications')
-      .select('id, type, title, body_html, link_url, from_user_id, created_at, read_at')
-      .eq('id', id)
-      .limit(1);
-    const n = rows && rows[0];
-    if (!n) {
-      document.getElementById('detail-title').textContent = t('not_found');
-      document.getElementById('detail-type').style.display = 'none';
-      document.getElementById('detail-meta').innerHTML = '';
-      document.getElementById('detail-body').innerHTML = '';
-      showView('detail');
-      return;
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_integrations: "integrations", nav_search: "search", nav_account: "account",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+      cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
+      eyebrow: "Search",
+      title: "Find a page",
+      lede: "Everything on the site that isn't already in the top navigation.",
+      filter_placeholder: "Filter pages...",
+      no_results: "No pages match that.",
+      p_changelog: "Changelog", d_changelog: "What's new, newest first.",
+      p_roadmap: "Roadmap", d_roadmap: "What's shipped, what's next.",
+      p_status: "Status", d_status: "Live system health checks.",
+      p_compare: "Compare", d_compare: "Poly vs. Homebrew, npm, cargo, uv, Scoop.",
+      p_leaderboard: "Leaderboard", d_leaderboard: "Top publishers and most-followed members.",
+      p_badges: "Badges", d_badges: "What every profile badge means.",
+      p_contact: "Contact", d_contact: "Get in touch with the team.",
+      p_press: "Press", d_press: "Brand assets and boilerplate copy.",
+      p_terms: "Terms", d_terms: "Terms of Service.",
+      p_privacy: "Privacy", d_privacy: "Privacy Policy.",
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_integrations: "intégrations", nav_search: "recherche", nav_account: "compte",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+      cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
+      eyebrow: "Recherche",
+      title: "Trouver une page",
+      lede: "Tout ce qui est sur le site et qui n'est pas déjà dans la barre de navigation.",
+      filter_placeholder: "Filtrer les pages...",
+      no_results: "Aucune page ne correspond.",
+      p_changelog: "Changelog", d_changelog: "Les nouveautés, les plus récentes en premier.",
+      p_roadmap: "Feuille de route", d_roadmap: "Ce qui est sorti, ce qui arrive.",
+      p_status: "Statut", d_status: "Vérifications système en direct.",
+      p_compare: "Comparer", d_compare: "Poly face à Homebrew, npm, cargo, uv, Scoop.",
+      p_leaderboard: "Classement", d_leaderboard: "Meilleurs publieurs et membres les plus suivis.",
+      p_badges: "Badges", d_badges: "La signification de chaque badge de profil.",
+      p_contact: "Contact", d_contact: "Contacter l'équipe.",
+      p_press: "Presse", d_press: "Éléments de marque et texte de présentation.",
+      p_terms: "Conditions", d_terms: "Conditions d'utilisation.",
+      p_privacy: "Confidentialité", d_privacy: "Politique de confidentialité.",
     }
+  };
 
-    if (!n.read_at) await supabase.rpc('mark_notification_read', { p_id: n.id });
-
-    document.getElementById('detail-type').textContent = typeLabel(n.type);
-    document.getElementById('detail-type').style.display = 'inline-block';
-    document.getElementById('detail-title').textContent = n.title;
-    document.getElementById('detail-body').innerHTML = n.body_html || '';
-
-    const metaEl = document.getElementById('detail-meta');
-    const dateStr = new Date(n.created_at).toLocaleString(lang() === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
-    metaEl.innerHTML = `<span class="detail-time">${escapeHtml(dateStr)}</span>`;
-
-    if (n.from_user_id) {
-      const { data: fromProf } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', n.from_user_id).maybeSingle();
-      if (fromProf) {
-        const avatarHtml = fromProf.avatar_url
-          ? `<img src="${escapeHtml(fromProf.avatar_url)}" alt="">`
-          : escapeHtml((fromProf.username || '?').charAt(0).toUpperCase());
-        metaEl.innerHTML = `
-          <a href="profile?u=${encodeURIComponent(fromProf.username)}" class="detail-from-avatar">${avatarHtml}</a>
-          <a href="profile?u=${encodeURIComponent(fromProf.username)}" class="detail-from-name">@${escapeHtml(fromProf.username)}</a>
-          <span>·</span>
-          <span class="detail-time">${escapeHtml(dateStr)}</span>
-        `;
-      }
-    }
-
-    const viewLink = document.getElementById('detail-view-link');
-    if (n.link_url) { viewLink.href = n.link_url; viewLink.style.display = 'inline-block'; }
-    else { viewLink.style.display = 'none'; }
-
-    showView('detail');
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+    renderPages(document.getElementById('filter-input').value);
   }
 
   async function renderUserMenu(session) {
     const menu = document.getElementById('user-menu');
     if (!session) { menu.style.display = 'none'; return; }
-
     const { data } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', session.user.id).single();
     const avatarSlot = document.getElementById('user-menu-avatar');
     if (data && data.avatar_url) {
@@ -508,6 +412,13 @@
   const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
   let notifCache = [];
   let notifPollInterval = null;
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+    return Math.floor(diff / 86400) + 'd';
+  }
   async function loadNotifications() {
     const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
     notifCache = data || [];
@@ -541,7 +452,6 @@
   document.getElementById('notif-mark-all').addEventListener('click', async () => {
     await supabase.rpc('mark_all_notifications_read');
     loadNotifications();
-    if (!notifId) loadFullList();
   });
   document.getElementById('notif-staff-send').addEventListener('click', async () => {
     const input = document.getElementById('notif-staff-input');
@@ -562,50 +472,25 @@
     notifPollInterval = setInterval(loadNotifications, 60000);
   }
 
-  async function initPage(session) {
-    if (!session) { showView('signedout'); return; }
-    if (notifId) await loadDetail(notifId);
-    else { showView('list'); await loadFullList(); }
-  }
-
   let saved = null;
   try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
   const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
   applyLanguage(saved || browserLang);
 
-  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); });
-  supabase.auth.getSession().then(({ data }) => {
-    renderUserMenu(data.session);
-    checkBan(data.session);
-    initNotifBell(data.session);
-    initPage(data.session);
-  });
-</script>
+  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session);  });
+  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session);  });
 
-<div class="cookie-banner" id="cookie-banner">
-  <div class="wrap cookie-banner-inner">
-    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
-    <div class="cookie-actions">
-      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
-      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
-    </div>
-  </div>
-</div>
-
-<script>
-(function () {
-  var KEY = 'poly-cookie-notice-dismissed';
-  var banner = document.getElementById('cookie-banner');
-  if (!banner) return;
-  var dismissed = false;
-  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
-  if (!dismissed) banner.classList.add('show');
-  var btn = document.getElementById('cookie-dismiss');
-  if (btn) btn.addEventListener('click', function () {
-    banner.classList.remove('show');
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
-  });
-})();
+  (function () {
+    var KEY = 'poly-cookie-notice-dismissed';
+    var banner = document.getElementById('cookie-banner');
+    var dismissed = false;
+    try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+    if (!dismissed) banner.classList.add('show');
+    document.getElementById('cookie-dismiss').addEventListener('click', function () {
+      banner.classList.remove('show');
+      try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    });
+  })();
 </script>
 
 </body>

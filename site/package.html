@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Package · Poly</title>
 <link rel="icon" href="logo.png" />
+<link rel="apple-touch-icon" href="logo.png" />
+<link rel="manifest" href="site.webmanifest" />
 <meta name="description" content="Details for a package published to the Poly community registry: publisher, downloads, and how to install it." />
+<link rel="canonical" href="https://poly.candygate.eu/package" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Poly" />
 <meta property="og:title" content="Package · Poly" />
@@ -44,6 +47,8 @@
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
+  .skip-link:focus { left: 0; }
 
   .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
 
@@ -197,11 +202,26 @@
   .note-box { border-left: 3px solid var(--accent); padding: 0.4rem 0 0.4rem 1rem; color: var(--text-dim); font-size: 0.88rem; margin: 2rem 0 0; max-width: 62ch; }
   .notfound-note { color: var(--text-dim); font-size: 0.9rem; padding: 1rem 0; }
 
+  .pkg-actions { display: flex; align-items: center; gap: 0.75rem; margin: 0 0 1.5rem; flex-wrap: wrap; }
+  .action-btn { font-family: var(--mono); font-size: 0.82rem; padding: 0.5rem 0.9rem; border-radius: 6px; border: 1px solid var(--border); background: var(--ink-raised); color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .action-btn:hover { border-color: var(--accent); }
+  .action-btn.active { border-color: var(--accent); color: var(--accent); }
+  .rating-row { display: flex; align-items: center; gap: 0.3rem; margin-bottom: 1.5rem; }
+  .star-btn { background: none; border: none; cursor: pointer; padding: 0 0.05rem; font-size: 1.35rem; line-height: 1; color: var(--border); }
+  .star-btn.filled { color: var(--accent); }
+  .rating-summary { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); margin-left: 0.5rem; }
+  .section-h { font-size: 1rem; font-weight: 700; margin: 2rem 0 0.75rem; }
+  .readme-box { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; white-space: pre-wrap; font-size: 0.92rem; color: var(--text-dim); max-height: 500px; overflow-y: auto; }
+  .versions-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .version-row { background: var(--ink-raised); padding: 0.6rem 1rem; display: flex; justify-content: space-between; font-size: 0.85rem; font-family: var(--mono); }
+  .version-row .v-date { color: var(--text-dim); }
+
   [data-view] { display: none; }
   [data-view].active { display: block; }
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <header class="top">
   <div class="wrap">
@@ -211,6 +231,7 @@
       <a href="docs" data-i18n="nav_docs">docs</a>
       <a href="community" data-i18n="nav_community">community</a>
 <a href="integrations" data-i18n="nav_integrations">integrations</a>
+<a href="search" data-i18n="nav_search">search</a>
       <a href="account" data-i18n="nav_account">account</a>
     </nav>
     <div class="header-actions">
@@ -271,7 +292,7 @@
 })();
 </script>
 
-<main>
+<main id="main">
   <div class="wrap">
     <a href="dependencies" class="back-link" data-i18n="back">← Back to dependencies</a>
 
@@ -302,6 +323,26 @@
         </div>
       </div>
 
+      <div class="pkg-actions">
+        <button type="button" class="action-btn" id="star-btn"><span id="star-icon">☆</span> <span data-i18n="star_btn">Star</span> <span id="star-count">(0)</span></button>
+        <button type="button" class="action-btn" id="report-btn" data-i18n="report_btn">Report</button>
+      </div>
+
+      <div class="rating-row">
+        <span id="stars-widget"></span>
+        <span class="rating-summary" id="rating-summary"></span>
+      </div>
+
+      <div id="readme-section" style="display:none">
+        <h2 class="section-h" data-i18n="readme_h">Readme</h2>
+        <div class="readme-box" id="readme-box"></div>
+      </div>
+
+      <div id="versions-section" style="display:none">
+        <h2 class="section-h" data-i18n="versions_h">Version history</h2>
+        <div class="versions-list" id="versions-list"></div>
+      </div>
+
       <p class="note-box" data-i18n="safety_note">Community packages aren't scanned for malware. The SHA-256 recorded at publish time is checked at install time; that protects against corruption or tampering in transit, not against a malicious publisher. Only install packages you trust.</p>
     </div>
   </div>
@@ -328,6 +369,7 @@
     en: {
       nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
       nav_integrations: "integrations",
+      nav_search: "search",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
       back: "← Back to dependencies",
@@ -336,11 +378,15 @@
       published_by: "Published by",
       safety_note: "Community packages aren't scanned for malware. The SHA-256 recorded at publish time is checked at install time; that protects against corruption or tampering in transit, not against a malicious publisher. Only install packages you trust.",
       copied: "copied ✓",
-      official_dev: "Official developer", official_app: "Official app"
+      official_dev: "Official developer", official_app: "Official app",
+      star_btn: "Star", report_btn: "Report", report_prompt: "What's wrong with this package?",
+      report_ok: "Thanks, reported.", err_generic: "Something went wrong. Try again.",
+      no_ratings: "No ratings yet", readme_h: "Readme", versions_h: "Version history"
     },
     fr: {
       nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
       nav_integrations: "intégrations",
+      nav_search: "recherche",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
       back: "← Retour aux dépendances",
@@ -349,7 +395,10 @@
       published_by: "Publié par",
       safety_note: "Les paquets communautaires ne sont pas scannés pour détecter les malwares. Le SHA-256 enregistré à la publication est vérifié à l'installation ; ça protège contre la corruption ou l'altération en transit, pas contre un publieur malveillant. N'installe que des paquets en qui tu as confiance.",
       copied: "copié ✓",
-      official_dev: "Développeur officiel", official_app: "App officielle"
+      official_dev: "Développeur officiel", official_app: "App officielle",
+      star_btn: "Suivre", report_btn: "Signaler", report_prompt: "Quel est le problème avec ce paquet ?",
+      report_ok: "Merci, signalé.", err_generic: "Un problème est survenu. Réessaie.",
+      no_ratings: "Pas encore de note", readme_h: "Readme", versions_h: "Historique des versions"
     }
   };
 
@@ -397,16 +446,85 @@
   }
 
   const pkgName = new URLSearchParams(window.location.search).get('name') || '';
+  let currentUserId = null;
+  let currentPackageId = null;
+
+  function renderStars(avgRating, myRating) {
+    const widget = document.getElementById('stars-widget');
+    widget.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'star-btn' + (i <= Math.round(myRating || avgRating) ? ' filled' : '');
+      btn.textContent = i <= Math.round(myRating || avgRating) ? '★' : '☆';
+      btn.dataset.value = i;
+      btn.addEventListener('click', async () => {
+        if (!currentUserId) { window.location.href = 'account'; return; }
+        await supabase.from('package_ratings').upsert({ package_id: currentPackageId, user_id: currentUserId, stars: i });
+        loadRatingSummary();
+      });
+      widget.appendChild(btn);
+    }
+  }
+
+  async function loadRatingSummary() {
+    const { data } = await supabase.from('community_packages_public').select('avg_rating, rating_count').eq('id', currentPackageId).single();
+    let myRating = 0;
+    if (currentUserId) {
+      const { data: mine } = await supabase.from('package_ratings').select('stars').eq('package_id', currentPackageId).eq('user_id', currentUserId).maybeSingle();
+      if (mine) myRating = mine.stars;
+    }
+    renderStars(data ? data.avg_rating : 0, myRating);
+    document.getElementById('rating-summary').textContent = data && data.rating_count > 0
+      ? `${Number(data.avg_rating).toFixed(1)} (${data.rating_count})`
+      : t('no_ratings');
+  }
+
+  async function loadStarState() {
+    const { data } = await supabase.from('community_packages_public').select('star_count').eq('id', currentPackageId).single();
+    document.getElementById('star-count').textContent = `(${data ? data.star_count : 0})`;
+    if (!currentUserId) { document.getElementById('star-btn').classList.remove('active'); document.getElementById('star-icon').textContent = '☆'; return; }
+    const { data: mine } = await supabase.from('starred_packages').select('user_id').eq('package_id', currentPackageId).eq('user_id', currentUserId).maybeSingle();
+    document.getElementById('star-btn').classList.toggle('active', !!mine);
+    document.getElementById('star-icon').textContent = mine ? '★' : '☆';
+  }
+
+  document.getElementById('star-btn').addEventListener('click', async () => {
+    if (!currentUserId) { window.location.href = 'account'; return; }
+    const isActive = document.getElementById('star-btn').classList.contains('active');
+    if (isActive) await supabase.from('starred_packages').delete().eq('package_id', currentPackageId).eq('user_id', currentUserId);
+    else await supabase.from('starred_packages').insert({ package_id: currentPackageId, user_id: currentUserId });
+    loadStarState();
+  });
+
+  document.getElementById('report-btn').addEventListener('click', async () => {
+    if (!currentUserId) { window.location.href = 'account'; return; }
+    const reason = window.prompt(t('report_prompt'));
+    if (!reason) return;
+    const { error } = await supabase.rpc('submit_package_report', { p_package_name: pkgName, p_reason: reason });
+    window.alert(error ? (error.message || t('err_generic')) : t('report_ok'));
+  });
+
+  async function loadVersions() {
+    const { data } = await supabase.from('package_versions').select('version, created_at').eq('package_id', currentPackageId).order('created_at', { ascending: false }).limit(20);
+    const section = document.getElementById('versions-section');
+    if (!data || data.length < 2) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    document.getElementById('versions-list').innerHTML = data.map((v) => `
+      <div class="version-row"><span>${escapeHtml(v.version)}</span><span class="v-date">${new Date(v.created_at).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US')}</span></div>
+    `).join('');
+  }
 
   async function loadPackage() {
     const { data: rows, error } = await supabase
       .from('community_packages_public')
-      .select('name, version, description, size_bytes, download_count, is_official, updated_at, uploader_username, uploader_avatar_url, badges')
+      .select('id, name, version, description, size_bytes, download_count, is_official, updated_at, uploader_username, uploader_avatar_url, badges, readme_md')
       .eq('name', pkgName)
       .limit(1);
 
     if (error || !rows || rows.length === 0) { showView('notfound'); return; }
     const p = rows[0];
+    currentPackageId = p.id;
 
     document.getElementById('pname-text').textContent = p.name;
     const pkgBadge = document.getElementById('official-badge');
@@ -425,6 +543,15 @@
     const link = document.getElementById('publisher-link');
     link.textContent = '@' + p.uploader_username;
     link.href = 'profile?u=' + encodeURIComponent(p.uploader_username);
+
+    if (p.readme_md) {
+      document.getElementById('readme-section').style.display = 'block';
+      document.getElementById('readme-box').textContent = p.readme_md;
+    }
+
+    loadRatingSummary();
+    loadStarState();
+    loadVersions();
 
     showView('package');
   }
@@ -556,8 +683,13 @@
     notifPollInterval = setInterval(loadNotifications, 60000);
   }
 
-  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); });
-  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); });
+  function updateCurrentUser(session) {
+    currentUserId = session ? session.user.id : null;
+    if (currentPackageId) { loadRatingSummary(); loadStarState(); }
+  }
+
+  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); updateCurrentUser(session); });
+  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); updateCurrentUser(data.session); });
 </script>
 
 <div class="cookie-banner" id="cookie-banner">

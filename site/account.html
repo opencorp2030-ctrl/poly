@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Account · Poly</title>
 <link rel="icon" href="logo.png" />
+<link rel="apple-touch-icon" href="logo.png" />
+<link rel="manifest" href="site.webmanifest" />
 <meta name="description" content="Sign in to manage your Poly account and Pro status." />
+<link rel="canonical" href="https://poly.candygate.eu/account" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Poly" />
 <meta property="og:title" content="Account · Poly" />
@@ -72,6 +75,8 @@
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   a:focus-visible, button:focus-visible, input:focus-visible {
+  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
+  .skip-link:focus { left: 0; }
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
@@ -326,6 +331,16 @@
   .btn.danger-btn:hover { background: var(--danger); color: #fff; }
   .danger-note { color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.9rem; max-width: 48ch; }
 
+  .security-block { padding: 1rem 0; border-top: 1px solid var(--border); }
+  .security-block:first-of-type { border-top: none; padding-top: 0; }
+  .security-label { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; margin: 0 0 0.4rem; }
+  .security-note { color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.6rem; max-width: 48ch; }
+  .inline-form { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .inline-form input { flex: 1; min-width: 140px; padding: 0.5rem 0.7rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.85rem; }
+  .session-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--text-dim); }
+  .session-row:last-child { border-bottom: none; }
+  .session-row .s-agent { max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
   .switch-mode {
     text-align: center; margin-top: 1.2rem; font-size: 0.9rem; color: var(--text-dim);
   }
@@ -429,6 +444,7 @@
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
 <header class="top">
   <div class="wrap">
@@ -440,6 +456,7 @@
       <a href="/#pro" data-i18n="nav_pro">pro</a>
       <a href="community" data-i18n="nav_community">community</a>
 <a href="integrations" data-i18n="nav_integrations">integrations</a>
+<a href="search" data-i18n="nav_search">search</a>
       <a href="account" class="current" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
@@ -508,7 +525,7 @@ window.addEventListener('unhandledrejection', function (e) {
 })();
 </script>
 
-<main>
+<main id="main">
   <div class="wrap">
 
     <div class="card auth-card active" data-view="auth">
@@ -525,6 +542,12 @@ window.addEventListener('unhandledrejection', function (e) {
         <div class="field">
           <label for="password" data-i18n="field_password">Password</label>
           <input id="password" type="password" required autocomplete="current-password" minlength="6" />
+        </div>
+        <div class="field" id="consent-field" style="display:none">
+          <label style="display:flex;align-items:flex-start;gap:0.5rem;font-family:var(--sans);font-size:0.85rem;color:var(--text-dim);cursor:pointer;">
+            <input type="checkbox" id="consent-checkbox" style="margin-top:0.2rem;" />
+            <span data-i18n-html="consent">I agree to the <a href="terms" target="_blank">Terms</a> and <a href="privacy" target="_blank">Privacy Policy</a>.</span>
+          </label>
         </div>
         <button class="btn primary" type="submit" id="submit-btn" data-i18n="btn_signin">Sign in</button>
       </form>
@@ -701,6 +724,46 @@ window.addEventListener('unhandledrejection', function (e) {
         </div>
 
         <div class="card-section">
+          <p class="section-label" data-i18n="section_security">Security</p>
+
+          <div class="security-block">
+            <p class="security-label" data-i18n="email_h">Email</p>
+            <div class="inline-form">
+              <input type="email" id="new-email-input" placeholder="" />
+              <button class="btn small" id="change-email-btn" type="button" data-i18n="change_email_btn">Update</button>
+            </div>
+            <p class="status" id="email-status"></p>
+          </div>
+
+          <div class="security-block">
+            <p class="security-label" data-i18n="mfa_h">Two-factor authentication</p>
+            <p class="security-note" id="mfa-status-note" data-i18n="mfa_loading">Checking...</p>
+            <div id="mfa-enroll-box" style="display:none">
+              <img id="mfa-qr" alt="" style="max-width:180px;display:block;margin-bottom:0.75rem;border-radius:8px;" />
+              <div class="inline-form">
+                <input type="text" id="mfa-code-input" placeholder="123456" maxlength="6" />
+                <button class="btn small" id="mfa-verify-btn" type="button" data-i18n="mfa_verify_btn">Verify &amp; enable</button>
+              </div>
+            </div>
+            <button class="btn small" id="mfa-enable-btn" type="button" data-i18n="mfa_enable_btn" style="display:none">Enable 2FA</button>
+            <button class="btn small danger-btn" id="mfa-disable-btn" type="button" data-i18n="mfa_disable_btn" style="display:none">Disable 2FA</button>
+            <p class="status" id="mfa-status"></p>
+          </div>
+
+          <div class="security-block">
+            <p class="security-label" data-i18n="sessions_h">Active sessions</p>
+            <div id="sessions-list"></div>
+            <button class="btn small danger-btn" id="revoke-sessions-btn" type="button" data-i18n="revoke_sessions_btn">Sign out everywhere</button>
+          </div>
+
+          <div class="security-block">
+            <p class="security-label" data-i18n="export_h">Your data</p>
+            <p class="security-note" data-i18n="export_note">Download everything Poly has about your account as a JSON file.</p>
+            <button class="btn small" id="export-data-btn" type="button" data-i18n="export_btn">Download my data</button>
+          </div>
+        </div>
+
+        <div class="card-section">
           <button class="btn" id="signout-btn" type="button" data-i18n="btn_signout">Sign out</button>
         </div>
 
@@ -769,6 +832,7 @@ window.addEventListener('unhandledrejection', function (e) {
     en: {
       nav_install: "install", nav_pro: "pro", nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account", nav_github: "github",
       nav_integrations: "integrations",
+      nav_search: "search",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
       acct_eyebrow: "Account",
@@ -809,6 +873,8 @@ window.addEventListener('unhandledrejection', function (e) {
       package_deleted_ok: "Package deleted.",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in.",
+      consent_html: 'I agree to the <a href="terms" target="_blank">Terms</a> and <a href="privacy" target="_blank">Privacy Policy</a>.',
+      consent_required: "Please agree to the Terms and Privacy Policy first.",
       forgot_link: "Forgot password?",
       forgot_title: "Reset your password",
       forgot_submit: "Send reset link",
@@ -818,6 +884,14 @@ window.addEventListener('unhandledrejection', function (e) {
       recovery_field: "New password",
       recovery_submit: "Update password",
       recovery_ok: "Password updated.",
+      section_security: "Security",
+      email_h: "Email", change_email_btn: "Update", email_change_sent: "Check your new email to confirm the change.",
+      mfa_h: "Two-factor authentication", mfa_loading: "Checking...", mfa_on: "Enabled ✓", mfa_off: "Not enabled",
+      mfa_enable_btn: "Enable 2FA", mfa_disable_btn: "Disable 2FA", mfa_verify_btn: "Verify & enable",
+      mfa_enabled_ok: "2FA enabled.", mfa_disabled_ok: "2FA disabled.",
+      sessions_h: "Active sessions", revoke_sessions_btn: "Sign out everywhere",
+      revoke_sessions_confirm: "Sign out of every device, including this one?",
+      export_h: "Your data", export_note: "Download everything Poly has about your account as a JSON file.", export_btn: "Download my data",
       section_danger: "Danger zone",
       delete_account_note: "Permanently deletes your profile, packages, tokens, follows, and notifications. This can't be undone.",
       delete_account_btn: "Delete account",
@@ -868,6 +942,7 @@ window.addEventListener('unhandledrejection', function (e) {
     fr: {
       nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
       nav_integrations: "intégrations",
+      nav_search: "recherche",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
       acct_eyebrow: "Compte",
@@ -908,6 +983,8 @@ window.addEventListener('unhandledrejection', function (e) {
       package_deleted_ok: "Paquet supprimé.",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi.",
+      consent_html: 'J\'accepte les <a href="terms" target="_blank">Conditions</a> et la <a href="privacy" target="_blank">Politique de confidentialité</a>.',
+      consent_required: "Merci d'accepter les Conditions et la Politique de confidentialité d'abord.",
       forgot_link: "Mot de passe oublié ?",
       forgot_title: "Réinitialiser ton mot de passe",
       forgot_submit: "Envoyer le lien",
@@ -917,6 +994,14 @@ window.addEventListener('unhandledrejection', function (e) {
       recovery_field: "Nouveau mot de passe",
       recovery_submit: "Mettre à jour",
       recovery_ok: "Mot de passe mis à jour.",
+      section_security: "Sécurité",
+      email_h: "E-mail", change_email_btn: "Mettre à jour", email_change_sent: "Vérifie ton nouvel e-mail pour confirmer le changement.",
+      mfa_h: "Authentification à deux facteurs", mfa_loading: "Vérification...", mfa_on: "Activée ✓", mfa_off: "Non activée",
+      mfa_enable_btn: "Activer la 2FA", mfa_disable_btn: "Désactiver la 2FA", mfa_verify_btn: "Vérifier et activer",
+      mfa_enabled_ok: "2FA activée.", mfa_disabled_ok: "2FA désactivée.",
+      sessions_h: "Sessions actives", revoke_sessions_btn: "Se déconnecter partout",
+      revoke_sessions_confirm: "Se déconnecter de tous les appareils, y compris celui-ci ?",
+      export_h: "Tes données", export_note: "Télécharge tout ce que Poly sait sur ton compte, au format JSON.", export_btn: "Télécharger mes données",
       section_danger: "Zone dangereuse",
       delete_account_note: "Supprime définitivement ton profil, tes paquets, tes tokens, tes abonnements et tes notifications. Irréversible.",
       delete_account_btn: "Supprimer le compte",
@@ -1160,10 +1245,15 @@ window.addEventListener('unhandledrejection', function (e) {
       const key = node.getAttribute('data-i18n-placeholder');
       if (I18N[l][key] !== undefined) node.placeholder = I18N[l][key];
     });
+    document.querySelectorAll('[data-i18n-html]').forEach((node) => {
+      const key = node.getAttribute('data-i18n-html') + '_html';
+      if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
+    });
     document.getElementById('auth-heading').textContent = mode === 'signup' ? t('btn_signup') : t('btn_signin');
     document.getElementById('submit-btn').textContent = mode === 'signup' ? t('btn_signup') : t('btn_signin');
     document.getElementById('switch-text').textContent = mode === 'signup' ? t('switch_to_signin_prompt') : t('switch_to_signup_prompt');
     document.getElementById('switch-link').textContent = mode === 'signup' ? t('switch_to_signin_link') : t('switch_to_signup_link');
+    document.getElementById('consent-field').style.display = mode === 'signup' ? 'block' : 'none';
     refreshBadgeTitles();
     document.getElementById('bio-input').setAttribute('data-placeholder', t('bio_placeholder'));
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
@@ -1203,6 +1293,10 @@ window.addEventListener('unhandledrejection', function (e) {
     setStatus('');
 
     if (mode === 'signup') {
+      if (!document.getElementById('consent-checkbox').checked) {
+        setStatus(t('consent_required'), 'error');
+        return;
+      }
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) { setStatus(error.message || t('err_generic'), 'error'); return; }
       setStatus(t('ok_check_email'), 'ok');
@@ -1247,6 +1341,104 @@ window.addEventListener('unhandledrejection', function (e) {
 
   document.getElementById('signout-btn').addEventListener('click', async () => {
     await supabase.auth.signOut();
+  });
+
+  // --- Email change ---
+  document.getElementById('change-email-btn').addEventListener('click', async () => {
+    const statusEl = document.getElementById('email-status');
+    const newEmail = document.getElementById('new-email-input').value.trim();
+    if (!newEmail) return;
+    const { error } = await supabase.auth.updateUser({ email: newEmail });
+    statusEl.textContent = error ? (error.message || t('err_generic')) : t('email_change_sent');
+    statusEl.className = 'status show ' + (error ? 'error' : 'ok');
+  });
+
+  // --- Two-factor authentication ---
+  let pendingMfaFactorId = null;
+  async function refreshMfaState() {
+    const { data, error } = await supabase.auth.mfa.listFactors();
+    const note = document.getElementById('mfa-status-note');
+    const enableBtn = document.getElementById('mfa-enable-btn');
+    const disableBtn = document.getElementById('mfa-disable-btn');
+    if (error) { note.textContent = t('err_generic'); return; }
+    const verified = (data.totp || []).find((f) => f.status === 'verified');
+    if (verified) {
+      note.textContent = t('mfa_on');
+      enableBtn.style.display = 'none';
+      disableBtn.style.display = 'inline-flex';
+      disableBtn.dataset.factorId = verified.id;
+    } else {
+      note.textContent = t('mfa_off');
+      enableBtn.style.display = 'inline-flex';
+      disableBtn.style.display = 'none';
+    }
+    document.getElementById('mfa-enroll-box').style.display = 'none';
+  }
+
+  document.getElementById('mfa-enable-btn').addEventListener('click', async () => {
+    const statusEl = document.getElementById('mfa-status');
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' });
+    if (error) { statusEl.textContent = error.message || t('err_generic'); statusEl.className = 'status show error'; return; }
+    pendingMfaFactorId = data.id;
+    document.getElementById('mfa-qr').src = data.totp.qr_code;
+    document.getElementById('mfa-enroll-box').style.display = 'block';
+  });
+
+  document.getElementById('mfa-verify-btn').addEventListener('click', async () => {
+    const statusEl = document.getElementById('mfa-status');
+    const code = document.getElementById('mfa-code-input').value.trim();
+    if (!code || !pendingMfaFactorId) return;
+    const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: pendingMfaFactorId });
+    if (challengeError) { statusEl.textContent = challengeError.message || t('err_generic'); statusEl.className = 'status show error'; return; }
+    const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: pendingMfaFactorId, challengeId: challenge.id, code });
+    if (verifyError) { statusEl.textContent = verifyError.message || t('err_generic'); statusEl.className = 'status show error'; return; }
+    statusEl.textContent = t('mfa_enabled_ok');
+    statusEl.className = 'status show ok';
+    document.getElementById('mfa-code-input').value = '';
+    refreshMfaState();
+  });
+
+  document.getElementById('mfa-disable-btn').addEventListener('click', async () => {
+    const statusEl = document.getElementById('mfa-status');
+    const factorId = document.getElementById('mfa-disable-btn').dataset.factorId;
+    if (!factorId) return;
+    const { error } = await supabase.auth.mfa.unenroll({ factorId });
+    statusEl.textContent = error ? (error.message || t('err_generic')) : t('mfa_disabled_ok');
+    statusEl.className = 'status show ' + (error ? 'error' : 'ok');
+    refreshMfaState();
+  });
+
+  // --- Sessions ---
+  async function loadSessions() {
+    const { data } = await supabase.rpc('list_my_sessions');
+    const list = document.getElementById('sessions-list');
+    if (!data || !data.length) { list.innerHTML = ''; return; }
+    list.innerHTML = data.slice(0, 10).map((s) => `
+      <div class="session-row">
+        <span class="s-agent">${escapeHtml((s.user_agent || '').slice(0, 60) || 'Unknown device')}</span>
+        <span>${new Date(s.updated_at || s.created_at).toLocaleString(lang() === 'fr' ? 'fr-FR' : 'en-US')}</span>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('revoke-sessions-btn').addEventListener('click', async () => {
+    if (!window.confirm(t('revoke_sessions_confirm'))) return;
+    await supabase.rpc('revoke_all_sessions');
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  });
+
+  // --- GDPR data export ---
+  document.getElementById('export-data-btn').addEventListener('click', async () => {
+    const { data, error } = await supabase.rpc('export_my_data');
+    if (error) { window.alert(error.message || t('err_generic')); return; }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'poly-account-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
   });
 
   document.getElementById('delete-account-btn').addEventListener('click', async () => {
@@ -1620,6 +1812,9 @@ window.addEventListener('unhandledrejection', function (e) {
     showView('profile');
     loadPublishedPackages(session.user.id);
     loadTokens(session.user.id);
+    refreshMfaState();
+    loadSessions();
+    document.getElementById('new-email-input').placeholder = session.user.email;
 
     const checkoutParam = new URLSearchParams(window.location.search).get('checkout');
     if (checkoutParam === 'success') {
