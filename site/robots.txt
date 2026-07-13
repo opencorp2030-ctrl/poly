@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /notifications.html
+Disallow: /banned.html
+Disallow: /mcp-connect.html
+
+Sitemap: https://poly.candygate.eu/sitemap.xml

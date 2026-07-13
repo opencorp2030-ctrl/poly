@@ -4,7 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Community · Poly</title>
+<link rel="icon" href="logo.png" />
 <meta name="description" content="Browse the Poly community, real download counts, and member stats." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Community · Poly" />
+<meta property="og:description" content="Browse the Poly community, real download counts, and member stats." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/community.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Community · Poly" />
+<meta name="twitter:description" content="Browse the Poly community, real download counts, and member stats." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
 <style>
   :root {
     --ink: #14171d;
@@ -55,6 +66,7 @@
     color: var(--text);
     font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
   a { color: var(--accent); text-decoration: none; }
@@ -74,14 +86,70 @@
   header.top { border-bottom: 1px solid var(--border); }
   header.top .wrap {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; flex-wrap: wrap; min-height: 64px;
+    gap: 1rem; flex-wrap: nowrap; min-height: 64px;
   }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover { color: var(--accent); }
+
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  @media (max-width: 960px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--ink-raised); border-bottom: 1px solid var(--border);
+      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
+    }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
   nav.top-links a.current { color: var(--accent); }
+
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .notif-bell { position: relative; display: none; }
+  .notif-bell-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .notif-bell-btn svg { width: 17px; height: 17px; }
+  .notif-count {
+    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
+    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
+  }
+  .notif-dropdown {
+    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
+    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
+    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  }
+  .notif-dropdown.open { display: flex; }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: rgba(240,169,62,0.06); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
 
   .user-menu { position: relative; }
   .user-menu-btn {
@@ -106,6 +174,14 @@
   }
   .user-menu-item:hover { background: var(--ink); }
   .user-menu-item.danger { color: var(--danger); }
+
+  footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
 
   main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
 
@@ -180,6 +256,16 @@
   }
   .empty-note { font-size: 0.85rem; color: var(--text-dim); text-align: center; padding: 1.5rem 0; grid-column: 1 / -1; }
 
+  .pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.35rem; margin-top: 1.75rem; }
+  .pager-btn {
+    min-width: 2.1rem; height: 2.1rem; padding: 0 0.5rem; border: 1px solid var(--border); border-radius: 6px;
+    background: transparent; color: var(--text); font-family: var(--mono); font-size: 0.82rem; cursor: pointer;
+  }
+  .pager-btn:hover:not(:disabled):not(.active) { border-color: var(--accent); }
+  .pager-btn.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; cursor: default; }
+  .pager-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .pager-ellipsis { color: var(--text-dim); font-family: var(--mono); font-size: 0.82rem; padding: 0 0.15rem; }
+
   [data-view] { display: none; }
   [data-view].active { display: block; }
 </style>
@@ -189,7 +275,7 @@
 <header class="top">
   <div class="wrap">
     <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
-    <nav class="top-links">
+    <nav class="top-links" id="top-links">
       <a href="index.html#install" data-i18n="nav_install">install</a>
       <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs.html" data-i18n="nav_docs">docs</a>
@@ -198,20 +284,63 @@
       <a href="account.html" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
+    <div class="header-actions">
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="notif-bell" id="notif-bell">
+      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-count" id="notif-count">0</span>
+      </button>
+      <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-dropdown-head">
+          <span class="title">Notifications</span>
+          <div class="head-actions">
+            <a class="notif-see-all" href="notifications.html">See all</a>
+            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+          </div>
+        </div>
+        <div class="notif-list" id="notif-list"></div>
+        <div class="notif-staff-compose" id="notif-staff-compose">
+          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+          <button type="button" id="notif-staff-send">Send</button>
+        </div>
+      </div>
+    </div>
     <div class="user-menu" id="user-menu" style="display:none">
       <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
         <span class="initial" id="user-menu-avatar">?</span>
       </button>
       <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">—</div>
+        <div class="user-menu-name" id="user-menu-name">…</div>
         <a href="account.html" class="user-menu-item">Account</a>
         <a href="community.html" class="user-menu-item">Community</a>
         <a href="docs.html" class="user-menu-item">Docs</a>
         <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
       </div>
     </div>
+    </div>
   </div>
 </header>
+
+<script>
+(function () {
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('top-links');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  links.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
 
 <main>
   <div class="wrap">
@@ -252,10 +381,22 @@
           <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" />
         </div>
         <div class="member-grid" id="member-grid"></div>
+        <div class="pager" id="member-pager"></div>
       </div>
     </div>
   </div>
 </main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms.html" data-i18n="footer_terms">Terms</a>
+      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
 
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -267,9 +408,10 @@
   const I18N = {
     en: {
       nav_install: "install", nav_pro: "pro", nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account", nav_github: "github",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       eyebrow: "Community",
       title: "The people building with poly",
-      lede: "Real numbers, pulled live from GitHub releases and the Poly account system — not made up.",
+      lede: "Real numbers, pulled live from GitHub releases and the Poly account system, not made up.",
       stat_downloads: "Downloads", stat_members: "Members", stat_pro: "Pro members", stat_releases: "Releases",
       search_eyebrow: "Find people",
       search_placeholder: "Search by username…",
@@ -280,9 +422,10 @@
     },
     fr: {
       nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       eyebrow: "Communauté",
       title: "Les gens qui construisent avec poly",
-      lede: "De vrais chiffres, tirés en direct des releases GitHub et du système de compte Poly — rien d'inventé.",
+      lede: "De vrais chiffres, tirés en direct des releases GitHub et du système de compte Poly, rien d'inventé.",
       stat_downloads: "Téléchargements", stat_members: "Membres", stat_pro: "Membres Pro", stat_releases: "Releases",
       search_eyebrow: "Trouver des gens",
       search_placeholder: "Chercher par nom d'utilisateur…",
@@ -355,14 +498,14 @@
       document.getElementById('stat-releases').classList.remove('loading');
     })
     .catch(() => {
-      document.getElementById('stat-downloads').textContent = '—';
-      document.getElementById('stat-releases').textContent = '—';
+      document.getElementById('stat-downloads').textContent = '…';
+      document.getElementById('stat-releases').textContent = '…';
     });
 
   supabase.rpc('community_stats').then(({ data, error }) => {
     if (error || !data || !data[0]) {
-      document.getElementById('stat-members').textContent = '—';
-      document.getElementById('stat-pro').textContent = '—';
+      document.getElementById('stat-members').textContent = '…';
+      document.getElementById('stat-pro').textContent = '…';
       return;
     }
     document.getElementById('stat-members').textContent = data[0].total_members;
@@ -372,14 +515,17 @@
   });
 
   // --- search / browse (signed-in only) ---
+  const PAGE_SIZE = 50;
   let currentUserId = null;
   let currentQuery = '';
+  let currentPage = 1;
   let searchDebounce = null;
 
   document.getElementById('search-input').addEventListener('input', (e) => {
     clearTimeout(searchDebounce);
     currentQuery = e.target.value.trim();
-    searchDebounce = setTimeout(() => runSearch(currentQuery), 300);
+    currentPage = 1;
+    searchDebounce = setTimeout(() => runSearch(), 300);
   });
 
   function renderMembers(rows, emptyKey) {
@@ -399,25 +545,61 @@
     `).join('');
   }
 
-  async function runSearch(q) {
-    if (!currentUserId) return;
-    if (!q) {
-      const { data } = await supabase
-        .from('profiles_public')
-        .select('id, username, bio, avatar_url, plan, is_official')
-        .order('created_at', { ascending: false })
-        .limit(24);
-      renderMembers(data, 'empty_note');
-      return;
+  function renderPager(totalCount) {
+    const pager = document.getElementById('member-pager');
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+    if (totalPages <= 1) { pager.innerHTML = ''; return; }
+
+    function pageBtn(p, label, opts) {
+      opts = opts || {};
+      return `<button type="button" class="pager-btn${p === currentPage ? ' active' : ''}" data-page="${p}" ${opts.disabled ? 'disabled' : ''}>${label}</button>`;
     }
-    const { data, error } = await supabase
+
+    let pages = [];
+    pages.push(pageBtn(Math.max(1, currentPage - 1), '‹', { disabled: currentPage === 1 }));
+
+    const nums = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+    let lastShown = 0;
+    for (let p = 1; p <= totalPages; p++) {
+      if (!nums.has(p)) continue;
+      if (p - lastShown > 1) pages.push('<span class="pager-ellipsis">…</span>');
+      pages.push(pageBtn(p, String(p)));
+      lastShown = p;
+    }
+
+    pages.push(pageBtn(Math.min(totalPages, currentPage + 1), '›', { disabled: currentPage === totalPages }));
+
+    pager.innerHTML = pages.join('');
+    pager.querySelectorAll('.pager-btn:not(:disabled)').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        currentPage = Number(btn.getAttribute('data-page'));
+        runSearch();
+        pager.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+  }
+
+  async function runSearch() {
+    if (!currentUserId) return;
+    const from = (currentPage - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    let query = supabase
       .from('profiles_public')
-      .select('id, username, bio, avatar_url, plan, is_official')
-      .ilike('username', `%${q}%`)
-      .neq('id', currentUserId)
-      .limit(30);
+      .select('id, username, bio, avatar_url, plan, is_official', { count: 'exact' });
+
+    if (currentQuery) {
+      query = query.ilike('username', `%${currentQuery}%`).neq('id', currentUserId);
+    }
+
+    const { data, error, count } = await query
+      .order('plan', { ascending: false })
+      .order('username', { ascending: true })
+      .range(from, to);
+
     if (error) { renderMembers([], 'empty_note'); return; }
     renderMembers(data, 'empty_note');
+    renderPager(count || 0);
   }
 
   async function renderUserMenu(session) {
@@ -451,22 +633,106 @@
     window.location.reload();
   });
 
+  async function checkBan(session) {
+    if (!session) return;
+    const { data } = await supabase.rpc('check_banned');
+    if (data && data[0] && data[0].banned) window.location.href = 'banned.html';
+  }
+
+  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+    return Math.floor(diff / 86400) + 'd';
+  }
+  let notifCache = [];
+  let notifPollInterval = null;
+  async function loadNotifications() {
+    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
+    notifCache = data || [];
+    const list = document.getElementById('notif-list');
+    const countEl = document.getElementById('notif-count');
+    if (!notifCache.length) {
+      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
+      countEl.style.display = 'none';
+      return;
+    }
+    const unread = notifCache.filter((n) => !n.read_at).length;
+    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
+    list.innerHTML = notifCache.map((n) => `
+      <a class="notif-item ${n.read_at ? '' : 'unread'}" data-id="${n.id}">
+        <div class="n-title">${escapeHtml(n.title)}</div>
+        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
+        <div class="n-time">${timeAgo(n.created_at)}</div>
+      </a>
+    `).join('');
+    list.querySelectorAll('.notif-item').forEach((el) => {
+      el.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const id = el.getAttribute('data-id');
+        const n = notifCache.find((x) => x.id === id);
+        await supabase.rpc('mark_notification_read', { p_id: id });
+        window.location.href = 'notifications.html?id=' + encodeURIComponent(id);
+      });
+    });
+  }
+  document.getElementById('notif-bell-btn').addEventListener('click', () => {
+    const dd = document.getElementById('notif-dropdown');
+    const open = dd.classList.toggle('open');
+    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) loadNotifications();
+  });
+  document.addEventListener('click', (e) => {
+    const bell = document.getElementById('notif-bell');
+    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
+  });
+  document.getElementById('notif-mark-all').addEventListener('click', async () => {
+    await supabase.rpc('mark_all_notifications_read');
+    loadNotifications();
+  });
+  document.getElementById('notif-staff-send').addEventListener('click', async () => {
+    const input = document.getElementById('notif-staff-input');
+    const title = input.value.trim();
+    if (!title) return;
+    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
+    if (!error) { input.value = ''; loadNotifications(); }
+  });
+  async function initNotifBell(session) {
+    const bell = document.getElementById('notif-bell');
+    clearInterval(notifPollInterval);
+    if (!session) { bell.style.display = 'none'; return; }
+    bell.style.display = 'block';
+    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
+    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
+    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
+    loadNotifications();
+    notifPollInterval = setInterval(loadNotifications, 60000);
+  }
+
   supabase.auth.getSession().then(({ data }) => {
     if (data.session) {
       currentUserId = data.session.user.id;
       showView('signedin');
-      runSearch('');
+      currentPage = 1;
+      runSearch();
     } else {
       showView('signedout');
     }
     renderUserMenu(data.session);
+    checkBan(data.session);
+    initNotifBell(data.session);
   });
 
   supabase.auth.onAuthStateChange((_event, session) => {
+    checkBan(session);
+    initNotifBell(session);
     if (session) {
       currentUserId = session.user.id;
       showView('signedin');
-      runSearch('');
+      currentPage = 1;
+      runSearch();
     } else {
       currentUserId = null;
       showView('signedout');

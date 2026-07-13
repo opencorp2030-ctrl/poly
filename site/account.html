@@ -4,7 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Account · Poly</title>
+<link rel="icon" href="logo.png" />
 <meta name="description" content="Sign in to manage your Poly account and Pro status." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Account · Poly" />
+<meta property="og:description" content="Sign in to manage your Poly account and Pro status." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/account.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Account · Poly" />
+<meta name="twitter:description" content="Sign in to manage your Poly account and Pro status." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
 <style>
   :root {
     --ink: #14171d;
@@ -55,6 +66,7 @@
     color: var(--text);
     font-family: var(--sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
   body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
   a { color: var(--accent); text-decoration: none; }
@@ -74,14 +86,70 @@
   header.top { border-bottom: 1px solid var(--border); }
   header.top .wrap {
     display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; flex-wrap: wrap; min-height: 64px;
+    gap: 1rem; flex-wrap: nowrap; min-height: 64px;
   }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover { color: var(--accent); }
+
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  @media (max-width: 960px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--ink-raised); border-bottom: 1px solid var(--border);
+      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
+    }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
   nav.top-links a.current { color: var(--accent); }
+
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .notif-bell { position: relative; display: none; }
+  .notif-bell-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .notif-bell-btn svg { width: 17px; height: 17px; }
+  .notif-count {
+    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
+    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
+  }
+  .notif-dropdown {
+    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
+    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
+    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  }
+  .notif-dropdown.open { display: flex; }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: rgba(240,169,62,0.06); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
 
   .user-menu { position: relative; }
   .user-menu-btn {
@@ -106,6 +174,14 @@
   }
   .user-menu-item:hover { background: var(--ink); }
   .user-menu-item.danger { color: var(--danger); }
+
+  footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
 
   main { padding: clamp(3rem, 8vw, 6rem) 0; }
 
@@ -153,10 +229,28 @@
   .official-badge { display: inline-flex; vertical-align: middle; }
   .official-badge svg { width: 0.95rem; height: 0.95rem; display: block; }
 
+  .pkg-badge {
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 999px; vertical-align: middle;
+    color: #fff; display: inline-block;
+  }
+  .pkg-badge.pkg-new { background: var(--accent); color: var(--accent-ink); }
+  .pkg-badge.pkg-safe { background: #218f5c; }
+  .user-badges { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; vertical-align: middle; align-items: center; }
+  .user-badge { display: inline-flex; background: none; }
+  .user-badge svg { width: 1rem; height: 1rem; display: block; }
+
   .token-box {
     font-family: var(--mono); font-size: 0.82rem; background: var(--ink); border: 1px solid var(--border);
     border-radius: 6px; padding: 0.7rem 0.9rem; cursor: pointer; margin-top: 0.5rem; overflow-x: auto;
     white-space: nowrap; word-break: break-all;
+  }
+  .toggle-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; cursor: pointer; margin-bottom: 1rem; user-select: none; }
+  .toggle-row input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+  .dev-info-box {
+    font-family: var(--mono); font-size: 0.76rem; background: var(--ink); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.8rem 1rem; white-space: pre-wrap; overflow-wrap: anywhere;
+    margin-bottom: 0.75rem; max-height: 280px; overflow-y: auto; color: var(--text-dim);
   }
   .token-box:hover { border-color: var(--accent); }
   .token-row { padding: 0.6rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
@@ -164,6 +258,18 @@
   .token-row .tlabel { font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; }
   .token-row .tmeta { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.15rem; font-family: var(--mono); }
   .token-revoked-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px; background: var(--border); color: var(--text-dim); }
+  .token-expired-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px; background: rgba(224, 102, 74, 0.16); color: var(--danger); }
+  .token-row-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .token-row-actions .btn.small { margin-top: 0; }
+  .token-edit-row { padding: 0.6rem 0; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .token-edit-row:last-of-type { border-bottom: none; }
+  .token-edit-row input[type=text], .token-edit-row select {
+    background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+    font-family: var(--sans); font-size: 0.82rem; padding: 0.45rem 0.6rem;
+  }
+  .token-edit-row input[type=text]:focus, .token-edit-row select:focus { outline: none; border-color: var(--accent); }
+  .token-edit-row input[type=text] { flex: 1 1 140px; min-width: 0; }
+  #new-token-form { padding: 0.7rem 0; }
 
   .cli-card .eyebrow { margin-bottom: 1.25rem; }
   .cli-tip {
@@ -206,6 +312,9 @@
   .btn.primary:hover { opacity: 0.92; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn:not(:disabled):hover { border-color: var(--accent); }
+  .btn.danger-btn { color: var(--danger); border-color: var(--danger); width: auto; }
+  .btn.danger-btn:hover { background: var(--danger); color: #fff; }
+  .danger-note { color: var(--text-dim); font-size: 0.85rem; margin: 0 0 0.9rem; max-width: 48ch; }
 
   .switch-mode {
     text-align: center; margin-top: 1.2rem; font-size: 0.9rem; color: var(--text-dim);
@@ -276,6 +385,34 @@
   .field-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem; text-align: right; }
   .btn.small { width: auto; padding: 0.45rem 0.9rem; font-size: 0.8rem; margin-top: 0.5rem; }
 
+  .editor-toolbar { display: flex; gap: 0.3rem; margin-bottom: 0.5rem; }
+  .editor-toolbar button {
+    width: 30px; height: 30px; border: 1px solid var(--border); background: var(--ink); color: var(--text);
+    border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-family: var(--sans);
+  }
+  .editor-toolbar button:hover { border-color: var(--accent); }
+  .editor-toolbar button.b { font-weight: 800; }
+  .editor-toolbar button.i { font-style: italic; }
+  .editor-toolbar button.u { text-decoration: underline; }
+  .bio-editor {
+    width: 100%; min-height: 6.5rem; padding: 0.7rem 0.85rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--ink); color: var(--text); font-family: var(--sans); font-size: 0.9rem; line-height: 1.5;
+    box-sizing: border-box; overflow-wrap: anywhere;
+  }
+  .bio-editor:focus { border-color: var(--accent); outline: none; }
+  .bio-editor:empty::before { content: attr(data-placeholder); color: var(--text-dim); }
+  .bio-editor a { color: var(--accent); }
+  .bio-editor img { max-width: 100%; border-radius: 6px; margin: 0.4rem 0; display: block; }
+  .bio-photos { display: flex; gap: 0.6rem; margin-top: 0.6rem; }
+  .bio-photo-slot {
+    width: 84px; height: 84px; border-radius: 8px; border: 1px dashed var(--border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem;
+    cursor: pointer; font-size: 0.68rem; color: var(--text-dim); overflow: hidden; position: relative; flex-shrink: 0;
+  }
+  .bio-photo-slot:hover { border-color: var(--accent); }
+  .bio-photo-preview { width: 100%; height: 100%; position: absolute; inset: 0; }
+  .bio-photo-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
   [data-view] { display: none; }
   [data-view].active { display: block; }
   .account-grid[data-view].active { display: grid; }
@@ -286,7 +423,7 @@
 <header class="top">
   <div class="wrap">
     <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
-    <nav class="top-links">
+    <nav class="top-links" id="top-links">
       <a href="index.html#install" data-i18n="nav_install">install</a>
       <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs.html" data-i18n="nav_docs">docs</a>
@@ -295,20 +432,70 @@
       <a href="account.html" class="current" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
+    <div class="header-actions">
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="notif-bell" id="notif-bell">
+      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-count" id="notif-count">0</span>
+      </button>
+      <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-dropdown-head">
+          <span class="title">Notifications</span>
+          <div class="head-actions">
+            <a class="notif-see-all" href="notifications.html">See all</a>
+            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+          </div>
+        </div>
+        <div class="notif-list" id="notif-list"></div>
+        <div class="notif-staff-compose" id="notif-staff-compose">
+          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+          <button type="button" id="notif-staff-send">Send</button>
+        </div>
+      </div>
+    </div>
     <div class="user-menu" id="user-menu" style="display:none">
       <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
         <span class="initial" id="user-menu-avatar">?</span>
       </button>
       <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">—</div>
+        <div class="user-menu-name" id="user-menu-name">…</div>
         <a href="account.html" class="user-menu-item">Account</a>
         <a href="community.html" class="user-menu-item">Community</a>
         <a href="docs.html" class="user-menu-item">Docs</a>
         <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
       </div>
     </div>
+    </div>
   </div>
 </header>
+
+<script>
+window.__polyErrors = [];
+window.addEventListener('error', function (e) {
+  window.__polyErrors.push(new Date().toISOString() + ' ' + (e.message || 'Unknown error') + (e.filename ? ' (' + e.filename + ':' + e.lineno + ')' : ''));
+});
+window.addEventListener('unhandledrejection', function (e) {
+  window.__polyErrors.push(new Date().toISOString() + ' Unhandled promise rejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+});
+(function () {
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('top-links');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  links.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
 
 <main>
   <div class="wrap">
@@ -332,9 +519,41 @@
       </form>
 
       <p class="switch-mode">
+        <a href="#" id="forgot-link" data-i18n="forgot_link">Forgot password?</a>
+      </p>
+      <p class="switch-mode">
         <span id="switch-text" data-i18n="switch_to_signup_prompt">No account yet?</span>
         <a href="#" id="switch-link" data-i18n="switch_to_signup_link">Create one</a>
       </p>
+    </div>
+
+    <div class="card auth-card" data-view="forgot">
+      <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
+      <h1 data-i18n="forgot_title">Reset your password</h1>
+      <p class="status" id="forgot-status"></p>
+      <form id="forgot-form">
+        <div class="field">
+          <label for="forgot-email" data-i18n="field_email">Email</label>
+          <input id="forgot-email" type="email" required autocomplete="email" />
+        </div>
+        <button class="btn primary" type="submit" data-i18n="forgot_submit">Send reset link</button>
+      </form>
+      <p class="switch-mode">
+        <a href="#" id="forgot-back-link" data-i18n="forgot_back">← Back to sign in</a>
+      </p>
+    </div>
+
+    <div class="card auth-card" data-view="recovery">
+      <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
+      <h1 data-i18n="recovery_title">Set a new password</h1>
+      <p class="status" id="recovery-status"></p>
+      <form id="recovery-form">
+        <div class="field">
+          <label for="new-password" data-i18n="recovery_field">New password</label>
+          <input id="new-password" type="password" required autocomplete="new-password" minlength="6" />
+        </div>
+        <button class="btn primary" type="submit" data-i18n="recovery_submit">Update password</button>
+      </form>
     </div>
 
     <div class="account-grid" data-view="profile">
@@ -345,9 +564,9 @@
         <div class="card-section">
           <p class="section-label" data-i18n="section_profile">Profile</p>
           <div class="avatar-row">
-            <div class="avatar-img" id="avatar-preview">—</div>
+            <div class="avatar-img" id="avatar-preview">…</div>
             <div class="avatar-meta">
-              <span class="username-display" id="profile-username">—</span><span class="official-badge" id="official-badge" data-badge-kind="dev" style="display:none"></span>
+              <span class="username-display" id="profile-username">…</span><span class="official-badge" id="official-badge" data-badge-kind="dev" style="display:none"></span><span id="profile-tier-badge"></span>
               <label class="avatar-upload">
                 <span data-i18n="avatar_change">Change photo</span>
                 <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/webp,image/gif" />
@@ -361,9 +580,27 @@
           </div>
 
           <div class="field">
-            <label for="bio-input" data-i18n="field_bio">Bio</label>
-            <textarea id="bio-input" maxlength="280" data-i18n-placeholder="bio_placeholder"></textarea>
-            <div class="field-hint"><span id="bio-count">0</span>/280</div>
+            <label data-i18n="field_bio">Bio</label>
+            <div class="editor-toolbar">
+              <button type="button" class="b" data-cmd="bold" title="Bold">B</button>
+              <button type="button" class="i" data-cmd="italic" title="Italic">I</button>
+              <button type="button" class="u" data-cmd="underline" title="Underline">U</button>
+              <button type="button" data-cmd="createLink" title="Link">🔗</button>
+            </div>
+            <div id="bio-input" class="bio-editor" contenteditable="true"></div>
+            <div class="field-hint"><span id="bio-count">0</span>/3500</div>
+            <div class="bio-photos">
+              <label class="bio-photo-slot" for="bio-photo-1-file">
+                <div class="bio-photo-preview" id="bio-photo-1-preview"></div>
+                <span id="bio-photo-1-label" data-i18n="bio_photo_add">+ Photo</span>
+              </label>
+              <input type="file" id="bio-photo-1-file" accept="image/*" style="display:none">
+              <label class="bio-photo-slot" for="bio-photo-2-file">
+                <div class="bio-photo-preview" id="bio-photo-2-preview"></div>
+                <span id="bio-photo-2-label" data-i18n="bio_photo_add">+ Photo</span>
+              </label>
+              <input type="file" id="bio-photo-2-file" accept="image/*" style="display:none">
+            </div>
           </div>
 
           <button class="btn small" id="save-profile-btn" type="button" data-i18n="btn_save">Save changes</button>
@@ -373,7 +610,7 @@
           <p class="section-label" data-i18n="section_plan">Plan &amp; account</p>
           <div class="profile-row">
             <span class="k" data-i18n="field_email">Email</span>
-            <span class="v" id="profile-email">—</span>
+            <span class="v" id="profile-email">…</span>
           </div>
           <div class="profile-row">
             <span class="k" data-i18n="field_plan">Plan</span>
@@ -381,36 +618,84 @@
           </div>
           <div class="profile-row">
             <span class="k" data-i18n="field_since">Member since</span>
-            <span class="v" id="profile-since">—</span>
+            <span class="v" id="profile-since">…</span>
           </div>
 
           <p class="status" id="profile-status"></p>
 
           <div id="upgrade-block">
-            <button class="btn primary" id="upgrade-btn" type="button" style="margin-top:1.5rem" data-i18n="pro_cta">Get Poly Pro — €0.99</button>
+            <button class="btn primary" id="upgrade-btn" type="button" style="margin-top:1.5rem" data-i18n="pro_cta">Get Poly Pro (€0.99)</button>
             <p class="upgrade-note" data-i18n="upgrade_note_generic">One-time payment, handled by Stripe Checkout.</p>
           </div>
           <div id="pro-confirmed-block" class="pro-confirmed" style="display:none">
             <span class="dot"></span>
-            <span data-i18n="already_pro">You're on Poly Pro — thanks for the support.</span>
+            <span data-i18n="already_pro">You're on Poly Pro, thanks for the support.</span>
           </div>
         </div>
 
         <div class="card-section">
           <p class="section-label" data-i18n="section_mcp">AI assistants (MCP)</p>
-          <p class="community-link-note" data-i18n="mcp_note">Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you — it never sees your password, and you can revoke it any time. <a href="docs.html#mcp" data-i18n="mcp_setup_link">Setup instructions →</a></p>
+          <p class="community-link-note" data-i18n="mcp_note">Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you. It never sees your password, and you can revoke it any time. <a href="docs.html#mcp" data-i18n="mcp_setup_link">Setup instructions →</a></p>
           <div id="tokens-list"></div>
           <p class="community-link-note" id="tokens-empty" data-i18n="tokens_empty" style="display:none">No tokens yet.</p>
           <button class="btn small" id="create-token-btn" type="button" data-i18n="btn_create_token">Generate new token</button>
+          <div id="new-token-form" class="token-edit-row" style="display:none">
+            <input type="text" id="new-token-label" data-i18n-placeholder="token_label_placeholder" placeholder="Label">
+            <select id="new-token-expiry">
+              <option value="" data-i18n="token_expiry_never">Never expires</option>
+              <option value="30" data-i18n="token_expiry_30">Expires in 30 days</option>
+              <option value="90" data-i18n="token_expiry_90">Expires in 90 days</option>
+              <option value="365" data-i18n="token_expiry_365">Expires in 1 year</option>
+            </select>
+            <div class="token-row-actions">
+              <button class="btn small primary" id="confirm-create-token-btn" type="button" data-i18n="btn_create">Create</button>
+              <button class="btn small" id="cancel-create-token-btn" type="button" data-i18n="btn_cancel">Cancel</button>
+            </div>
+          </div>
           <div id="token-reveal" style="display:none">
-            <p class="field-hint" id="token-reveal-note" style="text-align:left" data-i18n="token_reveal_note">Copy this now — it won't be shown again.</p>
+            <p class="field-hint" id="token-reveal-note" style="text-align:left" data-i18n="token_reveal_note">Copy this now, it won't be shown again.</p>
             <div class="token-box" id="token-reveal-value"></div>
           </div>
           <p class="status" id="token-status"></p>
         </div>
 
         <div class="card-section">
+          <p class="section-label" data-i18n="section_notif_prefs">Notifications</p>
+          <p class="community-link-note" data-i18n="notif_prefs_note">Service and staff announcements always reach you. Everything else is optional.</p>
+          <label class="toggle-row" for="pref-follow"><input type="checkbox" id="pref-follow"> <span data-i18n="pref_follow">Someone follows you</span></label>
+          <label class="toggle-row" for="pref-download"><input type="checkbox" id="pref-download"> <span data-i18n="pref_download">Someone installs your package</span></label>
+          <label class="toggle-row" for="pref-friend-request"><input type="checkbox" id="pref-friend-request"> <span data-i18n="pref_friend_request">Someone sends a friend request</span></label>
+          <label class="toggle-row" for="pref-friend-accept"><input type="checkbox" id="pref-friend-accept"> <span data-i18n="pref_friend_accept">Someone accepts your friend request</span></label>
+          <p class="status" id="notif-prefs-status"></p>
+          <label class="toggle-row" for="push-toggle" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+            <input type="checkbox" id="push-toggle">
+            <span data-i18n="push_enable">Send these as real notifications to this device</span>
+          </label>
+          <p class="status" id="push-status"></p>
+        </div>
+
+        <div class="card-section">
+          <p class="section-label" data-i18n="section_dev">Developer mode</p>
+          <p class="community-link-note" data-i18n="dev_mode_note">Shows advanced account details and recent client-side errors on this page, useful when talking to support.</p>
+          <label class="toggle-row" for="dev-mode-toggle">
+            <input type="checkbox" id="dev-mode-toggle">
+            <span data-i18n="dev_mode_enable">Enable developer mode</span>
+          </label>
+          <div id="dev-panel" style="display:none">
+            <div class="dev-info-box" id="dev-info-box"></div>
+            <button class="btn small" id="dev-copy-btn" type="button" data-i18n="dev_copy_btn">Copy debug info</button>
+            <p class="status" id="dev-copy-status"></p>
+          </div>
+        </div>
+
+        <div class="card-section">
           <button class="btn" id="signout-btn" type="button" data-i18n="btn_signout">Sign out</button>
+        </div>
+
+        <div class="card-section">
+          <p class="section-label" data-i18n="section_danger">Danger zone</p>
+          <p class="danger-note" data-i18n="delete_account_note">Permanently deletes your profile, packages, tokens, follows, and notifications. This can't be undone.</p>
+          <button class="btn danger-btn" id="delete-account-btn" type="button" data-i18n="delete_account_btn">Delete account</button>
         </div>
       </div>
 
@@ -449,6 +734,17 @@
   </div>
 </main>
 
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms.html" data-i18n="footer_terms">Terms</a>
+      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
+
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -459,6 +755,7 @@
   const I18N = {
     en: {
       nav_install: "install", nav_pro: "pro", nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account", nav_github: "github",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       acct_eyebrow: "Account",
       field_email: "Email", field_password: "Password", field_plan: "Plan", field_since: "Member since",
       btn_signin: "Sign in", btn_signup: "Create account", btn_signout: "Sign out",
@@ -472,16 +769,17 @@
       cli_tip_upgrade: "update installed packages now",
       cli_tip_selfupdate: "update poly itself",
       cli_auto_note: "poly checks for its own updates automatically. Pro accounts also get installed packages kept current automatically.",
-      pro_cta: "Get Poly Pro — €0.99",
+      pro_cta: "Get Poly Pro (€0.99)",
       upgrade_note_generic: "One-time payment, handled by Stripe Checkout.",
-      already_pro: "You're on Poly Pro — thanks for the support.",
+      already_pro: "You're on Poly Pro, thanks for the support.",
       checkout_loading: "Redirecting to checkout…",
-      checkout_success: "Payment received — welcome to Pro!",
-      checkout_cancelled: "Checkout cancelled — no charge was made.",
+      checkout_success: "Payment received, welcome to Pro!",
+      checkout_cancelled: "Checkout cancelled, no charge was made.",
       avatar_change: "Change photo",
       field_username: "Username",
       field_bio: "Bio",
       bio_placeholder: "Say something about yourself…",
+      bio_photo_add: "+ Photo",
       btn_save: "Save changes",
       saved_ok: "Saved.",
       err_username_taken: "That username is already taken.",
@@ -489,20 +787,33 @@
       community_link_note: "Search and browse everyone on Poly from the community page.",
       community_link_cta: "Browse the community →",
       packages_eyebrow: "Your published packages",
-      packages_empty: "Nothing published yet — see the docs for poly send.",
+      packages_empty: "Nothing published yet. See the docs for poly send.",
       downloads_label: "downloads",
       btn_delete_package: "Delete",
-      confirm_delete_package: "Delete {name}? This can't be undone — it stops being installable immediately.",
+      confirm_delete_package: "Delete {name}? This can't be undone, it stops being installable immediately.",
       package_deleted_ok: "Package deleted.",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in.",
+      forgot_link: "Forgot password?",
+      forgot_title: "Reset your password",
+      forgot_submit: "Send reset link",
+      forgot_back: "← Back to sign in",
+      forgot_sent: "If that email has an account, a reset link is on its way.",
+      recovery_title: "Set a new password",
+      recovery_field: "New password",
+      recovery_submit: "Update password",
+      recovery_ok: "Password updated.",
+      section_danger: "Danger zone",
+      delete_account_note: "Permanently deletes your profile, packages, tokens, follows, and notifications. This can't be undone.",
+      delete_account_btn: "Delete account",
+      delete_account_confirm: "Type DELETE to permanently delete your account. This cannot be undone.",
       official_dev: "Official developer", official_app: "Official app",
       section_mcp: "AI assistants (MCP)",
-      mcp_note: "Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you — it never sees your password, and you can revoke it any time.",
+      mcp_note: "Generate a token so Claude, ChatGPT, or any MCP-compatible assistant can publish and browse packages as you. It never sees your password, and you can revoke it any time.",
       mcp_setup_link: "Setup instructions →",
       tokens_empty: "No tokens yet.",
       btn_create_token: "Generate new token",
-      token_reveal_note: "Copy this now — it won't be shown again.",
+      token_reveal_note: "Copy this now, it won't be shown again.",
       token_created: "created",
       token_never_used: "never used",
       token_last_used: "last used",
@@ -510,10 +821,38 @@
       btn_revoke_token: "Revoke",
       token_revoke_confirm: "Revoke this token? Any assistant using it will stop working immediately.",
       token_revoked_ok: "Token revoked.",
-      token_copied: "copied ✓"
+      token_copied: "copied ✓",
+      btn_edit_token: "Edit",
+      btn_cancel: "Cancel",
+      btn_create: "Create",
+      token_label_placeholder: "Label",
+      token_expiry_never: "Never expires",
+      token_expiry_30: "Expires in 30 days",
+      token_expiry_90: "Expires in 90 days",
+      token_expiry_365: "Expires in 1 year",
+      token_expires: "expires",
+      token_expired: "expired",
+      token_updated_ok: "Token updated.",
+      section_notif_prefs: "Notifications",
+      notif_prefs_note: "Service and staff announcements always reach you. Everything else is optional.",
+      pref_follow: "Someone follows you",
+      pref_download: "Someone installs your package",
+      pref_friend_request: "Someone sends a friend request",
+      pref_friend_accept: "Someone accepts your friend request",
+      push_enable: "Send these as real notifications to this device",
+      push_unsupported: "This browser doesn't support push notifications.",
+      push_denied: "Notifications are blocked for this site in your browser settings.",
+      push_enabled_ok: "Notifications enabled on this device.",
+      push_disabled_ok: "Notifications disabled on this device.",
+      section_dev: "Developer mode",
+      dev_mode_note: "Shows advanced account details and recent client-side errors on this page, useful when talking to support.",
+      dev_mode_enable: "Enable developer mode",
+      dev_copy_btn: "Copy debug info",
+      dev_copy_ok: "Copied ✓"
     },
     fr: {
       nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       acct_eyebrow: "Compte",
       field_email: "E-mail", field_password: "Mot de passe", field_plan: "Formule", field_since: "Membre depuis",
       btn_signin: "Se connecter", btn_signup: "Créer un compte", btn_signout: "Se déconnecter",
@@ -527,16 +866,17 @@
       cli_tip_upgrade: "mettre à jour les paquets installés maintenant",
       cli_tip_selfupdate: "mettre à jour poly lui-même",
       cli_auto_note: "poly vérifie ses propres mises à jour automatiquement. Les comptes Pro gardent aussi leurs paquets installés à jour automatiquement.",
-      pro_cta: "Obtenir Poly Pro — 0,99 €",
+      pro_cta: "Obtenir Poly Pro (0,99 €)",
       upgrade_note_generic: "Paiement unique, géré par Stripe Checkout.",
-      already_pro: "Tu es sur Poly Pro — merci pour le soutien.",
+      already_pro: "Tu es sur Poly Pro, merci pour le soutien.",
       checkout_loading: "Redirection vers le paiement…",
-      checkout_success: "Paiement reçu — bienvenue dans Pro !",
-      checkout_cancelled: "Paiement annulé — aucun débit n'a été effectué.",
+      checkout_success: "Paiement reçu, bienvenue dans Pro !",
+      checkout_cancelled: "Paiement annulé, aucun débit n'a été effectué.",
       avatar_change: "Changer la photo",
       field_username: "Nom d'utilisateur",
       field_bio: "Bio",
       bio_placeholder: "Dis-en un peu plus sur toi…",
+      bio_photo_add: "+ Photo",
       btn_save: "Enregistrer",
       saved_ok: "Enregistré.",
       err_username_taken: "Ce nom d'utilisateur est déjà pris.",
@@ -544,20 +884,33 @@
       community_link_note: "Cherche et parcours tous les membres de Poly depuis la page communauté.",
       community_link_cta: "Parcourir la communauté →",
       packages_eyebrow: "Tes paquets publiés",
-      packages_empty: "Rien publié pour l'instant — voir la doc pour poly send.",
+      packages_empty: "Rien publié pour l'instant, voir la doc pour poly send.",
       downloads_label: "téléchargements",
       btn_delete_package: "Supprimer",
-      confirm_delete_package: "Supprimer {name} ? Impossible à annuler — il cesse d'être installable immédiatement.",
+      confirm_delete_package: "Supprimer {name} ? Impossible à annuler, il cesse d'être installable immédiatement.",
       package_deleted_ok: "Paquet supprimé.",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi.",
+      forgot_link: "Mot de passe oublié ?",
+      forgot_title: "Réinitialiser ton mot de passe",
+      forgot_submit: "Envoyer le lien",
+      forgot_back: "← Retour à la connexion",
+      forgot_sent: "Si ce compte existe, un lien de réinitialisation vient de partir.",
+      recovery_title: "Définir un nouveau mot de passe",
+      recovery_field: "Nouveau mot de passe",
+      recovery_submit: "Mettre à jour",
+      recovery_ok: "Mot de passe mis à jour.",
+      section_danger: "Zone dangereuse",
+      delete_account_note: "Supprime définitivement ton profil, tes paquets, tes tokens, tes abonnements et tes notifications. Irréversible.",
+      delete_account_btn: "Supprimer le compte",
+      delete_account_confirm: "Tape DELETE pour supprimer définitivement ton compte. C'est irréversible.",
       official_dev: "Développeur officiel", official_app: "App officielle",
       section_mcp: "Assistants IA (MCP)",
-      mcp_note: "Génère un token pour que Claude, ChatGPT, ou tout assistant compatible MCP puisse publier et parcourir des paquets en ton nom — il ne voit jamais ton mot de passe, et tu peux le révoquer à tout moment.",
+      mcp_note: "Génère un token pour que Claude, ChatGPT, ou tout assistant compatible MCP puisse publier et parcourir des paquets en ton nom. Il ne voit jamais ton mot de passe, et tu peux le révoquer à tout moment.",
       mcp_setup_link: "Instructions d'installation →",
       tokens_empty: "Aucun token pour l'instant.",
       btn_create_token: "Générer un nouveau token",
-      token_reveal_note: "Copie-le maintenant — il ne sera plus jamais affiché.",
+      token_reveal_note: "Copie-le maintenant, il ne sera plus jamais affiché.",
       token_created: "créé",
       token_never_used: "jamais utilisé",
       token_last_used: "dernière utilisation",
@@ -565,7 +918,34 @@
       btn_revoke_token: "Révoquer",
       token_revoke_confirm: "Révoquer ce token ? Tout assistant qui l'utilise cessera de fonctionner immédiatement.",
       token_revoked_ok: "Token révoqué.",
-      token_copied: "copié ✓"
+      token_copied: "copié ✓",
+      btn_edit_token: "Modifier",
+      btn_cancel: "Annuler",
+      btn_create: "Créer",
+      token_label_placeholder: "Nom",
+      token_expiry_never: "N'expire jamais",
+      token_expiry_30: "Expire dans 30 jours",
+      token_expiry_90: "Expire dans 90 jours",
+      token_expiry_365: "Expire dans 1 an",
+      token_expires: "expire",
+      token_expired: "expiré",
+      token_updated_ok: "Token mis à jour.",
+      section_notif_prefs: "Notifications",
+      notif_prefs_note: "Les annonces du service et du staff t'arrivent toujours. Le reste est optionnel.",
+      pref_follow: "Quelqu'un te suit",
+      pref_download: "Quelqu'un installe ton paquet",
+      pref_friend_request: "Quelqu'un t'envoie une demande d'ami",
+      pref_friend_accept: "Quelqu'un accepte ta demande d'ami",
+      push_enable: "Envoyer ça en vraies notifications sur cet appareil",
+      push_unsupported: "Ce navigateur ne prend pas en charge les notifications push.",
+      push_denied: "Les notifications sont bloquées pour ce site dans les réglages de ton navigateur.",
+      push_enabled_ok: "Notifications activées sur cet appareil.",
+      push_disabled_ok: "Notifications désactivées sur cet appareil.",
+      section_dev: "Mode développeur",
+      dev_mode_note: "Affiche les détails avancés du compte et les erreurs récentes de cette page, utile pour discuter avec le support.",
+      dev_mode_enable: "Activer le mode développeur",
+      dev_copy_btn: "Copier les infos de debug",
+      dev_copy_ok: "Copié ✓"
     }
   };
 
@@ -573,11 +953,181 @@
   function officialBadge(kind) {
     return `<span class="official-badge" data-badge-kind="${kind}" title="${t(kind === 'dev' ? 'official_dev' : 'official_app')}">${OFFICIAL_BADGE_SVG}</span>`;
   }
+  const ICON_SHAPES = {
+    star: '<polygon points="12,2 14.9,9.1 22,9.6 16.5,14.3 18.2,21.2 12,17.3 5.8,21.2 7.5,14.3 2,9.6 9.1,9.1"/>',
+    shield: '<polygon points="12,2 20,5 20,12 12,22 4,12 4,5"/>',
+    diamond: '<polygon points="12,2 20,12 12,22 4,12"/>',
+    hexagon: '<polygon points="12,2 20,7 20,17 12,22 4,17 4,7"/>',
+    triangle: '<polygon points="12,3 21,20 3,20"/>',
+    pentagon: '<polygon points="12,2 21,9 17.5,20 6.5,20 3,9"/>',
+    ring: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3"/>',
+    cross: '<polygon points="9,2 15,2 15,9 22,9 22,15 15,15 15,22 9,22 9,15 2,15 2,9 9,9"/>',
+    chevron: '<polygon points="12,4 22,18 15,18 15,22 9,22 9,18 2,18"/>',
+    bookmark: '<polygon points="5,2 19,2 19,22 12,16 5,22"/>',
+    flag: '<polygon points="6,2 6,22 8,22 8,14 19,14 15,8 19,2"/>',
+    circle: '<circle cx="12" cy="12" r="9"/>',
+    bolt: '<polygon points="13,2 4,14 10,14 9,22 20,9 13,9"/>'
+  };
+  const BADGE_META = {
+    staff: ['shield', '#e0664a'], founder: ['star', '#f0a93e'], partner: ['diamond', '#a855f7'],
+    ai: ['triangle', '#3897f0'], verified_developer: ['hexagon', '#2fa3ae'], verified_publisher: ['bookmark', '#2fa3ae'],
+    moderator: ['shield', '#b6304a'], core_contributor: ['hexagon', '#3a6bdb'], contributor: ['cross', '#3a5fc0'],
+    maintainer: ['hexagon', '#218f5c'], translator: ['pentagon', '#0ea5e9'], documentation: ['bookmark', '#0ea5e9'],
+    security_researcher: ['shield', '#7c3aed'], bug_hunter: ['ring', '#8b929c'], bug_hunter_gold: ['ring', '#ad8a1e'],
+    package_reviewer: ['pentagon', '#2fa3ae'], community_leader: ['star', '#db2777'], mentor: ['chevron', '#9333ea'],
+    ambassador: ['flag', '#9333ea'], speaker: ['triangle', '#f59e0b'], content_creator: ['diamond', '#db2777'],
+    streamer: ['triangle', '#9333ea'], writer: ['cross', '#0ea5e9'], designer: ['hexagon', '#db2777'],
+    artist: ['circle', '#db2777'], sponsor: ['ring', '#218f5c'], donor: ['diamond', '#218f5c'],
+    veteran: ['pentagon', '#a5652f'], og: ['star', '#ad8a1e'], pioneer: ['chevron', '#5f8b9c'],
+    innovator: ['bolt', '#2fa3ae'], hackathon_winner: ['hexagon', '#f0a93e'], top_publisher: ['chevron', '#f0a93e'],
+    rising_star: ['star', '#f59e0b'], helper: ['cross', '#218f5c'], student: ['bookmark', '#8b929c'],
+    educator: ['bookmark', '#06b6d4'], open_source: ['circle', '#218f5c'], early_supporter: ['bolt', '#a855f7'],
+    beta_tester: ['pentagon', '#3a5fc0']
+  };
+  function userBadgesHtml(badges) {
+    if (!badges || !badges.length) return '';
+    return '<span class="user-badges">' + badges.map((b) => {
+      const meta = BADGE_META[b];
+      if (!meta) return '';
+      const shape = ICON_SHAPES[meta[0]] || '';
+      return `<span class="user-badge" style="color:${meta[1]}" title="${b.replace(/_/g, ' ')}"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${shape}</svg></span>`;
+    }).join('') + '</span>';
+  }
+  function packageBadgesHtml(badges) {
+    if (!badges || !badges.length) return '';
+    return badges.map((b) => `<span class="pkg-badge pkg-${b}">${b === 'safe' ? '✓ ' : ''}${b}</span>`).join(' ');
+  }
   function refreshBadgeTitles() {
     document.querySelectorAll('.official-badge[data-badge-kind]').forEach((el) => {
       el.title = t(el.dataset.badgeKind === 'dev' ? 'official_dev' : 'official_app');
     });
   }
+
+  function renderDevPanel(session, data) {
+    const errors = (window.__polyErrors || []).slice(-10);
+    const lines = [
+      'user_id: ' + session.user.id,
+      'email: ' + session.user.email,
+      'plan: ' + (data.plan || 'free'),
+      'is_official: ' + !!data.is_official,
+      'account_created_at: ' + data.created_at,
+      'session_expires_at: ' + (session.expires_at ? new Date(session.expires_at * 1000).toISOString() : '-'),
+      'user_agent: ' + navigator.userAgent,
+      'page: ' + window.location.href,
+      '',
+      'recent errors (' + errors.length + '):',
+    ].concat(errors.length ? errors : ['(none)']);
+    document.getElementById('dev-info-box').textContent = lines.join('\n');
+  }
+
+  async function saveNotifPrefs() {
+    if (!currentUserId) return;
+    const prefs = {
+      follow: document.getElementById('pref-follow').checked,
+      download: document.getElementById('pref-download').checked,
+      friend_request: document.getElementById('pref-friend-request').checked,
+      friend_accept: document.getElementById('pref-friend-accept').checked,
+    };
+    const { error } = await supabase.from('profiles').update({ notification_prefs: prefs }).eq('id', currentUserId);
+    const el = document.getElementById('notif-prefs-status');
+    el.textContent = error ? (error.message || t('err_generic')) : t('saved_ok');
+    el.className = 'status show ' + (error ? 'error' : 'ok');
+    setTimeout(() => { el.className = 'status'; }, 1500);
+  }
+  ['pref-follow', 'pref-download', 'pref-friend-request', 'pref-friend-accept'].forEach((id) => {
+    document.getElementById(id).addEventListener('change', saveNotifPrefs);
+  });
+
+  const VAPID_PUBLIC_KEY = 'BJ9GLtAmHNhrVkdjseNE2eSE44HrnSeix8pjHizxhWekmGHst6mCn33aqj3YeQ2-itEihYLQ3RRFymgnB4K3ZwI';
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+  }
+  function setPushStatus(msg, kind) {
+    const el = document.getElementById('push-status');
+    el.textContent = msg || '';
+    el.className = 'status' + (kind ? ' show ' + kind : '');
+  }
+
+  async function refreshPushToggleState() {
+    const toggle = document.getElementById('push-toggle');
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      toggle.disabled = true;
+      return;
+    }
+    try {
+      const reg = await navigator.serviceWorker.getRegistration('/sw.js');
+      const sub = reg ? await reg.pushManager.getSubscription() : null;
+      toggle.checked = !!sub;
+    } catch (e) { /* no existing registration yet */ }
+  }
+  refreshPushToggleState();
+
+  document.getElementById('push-toggle').addEventListener('change', async (e) => {
+    const enable = e.target.checked;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      e.target.checked = false;
+      setPushStatus(t('push_unsupported'), 'error');
+      return;
+    }
+    try {
+      if (enable) {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          e.target.checked = false;
+          setPushStatus(t('push_denied'), 'error');
+          return;
+        }
+        const reg = await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
+        const json = sub.toJSON();
+        await supabase.from('push_subscriptions').upsert({
+          user_id: currentUserId,
+          endpoint: json.endpoint,
+          p256dh: json.keys.p256dh,
+          auth: json.keys.auth,
+        }, { onConflict: 'endpoint' });
+        setPushStatus(t('push_enabled_ok'), 'ok');
+      } else {
+        const reg = await navigator.serviceWorker.getRegistration('/sw.js');
+        const sub = reg ? await reg.pushManager.getSubscription() : null;
+        if (sub) {
+          await supabase.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+          await sub.unsubscribe();
+        }
+        setPushStatus(t('push_disabled_ok'), 'ok');
+      }
+    } catch (err) {
+      e.target.checked = !enable;
+      setPushStatus(err.message || t('err_generic'), 'error');
+    }
+    setTimeout(() => setPushStatus('', null), 2500);
+  });
+
+  document.getElementById('dev-mode-toggle').addEventListener('change', async (e) => {
+    const enabled = e.target.checked;
+    document.getElementById('dev-panel').style.display = enabled ? 'block' : 'none';
+    if (!currentUserId) return;
+    if (enabled && currentSession) renderDevPanel(currentSession, { plan: document.getElementById('profile-plan').textContent, is_official: document.getElementById('official-badge').style.display !== 'none', created_at: document.getElementById('profile-since').textContent });
+    await supabase.from('profiles').update({ dev_mode: enabled }).eq('id', currentUserId);
+  });
+
+  document.getElementById('dev-copy-btn').addEventListener('click', () => {
+    const text = document.getElementById('dev-info-box').textContent;
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const el = document.getElementById('dev-copy-status');
+      el.textContent = t('dev_copy_ok');
+      el.className = 'status show ok';
+      setTimeout(() => { el.className = 'status'; }, 1500);
+    });
+  });
 
   function lang() { return document.documentElement.lang || 'en'; }
   function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
@@ -598,6 +1148,7 @@
     document.getElementById('switch-text').textContent = mode === 'signup' ? t('switch_to_signin_prompt') : t('switch_to_signup_prompt');
     document.getElementById('switch-link').textContent = mode === 'signup' ? t('switch_to_signin_link') : t('switch_to_signup_link');
     refreshBadgeTitles();
+    document.getElementById('bio-input').setAttribute('data-placeholder', t('bio_placeholder'));
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
   }
 
@@ -644,8 +1195,51 @@
     }
   });
 
+  document.getElementById('forgot-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('forgot-email').value = document.getElementById('email').value.trim();
+    document.getElementById('forgot-status').className = 'status';
+    showView('forgot');
+  });
+  document.getElementById('forgot-back-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    showView('auth');
+  });
+  document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim();
+    const statusEl = document.getElementById('forgot-status');
+    statusEl.textContent = '';
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/account.html' });
+    if (error) { statusEl.textContent = error.message || t('err_generic'); statusEl.className = 'status show error'; return; }
+    statusEl.textContent = t('forgot_sent');
+    statusEl.className = 'status show ok';
+  });
+  document.getElementById('recovery-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPassword = document.getElementById('new-password').value;
+    const statusEl = document.getElementById('recovery-status');
+    statusEl.textContent = '';
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) { statusEl.textContent = error.message || t('err_generic'); statusEl.className = 'status show error'; return; }
+    statusEl.textContent = t('recovery_ok');
+    statusEl.className = 'status show ok';
+    const { data } = await supabase.auth.getSession();
+    if (data.session) { renderProfile(data.session); checkBan(data.session); initNotifBell(data.session); }
+  });
+
   document.getElementById('signout-btn').addEventListener('click', async () => {
     await supabase.auth.signOut();
+  });
+
+  document.getElementById('delete-account-btn').addEventListener('click', async () => {
+    const typed = window.prompt(t('delete_account_confirm'));
+    if (typed === null) return;
+    if (typed.trim().toUpperCase() !== 'DELETE') return;
+    const { error } = await supabase.rpc('delete_own_account');
+    if (error) { setProfileStatus(error.message || t('err_generic'), 'error'); return; }
+    await supabase.auth.signOut();
+    window.location.href = 'index.html';
   });
 
   document.getElementById('user-menu-btn').addEventListener('click', () => {
@@ -689,6 +1283,7 @@
   });
 
   let currentUserId = null;
+  let currentSession = null;
 
   function escapeHtml(s) {
     const div = document.createElement('div');
@@ -713,7 +1308,7 @@
 
     const { data, error } = await supabase
       .from('community_packages')
-      .select('name, version, download_count, is_official')
+      .select('name, version, download_count, is_official, badges')
       .eq('uploader_id', userId)
       .order('created_at', { ascending: false });
 
@@ -728,7 +1323,7 @@
 
     list.innerHTML = data.map((p) => `
       <div class="pkg-row">
-        <div class="pname">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''}</div>
+        <div class="pname">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''} ${packageBadgesHtml(p.badges)}</div>
         <div class="pmeta">v${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
         <button class="btn small delete-pkg-btn" data-name="${escapeHtml(p.name)}" type="button">${escapeHtml(t('btn_delete_package'))}</button>
       </div>
@@ -761,36 +1356,114 @@
     return new Date(iso).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US');
   }
 
+  let tokensCache = [];
+
+  function expiryOptionsHtml(selectedDays) {
+    return `
+      <option value="" ${!selectedDays ? 'selected' : ''}>${escapeHtml(t('token_expiry_never'))}</option>
+      <option value="30" ${selectedDays === 30 ? 'selected' : ''}>${escapeHtml(t('token_expiry_30'))}</option>
+      <option value="90" ${selectedDays === 90 ? 'selected' : ''}>${escapeHtml(t('token_expiry_90'))}</option>
+      <option value="365" ${selectedDays === 365 ? 'selected' : ''}>${escapeHtml(t('token_expiry_365'))}</option>
+    `;
+  }
+
+  function renderTokenRow(tok) {
+    const isExpired = tok.expires_at && new Date(tok.expires_at) <= new Date();
+    let statusBadge = '';
+    if (tok.revoked_at) statusBadge = `<span class="token-revoked-badge">${escapeHtml(t('token_revoked'))}</span>`;
+    else if (isExpired) statusBadge = `<span class="token-expired-badge">${escapeHtml(t('token_expired'))}</span>`;
+
+    const metaParts = [`${escapeHtml(t('token_created'))} ${formatDate(tok.created_at)}`];
+    metaParts.push(tok.last_used_at ? `${escapeHtml(t('token_last_used'))} ${formatDate(tok.last_used_at)}` : escapeHtml(t('token_never_used')));
+    if (tok.expires_at) metaParts.push(`${escapeHtml(t('token_expires'))} ${formatDate(tok.expires_at)}`);
+
+    return `
+      <div class="token-row" data-row-id="${tok.id}">
+        <div>
+          <div class="tlabel">${escapeHtml(tok.label)}${statusBadge}</div>
+          <div class="tmeta">${metaParts.join(' · ')}</div>
+        </div>
+        ${!tok.revoked_at ? `
+          <div class="token-row-actions">
+            <button class="btn small edit-token-btn" data-id="${tok.id}" type="button">${escapeHtml(t('btn_edit_token'))}</button>
+            <button class="btn small revoke-token-btn" data-id="${tok.id}" type="button">${escapeHtml(t('btn_revoke_token'))}</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  function renderTokenEditRow(tok) {
+    const selectedDays = tok.expires_at ? Math.round((new Date(tok.expires_at) - new Date(tok.created_at)) / 86400000) : null;
+    return `
+      <div class="token-edit-row" data-edit-id="${tok.id}">
+        <input type="text" class="edit-token-label" value="${escapeHtml(tok.label)}">
+        <select class="edit-token-expiry">${expiryOptionsHtml(selectedDays)}</select>
+        <div class="token-row-actions">
+          <button class="btn small primary save-token-btn" data-id="${tok.id}" type="button">${escapeHtml(t('btn_save'))}</button>
+          <button class="btn small cancel-token-btn" data-id="${tok.id}" type="button">${escapeHtml(t('btn_cancel'))}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireTokenRowEvents() {
+    document.querySelectorAll('.revoke-token-btn').forEach((btn) => {
+      btn.addEventListener('click', () => revokeToken(btn.getAttribute('data-id')));
+    });
+    document.querySelectorAll('.edit-token-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const tok = tokensCache.find((x) => x.id === id);
+        const row = document.querySelector(`.token-row[data-row-id="${id}"]`);
+        if (tok && row) row.outerHTML = renderTokenEditRow(tok);
+        wireTokenRowEvents();
+      });
+    });
+    document.querySelectorAll('.cancel-token-btn').forEach((btn) => {
+      btn.addEventListener('click', () => renderTokensList());
+    });
+    document.querySelectorAll('.save-token-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const editRow = document.querySelector(`.token-edit-row[data-edit-id="${id}"]`);
+        const label = editRow.querySelector('.edit-token-label').value.trim();
+        const days = editRow.querySelector('.edit-token-expiry').value;
+        if (!label) return;
+        const expiresAt = days ? new Date(Date.now() + Number(days) * 86400000).toISOString() : null;
+        const { error } = await supabase.from('api_tokens').update({ label, expires_at: expiresAt }).eq('id', id);
+        if (error) { setTokenStatus(error.message, 'error'); return; }
+        setTokenStatus(t('token_updated_ok'), 'ok');
+        loadTokens(currentUserId);
+      });
+    });
+  }
+
+  function renderTokensList() {
+    const list = document.getElementById('tokens-list');
+    list.innerHTML = tokensCache.map(renderTokenRow).join('');
+    wireTokenRowEvents();
+  }
+
   async function loadTokens(userId) {
     const list = document.getElementById('tokens-list');
     const empty = document.getElementById('tokens-empty');
 
     const { data, error } = await supabase
       .from('api_tokens')
-      .select('id, label, created_at, last_used_at, revoked_at')
+      .select('id, label, created_at, last_used_at, revoked_at, expires_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error || !data || data.length === 0) {
+      tokensCache = [];
       list.innerHTML = '';
       empty.style.display = 'block';
       return;
     }
     empty.style.display = 'none';
-
-    list.innerHTML = data.map((tok) => `
-      <div class="token-row">
-        <div>
-          <div class="tlabel">${escapeHtml(tok.label)}${tok.revoked_at ? `<span class="token-revoked-badge">${escapeHtml(t('token_revoked'))}</span>` : ''}</div>
-          <div class="tmeta">${escapeHtml(t('token_created'))} ${formatDate(tok.created_at)} · ${tok.last_used_at ? escapeHtml(t('token_last_used')) + ' ' + formatDate(tok.last_used_at) : escapeHtml(t('token_never_used'))}</div>
-        </div>
-        ${!tok.revoked_at ? `<button class="btn small revoke-token-btn" data-id="${tok.id}" type="button">${escapeHtml(t('btn_revoke_token'))}</button>` : ''}
-      </div>
-    `).join('');
-
-    list.querySelectorAll('.revoke-token-btn').forEach((btn) => {
-      btn.addEventListener('click', () => revokeToken(btn.getAttribute('data-id')));
-    });
+    tokensCache = data;
+    renderTokensList();
   }
 
   async function revokeToken(id) {
@@ -816,13 +1489,32 @@
   document.getElementById('create-token-btn').addEventListener('click', async () => {
     if (!currentUserId) return;
     const { count } = await supabase.from('api_tokens').select('id', { count: 'exact', head: true }).eq('user_id', currentUserId);
-    const label = `MCP token #${(count || 0) + 1}`;
+    document.getElementById('new-token-label').value = `MCP token #${(count || 0) + 1}`;
+    document.getElementById('new-token-expiry').value = '';
+    document.getElementById('new-token-form').style.display = 'flex';
+    document.getElementById('create-token-btn').style.display = 'none';
+    document.getElementById('token-reveal').style.display = 'none';
+    document.getElementById('new-token-label').focus();
+  });
+
+  document.getElementById('cancel-create-token-btn').addEventListener('click', () => {
+    document.getElementById('new-token-form').style.display = 'none';
+    document.getElementById('create-token-btn').style.display = '';
+  });
+
+  document.getElementById('confirm-create-token-btn').addEventListener('click', async () => {
+    if (!currentUserId) return;
+    const label = document.getElementById('new-token-label').value.trim() || 'MCP token';
+    const days = document.getElementById('new-token-expiry').value;
+    const expiresAt = days ? new Date(Date.now() + Number(days) * 86400000).toISOString() : null;
     const token = randomToken();
     const hash = await sha256Hex(token);
 
-    const { error } = await supabase.from('api_tokens').insert({ user_id: currentUserId, token_hash: hash, label });
+    const { error } = await supabase.from('api_tokens').insert({ user_id: currentUserId, token_hash: hash, label, expires_at: expiresAt });
     if (error) { setTokenStatus(error.message, 'error'); return; }
 
+    document.getElementById('new-token-form').style.display = 'none';
+    document.getElementById('create-token-btn').style.display = '';
     document.getElementById('token-reveal-value').textContent = token;
     document.getElementById('token-reveal').style.display = 'block';
     setTokenStatus('', null);
@@ -844,27 +1536,36 @@
     currentUserId = session.user.id;
     const { data, error } = await supabase
       .from('profiles')
-      .select('email, plan, created_at, username, bio, avatar_url, is_official')
+      .select('email, plan, created_at, username, bio, bio_html, bio_photo_1, bio_photo_2, avatar_url, is_official, dev_mode, notification_prefs')
       .eq('id', session.user.id)
       .single();
 
     const email = (data && data.email) || session.user.email;
     const plan = (data && data.plan) || 'free';
-    const since = data && data.created_at ? new Date(data.created_at).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US') : '—';
+    const since = data && data.created_at ? new Date(data.created_at).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US') : '…';
     const username = (data && data.username) || '';
     const bio = (data && data.bio) || '';
+    const bioHtml = (data && data.bio_html) || '';
     const avatarUrl = data && data.avatar_url;
 
     document.getElementById('profile-email').textContent = email;
     document.getElementById('profile-since').textContent = since;
-    document.getElementById('profile-username').textContent = username ? '@' + username : '—';
+    document.getElementById('profile-username').textContent = username ? '@' + username : '…';
     const ownBadge = document.getElementById('official-badge');
     ownBadge.innerHTML = OFFICIAL_BADGE_SVG;
     ownBadge.title = t('official_dev');
     ownBadge.style.display = data && data.is_official ? 'inline-flex' : 'none';
+    supabase.from('profiles_public').select('badges').eq('id', session.user.id).single().then(({ data: pub }) => {
+      document.getElementById('profile-tier-badge').innerHTML = userBadgesHtml(pub && pub.badges);
+    });
     document.getElementById('username-input').value = username;
-    document.getElementById('bio-input').value = bio;
-    document.getElementById('bio-count').textContent = bio.length;
+    const bioEl = document.getElementById('bio-input');
+    bioEl.innerHTML = bioHtml || escapeHtml(bio);
+    document.getElementById('bio-count').textContent = bioPlainLength(bioEl);
+    document.getElementById('bio-photo-1-preview').innerHTML = data && data.bio_photo_1 ? `<img src="${escapeHtml(data.bio_photo_1)}" alt="">` : '';
+    document.getElementById('bio-photo-2-preview').innerHTML = data && data.bio_photo_2 ? `<img src="${escapeHtml(data.bio_photo_2)}" alt="">` : '';
+    document.getElementById('bio-photo-1-label').style.display = data && data.bio_photo_1 ? 'none' : 'block';
+    document.getElementById('bio-photo-2-label').style.display = data && data.bio_photo_2 ? 'none' : 'block';
     document.getElementById('avatar-preview').innerHTML = avatarPreviewHTML(avatarUrl, username);
 
     const badge = document.getElementById('profile-plan');
@@ -887,6 +1588,17 @@
     }
     document.getElementById('user-menu-name').textContent = username ? '@' + username : email;
     menu.style.display = 'block';
+
+    currentSession = session;
+    document.getElementById('dev-mode-toggle').checked = !!(data && data.dev_mode);
+    document.getElementById('dev-panel').style.display = data && data.dev_mode ? 'block' : 'none';
+    if (data && data.dev_mode) renderDevPanel(session, data);
+
+    const prefs = (data && data.notification_prefs) || {};
+    document.getElementById('pref-follow').checked = prefs.follow !== false;
+    document.getElementById('pref-download').checked = prefs.download !== false;
+    document.getElementById('pref-friend-request').checked = prefs.friend_request !== false;
+    document.getElementById('pref-friend-accept').checked = prefs.friend_accept !== false;
 
     showView('profile');
     loadPublishedPackages(session.user.id);
@@ -944,36 +1656,172 @@
     setProfileStatus(t('saved_ok'), 'ok');
   });
 
-  document.getElementById('bio-input').addEventListener('input', (e) => {
-    document.getElementById('bio-count').textContent = e.target.value.length;
+  function bioPlainLength(el) {
+    return el.textContent.length;
+  }
+
+  const BIO_MAX_CHARS = 3500;
+  const bioInputEl = document.getElementById('bio-input');
+  bioInputEl.addEventListener('input', () => {
+    const len = bioPlainLength(bioInputEl);
+    document.getElementById('bio-count').textContent = len;
+    if (len > BIO_MAX_CHARS) {
+      // Trim overflow by truncating the plain text and re-inserting --
+      // simple and safe; rich formatting near the very end may be lost
+      // on the rare occasion someone actually hits the cap.
+      const text = bioInputEl.textContent.slice(0, BIO_MAX_CHARS);
+      bioInputEl.textContent = text;
+      document.getElementById('bio-count').textContent = BIO_MAX_CHARS;
+      const range = document.createRange();
+      range.selectNodeContents(bioInputEl);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
   });
+
+  document.querySelectorAll('.editor-toolbar button[data-cmd]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      bioInputEl.focus();
+      const cmd = btn.getAttribute('data-cmd');
+      if (cmd === 'createLink') {
+        const url = prompt('URL:');
+        if (url) document.execCommand(cmd, false, url);
+      } else {
+        document.execCommand(cmd, false, null);
+      }
+    });
+  });
+
+  async function uploadBioPhoto(slot, file) {
+    if (!currentUserId || !file) return;
+    setProfileStatus('', null);
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${currentUserId}/bio-${slot}.${ext}`;
+    const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type });
+    if (uploadError) { setProfileStatus(uploadError.message || t('err_generic'), 'error'); return; }
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
+    const photoUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+    const field = slot === 1 ? 'bio_photo_1' : 'bio_photo_2';
+    const { error } = await supabase.from('profiles').update({ [field]: photoUrl }).eq('id', currentUserId);
+    if (error) { setProfileStatus(error.message || t('err_generic'), 'error'); return; }
+    document.getElementById(`bio-photo-${slot}-preview`).innerHTML = `<img src="${photoUrl}" alt="">`;
+    document.getElementById(`bio-photo-${slot}-label`).style.display = 'none';
+    setProfileStatus(t('saved_ok'), 'ok');
+  }
+  document.getElementById('bio-photo-1-file').addEventListener('change', (e) => uploadBioPhoto(1, e.target.files[0]));
+  document.getElementById('bio-photo-2-file').addEventListener('change', (e) => uploadBioPhoto(2, e.target.files[0]));
 
   document.getElementById('save-profile-btn').addEventListener('click', async () => {
     if (!currentUserId) return;
     const username = document.getElementById('username-input').value.trim();
-    const bio = document.getElementById('bio-input').value.trim();
+    const bioHtml = bioInputEl.innerHTML.trim();
+    const bio = bioInputEl.textContent.trim();
 
-    const { error } = await supabase.from('profiles').update({ username, bio }).eq('id', currentUserId);
+    const { error } = await supabase.from('profiles').update({ username, bio, bio_html: bioHtml }).eq('id', currentUserId);
     if (error) {
       const msg = error.code === '23505' ? t('err_username_taken') : (error.message || t('err_generic'));
       setProfileStatus(msg, 'error');
       return;
     }
-    document.getElementById('profile-username').textContent = username ? '@' + username : '—';
+    document.getElementById('profile-username').textContent = username ? '@' + username : '…';
     setProfileStatus(t('saved_ok'), 'ok');
   });
 
+  async function checkBan(session) {
+    if (!session) return;
+    const { data } = await supabase.rpc('check_banned');
+    if (data && data[0] && data[0].banned) window.location.href = 'banned.html';
+  }
+
+  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+    return Math.floor(diff / 86400) + 'd';
+  }
+  let notifCache = [];
+  let notifPollInterval = null;
+  async function loadNotifications() {
+    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
+    notifCache = data || [];
+    const list = document.getElementById('notif-list');
+    const countEl = document.getElementById('notif-count');
+    if (!notifCache.length) {
+      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
+      countEl.style.display = 'none';
+      return;
+    }
+    const unread = notifCache.filter((n) => !n.read_at).length;
+    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
+    list.innerHTML = notifCache.map((n) => `
+      <a class="notif-item ${n.read_at ? '' : 'unread'}" data-id="${n.id}">
+        <div class="n-title">${escapeHtml(n.title)}</div>
+        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
+        <div class="n-time">${timeAgo(n.created_at)}</div>
+      </a>
+    `).join('');
+    list.querySelectorAll('.notif-item').forEach((el) => {
+      el.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const id = el.getAttribute('data-id');
+        const n = notifCache.find((x) => x.id === id);
+        await supabase.rpc('mark_notification_read', { p_id: id });
+        window.location.href = 'notifications.html?id=' + encodeURIComponent(id);
+      });
+    });
+  }
+  document.getElementById('notif-bell-btn').addEventListener('click', () => {
+    const dd = document.getElementById('notif-dropdown');
+    const open = dd.classList.toggle('open');
+    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) loadNotifications();
+  });
+  document.addEventListener('click', (e) => {
+    const bell = document.getElementById('notif-bell');
+    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
+  });
+  document.getElementById('notif-mark-all').addEventListener('click', async () => {
+    await supabase.rpc('mark_all_notifications_read');
+    loadNotifications();
+  });
+  document.getElementById('notif-staff-send').addEventListener('click', async () => {
+    const input = document.getElementById('notif-staff-input');
+    const title = input.value.trim();
+    if (!title) return;
+    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
+    if (!error) { input.value = ''; loadNotifications(); }
+  });
+  async function initNotifBell(session) {
+    const bell = document.getElementById('notif-bell');
+    clearInterval(notifPollInterval);
+    if (!session) { bell.style.display = 'none'; return; }
+    bell.style.display = 'block';
+    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
+    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
+    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
+    loadNotifications();
+    notifPollInterval = setInterval(loadNotifications, 60000);
+  }
+
   supabase.auth.onAuthStateChange((_event, session) => {
+    if (_event === 'PASSWORD_RECOVERY') { showView('recovery'); return; }
     if (session) {
       renderProfile(session);
+      checkBan(session);
+      initNotifBell(session);
     } else {
       showView('auth');
       document.getElementById('user-menu').style.display = 'none';
+      initNotifBell(null);
     }
   });
 
   supabase.auth.getSession().then(({ data }) => {
-    if (data.session) renderProfile(data.session);
+    if (data.session) { renderProfile(data.session); checkBan(data.session); initNotifBell(data.session); }
   });
 
   let saved = null;

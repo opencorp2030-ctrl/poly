@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Terms of Service · Poly</title>
+<link rel="icon" href="logo.png" />
+<meta name="description" content="Poly's terms of service: the community package registry, the Pro plan, and what you're responsible for." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Terms of Service · Poly" />
+<meta property="og:description" content="Poly&#x27;s terms of service: the community package registry, the Pro plan, and what you&#x27;re responsible for." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/terms.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Terms of Service · Poly" />
+<meta name="twitter:description" content="Poly&#x27;s terms of service: the community package registry, the Pro plan, and what you&#x27;re responsible for." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<style>
+  :root {
+    --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
+    --danger: #e0664a; --ok: #6fbf8b;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --container: 720px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
+
+  header.top { border-bottom: 1px solid var(--border); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover { color: var(--accent); }
+
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  @media (max-width: 960px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--ink-raised); border-bottom: 1px solid var(--border);
+      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
+    }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
+
+  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+  .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; display: inline-block; }
+  .legal-title { font-family: var(--mono); font-weight: 700; font-size: 1.8rem; margin: 0 0 0.4rem; }
+  .legal-updated { color: var(--text-dim); font-size: 0.85rem; margin: 0 0 2.5rem; }
+  .legal-body h2 { font-size: 1.05rem; margin: 2.2rem 0 0.7rem; }
+  .legal-body p, .legal-body li { color: var(--text-dim); font-size: 0.96rem; }
+  .legal-body ul { padding-left: 1.3rem; }
+  .legal-body li { margin: 0.4rem 0; }
+  .legal-body a { color: var(--accent); }
+
+  footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links" id="top-links">
+      <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs.html" data-i18n="nav_docs">docs</a>
+      <a href="community.html" data-i18n="nav_community">community</a>
+      <a href="account.html" data-i18n="nav_account">account</a>
+    </nav>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<script>
+(function () {
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('top-links');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+</script>
+
+<main>
+  <div class="wrap">
+    <a href="index.html" class="back-link" data-i18n="back">← Back to Poly</a>
+    <h1 class="legal-title" data-i18n="title">Terms of Service</h1>
+    <p class="legal-updated" data-i18n="updated">Last updated: 12 July 2026</p>
+
+    <div class="legal-body">
+      <p data-i18n="intro">These terms cover using the Poly CLI, poly.candygate.eu, and the community package registry. By creating an account or installing packages through Poly, you agree to them.</p>
+
+      <h2 data-i18n="h_account">Your account</h2>
+      <p data-i18n="p_account">You're responsible for your account and anything published or sent from it, including through a personal access token issued to an AI assistant. Keep your password and tokens private, and revoke a token immediately if you suspect it's been exposed.</p>
+
+      <h2 data-i18n="h_registry">The community registry</h2>
+      <p data-i18n="p_registry1">Anyone signed in can publish packages under <code>community:name</code>. Names are first-come-first-served. Community packages are <strong>not</strong> scanned for malware — the SHA-256 checksum recorded at publish time only protects against corruption or tampering in transit, not against a malicious publisher. Only install packages you trust.</p>
+      <p data-i18n="p_registry2">You keep ownership of what you publish, but grant every user the right to download and run it via Poly. Don't publish anything you don't have the rights to, anything malicious, or anything that isn't a runnable CLI script or small binary — the registry isn't a general file host.</p>
+
+      <h2 data-i18n="h_pro">Poly Pro</h2>
+      <p data-i18n="p_pro">Pro is a one-time €0.99 payment processed by Stripe, unlocking concurrent multi-package installs and automatic background upgrades. It doesn't gate any package or formula — the built-in tap catalog stays free for everyone. Because it's a small one-time digital purchase delivered immediately, it's non-refundable except where required by law.</p>
+
+      <h2 data-i18n="h_conduct">Acceptable use</h2>
+      <ul>
+        <li data-i18n="conduct_1">No malware, spam, harassment, or impersonation.</li>
+        <li data-i18n="conduct_2">No attempting to bypass moderation, rate limits, or the token/scope system.</li>
+        <li data-i18n="conduct_3">No automated mass account creation or name-squatting on the registry.</li>
+      </ul>
+      <p data-i18n="p_moderation">Staff and admin accounts can remove packages, suspend accounts (temporarily or permanently), and send service notifications you can't opt out of. You'll always see why if your account or a package is affected.</p>
+
+      <h2 data-i18n="h_avail">Availability</h2>
+      <p data-i18n="p_avail">Poly is provided "as is". The service, registry, and MCP server may change, be interrupted, or be discontinued at any time. Adapters like pip, npm, Homebrew, and crates.io are third-party services outside our control.</p>
+
+      <h2 data-i18n="h_changes">Changes</h2>
+      <p data-i18n="p_changes">These terms may be updated as the product evolves. Meaningful changes will be reflected here with an updated date at the top.</p>
+
+      <h2 data-i18n="h_contact">Contact</h2>
+      <p data-i18n="p_contact">Questions about these terms: <a href="mailto:open.corp.2030@gmail.com">open.corp.2030@gmail.com</a>. See also the <a href="privacy.html">Privacy Policy</a>.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms.html" data-i18n="footer_terms">Terms</a>
+      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
+      back: "← Back to Poly",
+      title: "Terms of Service",
+      updated: "Last updated: 12 July 2026",
+      intro: "These terms cover using the Poly CLI, poly.candygate.eu, and the community package registry. By creating an account or installing packages through Poly, you agree to them.",
+      h_account: "Your account",
+      p_account: "You're responsible for your account and anything published or sent from it, including through a personal access token issued to an AI assistant. Keep your password and tokens private, and revoke a token immediately if you suspect it's been exposed.",
+      h_registry: "The community registry",
+      p_registry1: "Anyone signed in can publish packages under <code>community:name</code>. Names are first-come-first-served. Community packages are <strong>not</strong> scanned for malware — the SHA-256 checksum recorded at publish time only protects against corruption or tampering in transit, not against a malicious publisher. Only install packages you trust.",
+      p_registry2: "You keep ownership of what you publish, but grant every user the right to download and run it via Poly. Don't publish anything you don't have the rights to, anything malicious, or anything that isn't a runnable CLI script or small binary — the registry isn't a general file host.",
+      h_pro: "Poly Pro",
+      p_pro: "Pro is a one-time €0.99 payment processed by Stripe, unlocking concurrent multi-package installs and automatic background upgrades. It doesn't gate any package or formula — the built-in tap catalog stays free for everyone. Because it's a small one-time digital purchase delivered immediately, it's non-refundable except where required by law.",
+      h_conduct: "Acceptable use",
+      conduct_1: "No malware, spam, harassment, or impersonation.",
+      conduct_2: "No attempting to bypass moderation, rate limits, or the token/scope system.",
+      conduct_3: "No automated mass account creation or name-squatting on the registry.",
+      p_moderation: "Staff and admin accounts can remove packages, suspend accounts (temporarily or permanently), and send service notifications you can't opt out of. You'll always see why if your account or a package is affected.",
+      h_avail: "Availability",
+      p_avail: "Poly is provided \"as is\". The service, registry, and MCP server may change, be interrupted, or be discontinued at any time. Adapters like pip, npm, Homebrew, and crates.io are third-party services outside our control.",
+      h_changes: "Changes",
+      p_changes: "These terms may be updated as the product evolves. Meaningful changes will be reflected here with an updated date at the top.",
+      h_contact: "Contact",
+      p_contact: "Questions about these terms: <a href=\"mailto:open.corp.2030@gmail.com\">open.corp.2030@gmail.com</a>. See also the <a href=\"privacy.html\">Privacy Policy</a>.",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
+      back: "← Retour à Poly",
+      title: "Conditions d'utilisation",
+      updated: "Dernière mise à jour : 12 juillet 2026",
+      intro: "Ces conditions couvrent l'utilisation du CLI Poly, de poly.candygate.eu, et du registre communautaire de paquets. En créant un compte ou en installant des paquets via Poly, tu les acceptes.",
+      h_account: "Ton compte",
+      p_account: "Tu es responsable de ton compte et de tout ce qui est publié ou envoyé depuis celui-ci, y compris via un token d'accès personnel délivré à un assistant IA. Garde ton mot de passe et tes tokens privés, et révoque un token immédiatement si tu penses qu'il a été exposé.",
+      h_registry: "Le registre communautaire",
+      p_registry1: "Toute personne connectée peut publier des paquets sous <code>community:nom</code>. Les noms sont attribués au premier arrivé. Les paquets communautaires ne sont <strong>pas</strong> scannés pour détecter les malwares — le SHA-256 enregistré à la publication protège seulement contre la corruption ou l'altération en transit, pas contre un publieur malveillant. N'installe que des paquets en qui tu as confiance.",
+      p_registry2: "Tu gardes la propriété de ce que tu publies, mais accordes à chaque utilisateur le droit de le télécharger et de l'exécuter via Poly. Ne publie rien dont tu n'as pas les droits, rien de malveillant, ni rien qui ne soit pas un script CLI exécutable ou un petit binaire — le registre n'est pas un hébergeur de fichiers généraliste.",
+      h_pro: "Poly Pro",
+      p_pro: "Pro est un paiement unique de 0,99 € traité par Stripe, débloquant les installations multi-paquets simultanées et les mises à jour automatiques en arrière-plan. Ça ne verrouille aucun paquet ni formule — le catalogue tap intégré reste gratuit pour tout le monde. S'agissant d'un petit achat numérique unique livré immédiatement, il n'est pas remboursable sauf obligation légale.",
+      h_conduct: "Utilisation acceptable",
+      conduct_1: "Pas de malware, de spam, de harcèlement ni d'usurpation d'identité.",
+      conduct_2: "Pas de tentative de contournement de la modération, des limites de débit, ou du système de tokens/scopes.",
+      conduct_3: "Pas de création automatisée massive de comptes ni de squattage de noms sur le registre.",
+      p_moderation: "Le staff et l'admin peuvent retirer des paquets, suspendre des comptes (temporairement ou définitivement), et envoyer des notifications de service auxquelles tu ne peux pas te désabonner. Tu verras toujours pourquoi si ton compte ou un paquet est concerné.",
+      h_avail: "Disponibilité",
+      p_avail: "Poly est fourni \"tel quel\". Le service, le registre et le serveur MCP peuvent changer, être interrompus, ou être arrêtés à tout moment. Des adaptateurs comme pip, npm, Homebrew et crates.io sont des services tiers hors de notre contrôle.",
+      h_changes: "Modifications",
+      p_changes: "Ces conditions peuvent être mises à jour à mesure que le produit évolue. Les changements significatifs seront reflétés ici avec une date de mise à jour en haut de page.",
+      h_contact: "Contact",
+      p_contact: "Questions sur ces conditions : <a href=\"mailto:open.corp.2030@gmail.com\">open.corp.2030@gmail.com</a>. Voir aussi la <a href=\"privacy.html\">Politique de confidentialité</a>.",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+</script>
+
+</body>
+</html>

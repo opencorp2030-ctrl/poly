@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>404 · Poly</title>
+<link rel="icon" href="logo.png" />
+<meta name="description" content="Page not found." />
+<meta name="robots" content="noindex" />
+<style>
+  :root {
+    --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body {
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 2rem;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.3rem; margin-bottom: 2.5rem; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  .code { font-family: var(--mono); font-size: 5rem; font-weight: 700; color: var(--accent); line-height: 1; margin: 0 0 1rem; }
+  .msg { font-size: 1.1rem; color: var(--text-dim); margin: 0 0 2rem; max-width: 40ch; }
+  .prompt { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.2rem; margin-bottom: 2rem; }
+  .home-link { font-family: var(--mono); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+  <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+  <p class="code">404</p>
+  <p class="msg" data-i18n="msg">This page doesn't exist, or moved.</p>
+  <p class="prompt">$ poly search &lt;this-page&gt;<br>no matches found</p>
+  <a href="index.html" class="home-link" data-i18n="home">← Back to poly.candygate.eu</a>
+
+  <script>
+    const I18N = {
+      en: { msg: "This page doesn't exist, or moved.", home: "← Back to poly.candygate.eu" },
+      fr: { msg: "Cette page n'existe pas, ou a été déplacée.", home: "← Retour à poly.candygate.eu" }
+    };
+    let saved = null;
+    try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+    const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+    const l = I18N[saved] ? saved : browserLang;
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key]) node.textContent = I18N[l][key];
+    });
+  </script>
+</body>
+</html>

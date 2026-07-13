@@ -4,7 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Profile · Poly</title>
+<link rel="icon" href="logo.png" />
 <meta name="description" content="A Poly community member's profile: bio, plan, and the packages they've published." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Profile · Poly" />
+<meta property="og:description" content="A Poly community member&#x27;s profile: bio, plan, and the packages they&#x27;ve published." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/profile.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Profile · Poly" />
+<meta name="twitter:description" content="A Poly community member&#x27;s profile: bio, plan, and the packages they&#x27;ve published." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
 <style>
   :root {
     --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
@@ -28,7 +39,7 @@
     }
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -37,12 +48,68 @@
   .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
 
   header.top { border-bottom: 1px solid var(--border); }
-  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; min-height: 64px; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover { color: var(--accent); }
+
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  @media (max-width: 960px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--ink-raised); border-bottom: 1px solid var(--border);
+      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
+    }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .notif-bell { position: relative; display: none; }
+  .notif-bell-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .notif-bell-btn svg { width: 17px; height: 17px; }
+  .notif-count {
+    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
+    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
+  }
+  .notif-dropdown {
+    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
+    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
+    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  }
+  .notif-dropdown.open { display: flex; }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: rgba(240,169,62,0.06); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+
   .user-menu { position: relative; }
   .user-menu-btn {
     width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
@@ -67,6 +134,14 @@
   .user-menu-item:hover { background: var(--ink); }
   .user-menu-item.danger { color: var(--danger); }
 
+  footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
+
   main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
 
   .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; display: inline-block; }
@@ -81,6 +156,17 @@
   .uname { font-family: var(--mono); font-weight: 700; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
   .official-badge { display: inline-flex; vertical-align: middle; }
   .official-badge svg { width: 1.1rem; height: 1.1rem; display: block; }
+
+  .pkg-badge {
+    font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 999px; vertical-align: middle;
+    color: #fff; display: inline-block;
+  }
+  .user-badges { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; vertical-align: middle; align-items: center; }
+  .user-badge { display: inline-flex; background: none; }
+  .user-badge svg { width: 1rem; height: 1rem; display: block; }
+  .pkg-badge.pkg-new { background: var(--accent); color: var(--accent-ink); }
+  .pkg-badge.pkg-safe { background: #218f5c; }
   .plan-badge {
     font-family: var(--mono); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;
     text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 999px; margin-top: 0.4rem; display: inline-block;
@@ -88,8 +174,26 @@
   .plan-badge.free { background: var(--border); color: var(--text-dim); }
   .plan-badge.pro { background: var(--accent); color: var(--accent-ink); }
 
-  .bio { color: var(--text-dim); max-width: 60ch; margin: 0 0 0.5rem; }
+  .bio { color: var(--text-dim); max-width: 60ch; margin: 0 0 0.5rem; overflow-wrap: anywhere; line-height: 1.55; }
+  .bio a { color: var(--accent); }
+  .bio img { max-width: 100%; border-radius: 6px; margin: 0.4rem 0; display: block; }
+  .bio-photos-row { display: flex; gap: 0.6rem; margin: 0.5rem 0 1rem; }
+  .bio-photos-row img { width: 96px; height: 96px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
   .since { font-family: var(--mono); font-size: 0.78rem; color: var(--text-dim); }
+
+  .btn {
+    font-family: var(--sans); font-size: 0.82rem; font-weight: 600;
+    padding: 0.5rem 0.9rem; border: 1px solid var(--border); border-radius: 6px;
+    background: transparent; color: var(--text); cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.primary:hover { opacity: 0.92; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn:not(:disabled):hover { border-color: var(--accent); }
+  .social-actions { display: flex; align-items: center; gap: 0.75rem; margin: 0.85rem 0 1.35rem; flex-wrap: wrap; }
+  .social-counts { font-size: 0.82rem; color: var(--text-dim); }
+  .social-counts b { color: var(--text); font-weight: 600; }
 
   .section-label {
     font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
@@ -112,26 +216,69 @@
 <header class="top">
   <div class="wrap">
     <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
-    <nav class="top-links">
+    <nav class="top-links" id="top-links">
       <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs.html" data-i18n="nav_docs">docs</a>
       <a href="community.html" data-i18n="nav_community">community</a>
       <a href="account.html" data-i18n="nav_account">account</a>
     </nav>
+    <div class="header-actions">
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="notif-bell" id="notif-bell">
+      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-count" id="notif-count">0</span>
+      </button>
+      <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-dropdown-head">
+          <span class="title">Notifications</span>
+          <div class="head-actions">
+            <a class="notif-see-all" href="notifications.html">See all</a>
+            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+          </div>
+        </div>
+        <div class="notif-list" id="notif-list"></div>
+        <div class="notif-staff-compose" id="notif-staff-compose">
+          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+          <button type="button" id="notif-staff-send">Send</button>
+        </div>
+      </div>
+    </div>
     <div class="user-menu" id="user-menu" style="display:none">
       <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
         <span class="initial" id="user-menu-avatar">?</span>
       </button>
       <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">—</div>
+        <div class="user-menu-name" id="user-menu-name">…</div>
         <a href="account.html" class="user-menu-item">Account</a>
         <a href="community.html" class="user-menu-item">Community</a>
         <a href="docs.html" class="user-menu-item">Docs</a>
         <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
       </div>
     </div>
+    </div>
   </div>
 </header>
+
+<script>
+(function () {
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('top-links');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  links.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
 
 <main>
   <div class="wrap">
@@ -147,14 +294,21 @@
 
     <div data-view="profile">
       <div class="profile-head">
-        <div class="avatar-img" id="avatar">—</div>
+        <div class="avatar-img" id="avatar">…</div>
         <div>
-          <div class="uname"><span id="uname-text">—</span><span class="official-badge" id="official-badge" data-badge-kind="dev" style="display:none"></span></div>
+          <div class="uname"><span id="uname-text">…</span><span class="official-badge" id="official-badge" data-badge-kind="dev" style="display:none"></span><span id="profile-tier-badge"></span></div>
           <span class="plan-badge free" id="plan-badge">free</span>
         </div>
       </div>
-      <p class="bio" id="bio"></p>
+      <div class="bio" id="bio"></div>
+      <div class="bio-photos-row" id="bio-photos-row" style="display:none"></div>
       <p class="since" id="since"></p>
+
+      <div class="social-actions" id="social-actions" style="display:none">
+        <span class="social-counts" id="social-counts"></span>
+        <button type="button" class="btn" id="follow-btn"></button>
+        <button type="button" class="btn" id="friend-btn"></button>
+      </div>
 
       <p class="section-label" data-i18n="apps_label">Published apps</p>
       <div id="pkg-list"></div>
@@ -162,6 +316,17 @@
     </div>
   </div>
 </main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms.html" data-i18n="footer_terms">Terms</a>
+      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
 
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -172,27 +337,83 @@
   const I18N = {
     en: {
       nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       back: "← Back to community",
       signin_prompt_html: '<a href="account.html">Sign in</a> to view community profiles.',
       not_found: "No one with that username.",
       apps_label: "Published apps", no_apps: "Nothing published yet.",
       downloads_label: "downloads", member_since: "Member since",
-      official_dev: "Official developer", official_app: "Official app"
+      official_dev: "Official developer", official_app: "Official app",
+      followers_following: "{followers} followers · {following} following",
+      btn_follow: "Follow", btn_unfollow: "Unfollow",
+      btn_add_friend: "Add friend", btn_friend_pending: "Request sent",
+      btn_friend_accept: "Accept friend request", btn_friends: "Friends",
+      confirm_unfriend: "Remove this friend?"
     },
     fr: {
       nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       back: "← Retour à la communauté",
       signin_prompt_html: '<a href="account.html">Connecte-toi</a> pour voir les profils de la communauté.',
       not_found: "Personne avec ce nom d'utilisateur.",
       apps_label: "Applications publiées", no_apps: "Rien publié pour l'instant.",
       downloads_label: "téléchargements", member_since: "Membre depuis",
-      official_dev: "Développeur officiel", official_app: "App officielle"
+      official_dev: "Développeur officiel", official_app: "App officielle",
+      followers_following: "{followers} abonnés · {following} abonnements",
+      btn_follow: "Suivre", btn_unfollow: "Ne plus suivre",
+      btn_add_friend: "Ajouter en ami", btn_friend_pending: "Demande envoyée",
+      btn_friend_accept: "Accepter la demande d'ami", btn_friends: "Amis",
+      confirm_unfriend: "Retirer cet ami ?"
     }
   };
 
   const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
   function officialBadge(kind) {
     return `<span class="official-badge" data-badge-kind="${kind}" title="${t(kind === 'dev' ? 'official_dev' : 'official_app')}">${OFFICIAL_BADGE_SVG}</span>`;
+  }
+  const ICON_SHAPES = {
+    star: '<polygon points="12,2 14.9,9.1 22,9.6 16.5,14.3 18.2,21.2 12,17.3 5.8,21.2 7.5,14.3 2,9.6 9.1,9.1"/>',
+    shield: '<polygon points="12,2 20,5 20,12 12,22 4,12 4,5"/>',
+    diamond: '<polygon points="12,2 20,12 12,22 4,12"/>',
+    hexagon: '<polygon points="12,2 20,7 20,17 12,22 4,17 4,7"/>',
+    triangle: '<polygon points="12,3 21,20 3,20"/>',
+    pentagon: '<polygon points="12,2 21,9 17.5,20 6.5,20 3,9"/>',
+    ring: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="3"/>',
+    cross: '<polygon points="9,2 15,2 15,9 22,9 22,15 15,15 15,22 9,22 9,15 2,15 2,9 9,9"/>',
+    chevron: '<polygon points="12,4 22,18 15,18 15,22 9,22 9,18 2,18"/>',
+    bookmark: '<polygon points="5,2 19,2 19,22 12,16 5,22"/>',
+    flag: '<polygon points="6,2 6,22 8,22 8,14 19,14 15,8 19,2"/>',
+    circle: '<circle cx="12" cy="12" r="9"/>',
+    bolt: '<polygon points="13,2 4,14 10,14 9,22 20,9 13,9"/>'
+  };
+  const BADGE_META = {
+    staff: ['shield', '#e0664a'], founder: ['star', '#f0a93e'], partner: ['diamond', '#a855f7'],
+    ai: ['triangle', '#3897f0'], verified_developer: ['hexagon', '#2fa3ae'], verified_publisher: ['bookmark', '#2fa3ae'],
+    moderator: ['shield', '#b6304a'], core_contributor: ['hexagon', '#3a6bdb'], contributor: ['cross', '#3a5fc0'],
+    maintainer: ['hexagon', '#218f5c'], translator: ['pentagon', '#0ea5e9'], documentation: ['bookmark', '#0ea5e9'],
+    security_researcher: ['shield', '#7c3aed'], bug_hunter: ['ring', '#8b929c'], bug_hunter_gold: ['ring', '#ad8a1e'],
+    package_reviewer: ['pentagon', '#2fa3ae'], community_leader: ['star', '#db2777'], mentor: ['chevron', '#9333ea'],
+    ambassador: ['flag', '#9333ea'], speaker: ['triangle', '#f59e0b'], content_creator: ['diamond', '#db2777'],
+    streamer: ['triangle', '#9333ea'], writer: ['cross', '#0ea5e9'], designer: ['hexagon', '#db2777'],
+    artist: ['circle', '#db2777'], sponsor: ['ring', '#218f5c'], donor: ['diamond', '#218f5c'],
+    veteran: ['pentagon', '#a5652f'], og: ['star', '#ad8a1e'], pioneer: ['chevron', '#5f8b9c'],
+    innovator: ['bolt', '#2fa3ae'], hackathon_winner: ['hexagon', '#f0a93e'], top_publisher: ['chevron', '#f0a93e'],
+    rising_star: ['star', '#f59e0b'], helper: ['cross', '#218f5c'], student: ['bookmark', '#8b929c'],
+    educator: ['bookmark', '#06b6d4'], open_source: ['circle', '#218f5c'], early_supporter: ['bolt', '#a855f7'],
+    beta_tester: ['pentagon', '#3a5fc0']
+  };
+  function userBadgesHtml(badges) {
+    if (!badges || !badges.length) return '';
+    return '<span class="user-badges">' + badges.map((b) => {
+      const meta = BADGE_META[b];
+      if (!meta) return '';
+      const shape = ICON_SHAPES[meta[0]] || '';
+      return `<span class="user-badge" style="color:${meta[1]}" title="${b.replace(/_/g, ' ')}"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${shape}</svg></span>`;
+    }).join('') + '</span>';
+  }
+  function packageBadgesHtml(badges) {
+    if (!badges || !badges.length) return '';
+    return badges.map((b) => `<span class="pkg-badge pkg-${b}">${b === 'safe' ? '✓ ' : ''}${b}</span>`).join(' ');
   }
   function refreshBadgeTitles() {
     document.querySelectorAll('.official-badge[data-badge-kind]').forEach((el) => {
@@ -239,7 +460,7 @@
 
     const { data: profiles, error } = await supabase
       .from('profiles_public')
-      .select('username, bio, avatar_url, plan, is_official, created_at')
+      .select('id, username, bio, bio_html, bio_photo_1, bio_photo_2, avatar_url, plan, is_official, created_at, badges')
       .eq('username', username)
       .limit(1);
 
@@ -252,15 +473,26 @@
     ownedBadge.innerHTML = OFFICIAL_BADGE_SVG;
     ownedBadge.title = t('official_dev');
     ownedBadge.style.display = p.is_official ? 'inline-flex' : 'none';
+    document.getElementById('profile-tier-badge').innerHTML = userBadgesHtml(p.badges);
     const badge = document.getElementById('plan-badge');
     badge.textContent = p.plan;
     badge.className = 'plan-badge ' + p.plan;
-    document.getElementById('bio').textContent = p.bio || '';
+    const bioEl = document.getElementById('bio');
+    if (p.bio_html) bioEl.innerHTML = p.bio_html;
+    else bioEl.textContent = p.bio || '';
+    const photosRow = document.getElementById('bio-photos-row');
+    const photos = [p.bio_photo_1, p.bio_photo_2].filter(Boolean);
+    if (photos.length) {
+      photosRow.innerHTML = photos.map((url) => `<img src="${escapeHtml(url)}" alt="">`).join('');
+      photosRow.style.display = 'flex';
+    } else {
+      photosRow.style.display = 'none';
+    }
     document.getElementById('since').textContent = t('member_since') + ' ' + new Date(p.created_at).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US');
 
     const { data: pkgs } = await supabase
       .from('community_packages_public')
-      .select('name, version, description, download_count, is_official')
+      .select('name, version, description, download_count, is_official, badges')
       .eq('uploader_username', p.username)
       .order('created_at', { ascending: false });
 
@@ -273,14 +505,82 @@
       empty.style.display = 'none';
       list.innerHTML = pkgs.map((pkg) => `
         <a class="pkg-card" style="display:block" href="package.html?name=${encodeURIComponent(pkg.name)}">
-          <div class="pname">${escapeHtml(pkg.name)} ${pkg.is_official ? officialBadge('app') : ''}</div>
+          <div class="pname">${escapeHtml(pkg.name)} ${pkg.is_official ? officialBadge('app') : ''} ${packageBadgesHtml(pkg.badges)}</div>
           <div class="pmeta">v${escapeHtml(pkg.version)} · ${pkg.download_count} ${escapeHtml(t('downloads_label'))}</div>
           ${pkg.description ? `<div class="pdesc">${escapeHtml(pkg.description)}</div>` : ''}
         </a>
       `).join('');
     }
 
+    loadSocial(sessionData.session.user.id, p.id);
     showView('profile');
+  }
+
+  async function loadSocial(viewerId, targetId) {
+    const actions = document.getElementById('social-actions');
+    const [{ count: followers }, { count: following }] = await Promise.all([
+      supabase.from('follows').select('follower_id', { count: 'exact', head: true }).eq('followed_id', targetId),
+      supabase.from('follows').select('followed_id', { count: 'exact', head: true }).eq('follower_id', targetId),
+    ]);
+    document.getElementById('social-counts').textContent = t('followers_following')
+      .replace('{followers}', followers || 0).replace('{following}', following || 0);
+
+    if (viewerId === targetId) {
+      document.getElementById('follow-btn').style.display = 'none';
+      document.getElementById('friend-btn').style.display = 'none';
+      actions.style.display = 'flex';
+      return;
+    }
+
+    const { data: followRow } = await supabase.from('follows').select('follower_id').eq('follower_id', viewerId).eq('followed_id', targetId).maybeSingle();
+    const followBtn = document.getElementById('follow-btn');
+    followBtn.style.display = 'inline-flex';
+    followBtn.textContent = followRow ? t('btn_unfollow') : t('btn_follow');
+    followBtn.className = 'btn' + (followRow ? '' : ' primary');
+    followBtn.onclick = async () => {
+      followBtn.disabled = true;
+      if (followRow) await supabase.from('follows').delete().eq('follower_id', viewerId).eq('followed_id', targetId);
+      else await supabase.from('follows').insert({ follower_id: viewerId, followed_id: targetId });
+      followBtn.disabled = false;
+      loadSocial(viewerId, targetId);
+    };
+
+    const { data: reqRow } = await supabase.from('friend_requests').select('id, sender_id, receiver_id, status')
+      .or(`and(sender_id.eq.${viewerId},receiver_id.eq.${targetId}),and(sender_id.eq.${targetId},receiver_id.eq.${viewerId})`)
+      .maybeSingle();
+    const friendBtn = document.getElementById('friend-btn');
+    friendBtn.style.display = 'inline-flex';
+    friendBtn.disabled = false;
+    friendBtn.className = 'btn';
+    if (!reqRow) {
+      friendBtn.textContent = t('btn_add_friend');
+      friendBtn.onclick = async () => {
+        friendBtn.disabled = true;
+        await supabase.from('friend_requests').insert({ sender_id: viewerId, receiver_id: targetId });
+        loadSocial(viewerId, targetId);
+      };
+    } else if (reqRow.status === 'accepted') {
+      friendBtn.textContent = t('btn_friends');
+      friendBtn.onclick = async () => {
+        if (!confirm(t('confirm_unfriend'))) return;
+        await supabase.from('friend_requests').delete().eq('id', reqRow.id);
+        loadSocial(viewerId, targetId);
+      };
+    } else if (reqRow.sender_id === viewerId) {
+      friendBtn.textContent = t('btn_friend_pending');
+      friendBtn.disabled = true;
+      friendBtn.onclick = null;
+    } else {
+      friendBtn.textContent = t('btn_friend_accept');
+      friendBtn.className = 'btn primary';
+      friendBtn.onclick = async () => {
+        friendBtn.disabled = true;
+        await supabase.from('friend_requests').update({ status: 'accepted' }).eq('id', reqRow.id);
+        loadSocial(viewerId, targetId);
+      };
+    }
+
+    actions.style.display = 'flex';
   }
 
   async function renderUserMenu(session) {
@@ -314,8 +614,86 @@
     window.location.reload();
   });
 
-  supabase.auth.onAuthStateChange((_event, session) => { loadProfile(); renderUserMenu(session); });
-  supabase.auth.getSession().then(({ data }) => renderUserMenu(data.session));
+  async function checkBan(session) {
+    if (!session) return;
+    const { data } = await supabase.rpc('check_banned');
+    if (data && data[0] && data[0].banned) window.location.href = 'banned.html';
+  }
+
+  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+    return Math.floor(diff / 86400) + 'd';
+  }
+  let notifCache = [];
+  let notifPollInterval = null;
+  async function loadNotifications() {
+    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
+    notifCache = data || [];
+    const list = document.getElementById('notif-list');
+    const countEl = document.getElementById('notif-count');
+    if (!notifCache.length) {
+      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
+      countEl.style.display = 'none';
+      return;
+    }
+    const unread = notifCache.filter((n) => !n.read_at).length;
+    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
+    list.innerHTML = notifCache.map((n) => `
+      <a class="notif-item ${n.read_at ? '' : 'unread'}" data-id="${n.id}">
+        <div class="n-title">${escapeHtml(n.title)}</div>
+        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
+        <div class="n-time">${timeAgo(n.created_at)}</div>
+      </a>
+    `).join('');
+    list.querySelectorAll('.notif-item').forEach((el) => {
+      el.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const id = el.getAttribute('data-id');
+        const n = notifCache.find((x) => x.id === id);
+        await supabase.rpc('mark_notification_read', { p_id: id });
+        window.location.href = 'notifications.html?id=' + encodeURIComponent(id);
+      });
+    });
+  }
+  document.getElementById('notif-bell-btn').addEventListener('click', () => {
+    const dd = document.getElementById('notif-dropdown');
+    const open = dd.classList.toggle('open');
+    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) loadNotifications();
+  });
+  document.addEventListener('click', (e) => {
+    const bell = document.getElementById('notif-bell');
+    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
+  });
+  document.getElementById('notif-mark-all').addEventListener('click', async () => {
+    await supabase.rpc('mark_all_notifications_read');
+    loadNotifications();
+  });
+  document.getElementById('notif-staff-send').addEventListener('click', async () => {
+    const input = document.getElementById('notif-staff-input');
+    const title = input.value.trim();
+    if (!title) return;
+    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
+    if (!error) { input.value = ''; loadNotifications(); }
+  });
+  async function initNotifBell(session) {
+    const bell = document.getElementById('notif-bell');
+    clearInterval(notifPollInterval);
+    if (!session) { bell.style.display = 'none'; return; }
+    bell.style.display = 'block';
+    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
+    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
+    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
+    loadNotifications();
+    notifPollInterval = setInterval(loadNotifications, 60000);
+  }
+
+  supabase.auth.onAuthStateChange((_event, session) => { loadProfile(); renderUserMenu(session); checkBan(session); initNotifBell(session); });
+  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); });
 
   let saved = null;
   try { saved = localStorage.getItem('poly-lang'); } catch (e) {}

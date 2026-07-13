@@ -4,7 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dependencies · Poly</title>
+<link rel="icon" href="logo.png" />
 <meta name="description" content="Search every ecosystem poly can install from at once: pip, npm, crates.io, Homebrew, and the Poly community registry." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Dependencies · Poly" />
+<meta property="og:description" content="Search every ecosystem poly can install from at once: pip, npm, crates.io, Homebrew, and the Poly community registry." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/dependencies.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Dependencies · Poly" />
+<meta name="twitter:description" content="Search every ecosystem poly can install from at once: pip, npm, crates.io, Homebrew, and the Poly community registry." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
 <style>
   :root {
     --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
@@ -29,7 +40,7 @@
   }
 
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -38,12 +49,68 @@
   .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
 
   header.top { border-bottom: 1px solid var(--border); }
-  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; min-height: 64px; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  @media (max-width: 960px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--ink-raised); border-bottom: 1px solid var(--border);
+      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
+    }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
+
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .notif-bell { position: relative; display: none; }
+  .notif-bell-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .notif-bell-btn svg { width: 17px; height: 17px; }
+  .notif-count {
+    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
+    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
+    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
+  }
+  .notif-dropdown {
+    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
+    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
+    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  }
+  .notif-dropdown.open { display: flex; }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: rgba(240,169,62,0.06); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
 
   .user-menu { position: relative; }
   .user-menu-btn {
@@ -68,6 +135,14 @@
   }
   .user-menu-item:hover { background: var(--ink); }
   .user-menu-item.danger { color: var(--danger); }
+
+  footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
 
   main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
   .eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin: 0 0 0.9rem; }
@@ -113,6 +188,32 @@
   .official-badge { display: inline-flex; vertical-align: middle; }
   .official-badge svg { width: 0.85rem; height: 0.85rem; display: block; }
 
+  .pkg-badge {
+    font-family: var(--mono); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px; vertical-align: middle;
+    color: #fff; display: inline-block;
+  }
+  .pkg-badge.pkg-new { background: var(--accent); color: var(--accent-ink); }
+  .pkg-badge.pkg-safe { background: #218f5c; }
+
+  /* Multi-result community lane: .lane-body is flex/align-center for the
+     single-result case, so this wrapper is the lane-body's only direct
+     child and stacks its own rows in a column -- without it, several
+     width:100% .result divs collapse into the same flex row and overlap. */
+  .result-list { width: 100%; display: flex; flex-direction: column; gap: 0.5rem; }
+  .accordion-item { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .accordion-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+    padding: 0.6rem 0.75rem; cursor: pointer; background: transparent; border: none; width: 100%;
+    text-align: left; font-family: var(--sans); color: var(--text);
+  }
+  .accordion-head:hover { background: var(--ink-raised); }
+  .accordion-head .rname { margin-bottom: 0; }
+  .accordion-chevron { flex-shrink: 0; color: var(--text-dim); transition: transform 0.15s ease; font-size: 0.75rem; }
+  .accordion-item.open .accordion-chevron { transform: rotate(90deg); }
+  .accordion-body { display: none; padding: 0 0.75rem 0.75rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+  .accordion-item.open .accordion-body { display: block; }
+
   .cta-row { margin-top: 3rem; text-align: center; }
   .cta-row p { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 0.75rem; }
   .btn { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; padding: 0.65rem 1.2rem; border: 1px solid var(--border); border-radius: 6px; background: var(--accent); color: var(--accent-ink); }
@@ -124,39 +225,82 @@
 <header class="top">
   <div class="wrap">
     <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
-    <nav class="top-links">
+    <nav class="top-links" id="top-links">
       <a href="dependencies.html" class="current" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs.html" data-i18n="nav_docs">docs</a>
       <a href="community.html" data-i18n="nav_community">community</a>
       <a href="account.html" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
+    <div class="header-actions">
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="notif-bell" id="notif-bell">
+      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-count" id="notif-count">0</span>
+      </button>
+      <div class="notif-dropdown" id="notif-dropdown">
+        <div class="notif-dropdown-head">
+          <span class="title">Notifications</span>
+          <div class="head-actions">
+            <a class="notif-see-all" href="notifications.html">See all</a>
+            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+          </div>
+        </div>
+        <div class="notif-list" id="notif-list"></div>
+        <div class="notif-staff-compose" id="notif-staff-compose">
+          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+          <button type="button" id="notif-staff-send">Send</button>
+        </div>
+      </div>
+    </div>
     <div class="user-menu" id="user-menu" style="display:none">
       <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
         <span class="initial" id="user-menu-avatar">?</span>
       </button>
       <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">—</div>
+        <div class="user-menu-name" id="user-menu-name">…</div>
         <a href="account.html" class="user-menu-item">Account</a>
         <a href="community.html" class="user-menu-item">Community</a>
         <a href="docs.html" class="user-menu-item">Docs</a>
         <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
       </div>
     </div>
+    </div>
   </div>
 </header>
+
+<script>
+(function () {
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('top-links');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  links.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
 
 <main>
   <div class="wrap">
     <p class="eyebrow" data-i18n="eyebrow">Dependencies</p>
     <h1 data-i18n="title">Search every ecosystem at once</h1>
-    <p class="lede" data-i18n="lede">One box, five sources: pip, npm, crates.io, Homebrew, and packages the Poly community has published. Real-time, live against each registry's own API — nothing cached or made up.</p>
+    <p class="lede" data-i18n="lede">One box, five sources: pip, npm, crates.io, Homebrew, and packages the Poly community has published. Real-time, live against each registry's own API. Nothing cached or made up.</p>
 
     <div class="search-box">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" autofocus />
     </div>
-    <p class="search-hint" data-i18n="search_hint">pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either) — try the exact package name. The community lane matches partial names.</p>
+    <p class="search-hint" data-i18n="search_hint">pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either), try the exact package name. The community lane matches partial names.</p>
 
     <div class="source-lanes">
       <div class="lane" data-lane="tap">
@@ -192,6 +336,17 @@
   </div>
 </main>
 
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms.html" data-i18n="footer_terms">Terms</a>
+      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
+
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
   const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
@@ -201,10 +356,11 @@
   const I18N = {
     en: {
       nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account", nav_github: "github",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       eyebrow: "Dependencies", title: "Search every ecosystem at once",
-      lede: "One box, five sources: pip, npm, crates.io, Homebrew, and packages the Poly community has published. Real-time, live against each registry's own API — nothing cached or made up.",
+      lede: "One box, five sources: pip, npm, crates.io, Homebrew, and packages the Poly community has published. Real-time, live against each registry's own API. Nothing cached or made up.",
       search_placeholder: "requests, lodash, ripgrep, serde…",
-      search_hint: "pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either) — try the exact package name. The community lane matches partial names.",
+      search_hint: "pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either), try the exact package name. The community lane matches partial names.",
       lane_tap: "tap (built-in)", lane_community: "community", lane_idle: "Type to search…",
       lane_not_found: "Not found.", lane_error: "Lookup failed.",
       cta_p: "Published something of your own? Ship it to the community lane.",
@@ -214,10 +370,11 @@
     },
     fr: {
       nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       eyebrow: "Dépendances", title: "Cherche dans tous les écosystèmes d'un coup",
-      lede: "Une seule barre, cinq sources : pip, npm, crates.io, Homebrew, et les paquets publiés par la communauté Poly. En direct, contre l'API réelle de chaque registre — rien n'est mis en cache ou inventé.",
+      lede: "Une seule barre, cinq sources : pip, npm, crates.io, Homebrew, et les paquets publiés par la communauté Poly. En direct, contre l'API réelle de chaque registre. Rien n'est mis en cache ou inventé.",
       search_placeholder: "requests, lodash, ripgrep, serde…",
-      search_hint: "pip/npm/crates.io/Homebrew sont des recherches par nom exact (ils n'offrent pas non plus de recherche floue publique) — essaie le nom exact du paquet. La colonne communauté accepte les noms partiels.",
+      search_hint: "pip/npm/crates.io/Homebrew sont des recherches par nom exact (ils n'offrent pas non plus de recherche floue publique), essaie le nom exact du paquet. La colonne communauté accepte les noms partiels.",
       lane_tap: "tap (intégré)", lane_community: "communauté", lane_idle: "Tape pour chercher…",
       lane_not_found: "Introuvable.", lane_error: "Échec de la recherche.",
       cta_p: "Tu as publié quelque chose ? Envoie-le dans la colonne communauté.",
@@ -230,6 +387,10 @@
   const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
   function officialBadge(kind) {
     return `<span class="official-badge" data-badge-kind="${kind}" title="${t(kind === 'dev' ? 'official_dev' : 'official_app')}">${OFFICIAL_BADGE_SVG}</span>`;
+  }
+  function packageBadgesHtml(badges) {
+    if (!badges || !badges.length) return '';
+    return badges.map((b) => `<span class="pkg-badge pkg-${b}">${b === 'safe' ? '✓ ' : ''}${b}</span>`).join(' ');
   }
   function refreshBadgeTitles() {
     document.querySelectorAll('.official-badge[data-badge-kind]').forEach((el) => {
@@ -281,15 +442,22 @@
   }
 
   document.addEventListener('click', (e) => {
-    const el = e.target.closest('.rinstall');
-    if (!el) return;
-    const text = 'poly install ' + el.getAttribute('data-copy');
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        const original = el.textContent;
-        el.textContent = 'copied ✓';
-        setTimeout(() => { el.textContent = original; }, 1200);
-      }).catch(() => {});
+    const rinstall = e.target.closest('.rinstall');
+    if (rinstall) {
+      const text = 'poly install ' + rinstall.getAttribute('data-copy');
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          const original = rinstall.textContent;
+          rinstall.textContent = 'copied ✓';
+          setTimeout(() => { rinstall.textContent = original; }, 1200);
+        }).catch(() => {});
+      }
+      return;
+    }
+
+    const head = e.target.closest('.accordion-head');
+    if (head) {
+      head.closest('.accordion-item').classList.toggle('open');
     }
   });
 
@@ -349,22 +517,47 @@
   async function searchCommunity(q) {
     const { data, error } = await supabase
       .from('community_packages_public')
-      .select('name, version, description, uploader_username, download_count, is_official')
+      .select('name, version, description, uploader_username, download_count, is_official, badges')
       .ilike('name', `%${q}%`)
       .limit(5);
     if (error || !data || data.length === 0) {
       setLane('community', 'empty', `<span class="lane-empty">${t('lane_not_found')}</span>`);
       return;
     }
-    const html = data.map((p) => `
-      <div class="result" style="margin-bottom:0.75rem">
-        <a class="rname" style="display:block" href="package.html?name=${encodeURIComponent(p.name)}">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''}</a>
-        <div class="rversion">${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
-        ${p.description ? `<div class="rsummary">${escapeHtml(p.description)}</div>` : ''}
-        <div class="rinstall" data-copy="community:${escapeHtml(p.name)}">poly install community:${escapeHtml(p.name)}</div>
-        ${p.uploader_username ? `<div class="rby">${t('by')} <a href="profile.html?u=${encodeURIComponent(p.uploader_username)}">@${escapeHtml(p.uploader_username)}</a></div>` : ''}
+
+    // A single match renders like every other lane (name/version/summary/
+    // install line, no accordion chrome needed). Two or more render as a
+    // collapsed-by-default accordion list -- stacking several full .result
+    // blocks directly used to overlap them, since .lane-body centers its
+    // one expected child as a flex row.
+    if (data.length === 1) {
+      const p = data[0];
+      const html = `
+        <div class="result">
+          <a class="rname" style="display:block" href="package.html?name=${encodeURIComponent(p.name)}">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''} ${packageBadgesHtml(p.badges)}</a>
+          <div class="rversion">${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
+          ${p.description ? `<div class="rsummary">${escapeHtml(p.description)}</div>` : ''}
+          <div class="rinstall" data-copy="community:${escapeHtml(p.name)}">poly install community:${escapeHtml(p.name)}</div>
+          ${p.uploader_username ? `<div class="rby">${t('by')} <a href="profile.html?u=${encodeURIComponent(p.uploader_username)}">@${escapeHtml(p.uploader_username)}</a></div>` : ''}
+        </div>`;
+      setLane('community', 'found', html);
+      return;
+    }
+
+    const html = `<div class="result-list">${data.map((p) => `
+      <div class="accordion-item">
+        <button type="button" class="accordion-head">
+          <span class="rname">${escapeHtml(p.name)} ${p.is_official ? officialBadge('app') : ''} ${packageBadgesHtml(p.badges)}</span>
+          <span class="accordion-chevron">▸</span>
+        </button>
+        <div class="accordion-body">
+          <div class="rversion">${escapeHtml(p.version)} · ${p.download_count} ${escapeHtml(t('downloads_label'))}</div>
+          ${p.description ? `<div class="rsummary">${escapeHtml(p.description)}</div>` : ''}
+          <div class="rinstall" data-copy="community:${escapeHtml(p.name)}">poly install community:${escapeHtml(p.name)}</div>
+          ${p.uploader_username ? `<div class="rby">${t('by')} <a href="profile.html?u=${encodeURIComponent(p.uploader_username)}">@${escapeHtml(p.uploader_username)}</a></div>` : ''}
+        </div>
       </div>
-    `).join('');
+    `).join('')}</div>`;
     setLane('community', 'found', html);
   }
 
@@ -429,8 +622,84 @@
     window.location.reload();
   });
 
-  supabase.auth.onAuthStateChange((_event, session) => renderUserMenu(session));
-  supabase.auth.getSession().then(({ data }) => renderUserMenu(data.session));
+  async function checkBan(session) {
+    if (!session) return;
+    const { data } = await supabase.rpc('check_banned');
+    if (data && data[0] && data[0].banned) window.location.href = 'banned.html';
+  }
+  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
+  function timeAgo(iso) {
+    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (diff < 60) return 'now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+    return Math.floor(diff / 86400) + 'd';
+  }
+  let notifCache = [];
+  let notifPollInterval = null;
+  async function loadNotifications() {
+    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
+    notifCache = data || [];
+    const list = document.getElementById('notif-list');
+    const countEl = document.getElementById('notif-count');
+    if (!notifCache.length) {
+      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
+      countEl.style.display = 'none';
+      return;
+    }
+    const unread = notifCache.filter((n) => !n.read_at).length;
+    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
+    list.innerHTML = notifCache.map((n) => `
+      <a class="notif-item ${n.read_at ? '' : 'unread'}" data-id="${n.id}">
+        <div class="n-title">${escapeHtml(n.title)}</div>
+        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
+        <div class="n-time">${timeAgo(n.created_at)}</div>
+      </a>
+    `).join('');
+    list.querySelectorAll('.notif-item').forEach((el) => {
+      el.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const id = el.getAttribute('data-id');
+        const n = notifCache.find((x) => x.id === id);
+        await supabase.rpc('mark_notification_read', { p_id: id });
+        window.location.href = 'notifications.html?id=' + encodeURIComponent(id);
+      });
+    });
+  }
+  document.getElementById('notif-bell-btn').addEventListener('click', () => {
+    const dd = document.getElementById('notif-dropdown');
+    const open = dd.classList.toggle('open');
+    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) loadNotifications();
+  });
+  document.addEventListener('click', (e) => {
+    const bell = document.getElementById('notif-bell');
+    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
+  });
+  document.getElementById('notif-mark-all').addEventListener('click', async () => {
+    await supabase.rpc('mark_all_notifications_read');
+    loadNotifications();
+  });
+  document.getElementById('notif-staff-send').addEventListener('click', async () => {
+    const input = document.getElementById('notif-staff-input');
+    const title = input.value.trim();
+    if (!title) return;
+    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
+    if (!error) { input.value = ''; loadNotifications(); }
+  });
+  async function initNotifBell(session) {
+    const bell = document.getElementById('notif-bell');
+    clearInterval(notifPollInterval);
+    if (!session) { bell.style.display = 'none'; return; }
+    bell.style.display = 'block';
+    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
+    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
+    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
+    loadNotifications();
+    notifPollInterval = setInterval(loadNotifications, 60000);
+  }
+  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); });
+  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); });
 </script>
 
 </body>

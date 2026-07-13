@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Privacy Policy · Poly</title>
+<link rel="icon" href="logo.png" />
+<meta name="description" content="What Poly collects, why, who processes it, and how to access, export, or delete your data." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Privacy Policy · Poly" />
+<meta property="og:description" content="What Poly collects, why, who processes it, and how to access, export, or delete your data." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/privacy.html" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Privacy Policy · Poly" />
+<meta name="twitter:description" content="What Poly collects, why, who processes it, and how to access, export, or delete your data." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<style>
+  :root {
+    --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
+    --danger: #e0664a; --ok: #6fbf8b;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --container: 720px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
+
+  header.top { border-bottom: 1px solid var(--border); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
+  nav.top-links a { color: var(--text-dim); }
+  nav.top-links a:hover { color: var(--accent); }
+
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
+  }
+  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  @media (max-width: 960px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--ink-raised); border-bottom: 1px solid var(--border);
+      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
+    }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
+
+  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+  .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; display: inline-block; }
+  .legal-title { font-family: var(--mono); font-weight: 700; font-size: 1.8rem; margin: 0 0 0.4rem; }
+  .legal-updated { color: var(--text-dim); font-size: 0.85rem; margin: 0 0 2.5rem; }
+  .legal-body h2 { font-size: 1.05rem; margin: 2.2rem 0 0.7rem; }
+  .legal-body p, .legal-body li { color: var(--text-dim); font-size: 0.96rem; }
+  .legal-body ul { padding-left: 1.3rem; }
+  .legal-body li { margin: 0.4rem 0; }
+  .legal-body a { color: var(--accent); }
+  .legal-body table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1.5rem; font-size: 0.88rem; }
+  .legal-body th, .legal-body td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
+  .legal-body th { color: var(--text); font-weight: 600; }
+
+  footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
+  footer.site-footer .footer-brand a:hover { color: var(--accent); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links" id="top-links">
+      <a href="dependencies.html" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs.html" data-i18n="nav_docs">docs</a>
+      <a href="community.html" data-i18n="nav_community">community</a>
+      <a href="account.html" data-i18n="nav_account">account</a>
+    </nav>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<script>
+(function () {
+  var toggle = document.getElementById('nav-toggle');
+  var links = document.getElementById('top-links');
+  if (!toggle || !links) return;
+  toggle.addEventListener('click', function () {
+    var open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+</script>
+
+<main>
+  <div class="wrap">
+    <a href="index.html" class="back-link" data-i18n="back">← Back to Poly</a>
+    <h1 class="legal-title" data-i18n="title">Privacy Policy</h1>
+    <p class="legal-updated" data-i18n="updated">Last updated: 12 July 2026</p>
+
+    <div class="legal-body">
+      <p data-i18n="intro">Poly is a small, independently-run project. This page explains what data it collects, why, and how you can access, export, or delete it — in plain language, not legalese.</p>
+
+      <h2 data-i18n="h_what">What's collected</h2>
+      <table>
+        <thead><tr><th data-i18n="th_data">Data</th><th data-i18n="th_why">Why</th></tr></thead>
+        <tbody>
+          <tr><td data-i18n="d_account">Email, hashed password, username</td><td data-i18n="w_account">Account creation and sign-in</td></tr>
+          <tr><td data-i18n="d_profile">Bio, avatar, bio photos, badges</td><td data-i18n="w_profile">Your public profile</td></tr>
+          <tr><td data-i18n="d_packages">Published packages, download counts</td><td data-i18n="w_packages">The community registry</td></tr>
+          <tr><td data-i18n="d_social">Follows, friends, notifications</td><td data-i18n="w_social">Social features, opt-out per type in account settings</td></tr>
+          <tr><td data-i18n="d_tokens">Hashed personal access tokens</td><td data-i18n="w_tokens">CLI and AI assistant (MCP) sign-in, revocable any time</td></tr>
+          <tr><td data-i18n="d_push">Browser push subscription endpoint</td><td data-i18n="w_push">Real OS notifications, only if you opt in; revocable any time</td></tr>
+          <tr><td data-i18n="d_payment">Payment confirmation (not full card details)</td><td data-i18n="w_payment">Poly Pro one-time purchase, handled entirely by Stripe</td></tr>
+        </tbody>
+      </table>
+
+      <h2 data-i18n="h_processors">Who processes it</h2>
+      <p data-i18n="p_processors">Poly doesn't run its own servers. It relies on a small number of infrastructure providers:</p>
+      <ul>
+        <li data-i18n="proc_1"><strong>Supabase</strong> — database, authentication, file storage, and the backend functions that power the site, CLI, and MCP server.</li>
+        <li data-i18n="proc_2"><strong>Stripe</strong> — payment processing for the one-time Pro purchase. Poly never sees or stores your card details.</li>
+        <li data-i18n="proc_3"><strong>Hostinger</strong> — hosts the static website (poly.candygate.eu).</li>
+        <li data-i18n="proc_4"><strong>GitHub</strong> — hosts the open source code and CLI release downloads.</li>
+      </ul>
+
+      <h2 data-i18n="h_cookies">Cookies and local storage</h2>
+      <p data-i18n="p_cookies">No advertising or tracking cookies. The site stores a couple of small preferences in your browser's local storage — theme (dark/light) and language — and Supabase stores your sign-in session so you don't have to log in on every page. Nothing is shared with ad networks or analytics trackers.</p>
+
+      <h2 data-i18n="h_retention">Retention and deletion</h2>
+      <p data-i18n="p_retention">Your data is kept while your account is active. You can permanently delete your account and all associated data (profile, packages, tokens, social graph, notifications) from <a href="account.html">your account settings</a> at any time — this can't be undone. You can also email <a href="mailto:open.corp.2030@gmail.com">open.corp.2030@gmail.com</a> to request deletion or an export of your data.</p>
+
+      <h2 data-i18n="h_rights">Your rights</h2>
+      <p data-i18n="p_rights">If you're in the EU/EEA or a similar jurisdiction, you have the right to access, correct, export, and delete your personal data, and to object to specific processing (like optional notifications). Most of this is self-service in account settings; anything else, email us.</p>
+
+      <h2 data-i18n="h_children">Children</h2>
+      <p data-i18n="p_children">Poly isn't directed at children and shouldn't be used by anyone under 16.</p>
+
+      <h2 data-i18n="h_changes">Changes</h2>
+      <p data-i18n="p_changes">This policy may be updated as the product evolves. Meaningful changes will be reflected here with an updated date at the top.</p>
+
+      <h2 data-i18n="h_contact">Contact</h2>
+      <p data-i18n="p_contact">Questions, exports, or deletion requests: <a href="mailto:open.corp.2030@gmail.com">open.corp.2030@gmail.com</a>. See also the <a href="terms.html">Terms of Service</a>.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms.html" data-i18n="footer_terms">Terms</a>
+      <a href="privacy.html" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
+      back: "← Back to Poly",
+      title: "Privacy Policy",
+      updated: "Last updated: 12 July 2026",
+      intro: "Poly is a small, independently-run project. This page explains what data it collects, why, and how you can access, export, or delete it — in plain language, not legalese.",
+      h_what: "What's collected",
+      th_data: "Data", th_why: "Why",
+      d_account: "Email, hashed password, username", w_account: "Account creation and sign-in",
+      d_profile: "Bio, avatar, bio photos, badges", w_profile: "Your public profile",
+      d_packages: "Published packages, download counts", w_packages: "The community registry",
+      d_social: "Follows, friends, notifications", w_social: "Social features, opt-out per type in account settings",
+      d_tokens: "Hashed personal access tokens", w_tokens: "CLI and AI assistant (MCP) sign-in, revocable any time",
+      d_push: "Browser push subscription endpoint", w_push: "Real OS notifications, only if you opt in; revocable any time",
+      d_payment: "Payment confirmation (not full card details)", w_payment: "Poly Pro one-time purchase, handled entirely by Stripe",
+      h_processors: "Who processes it",
+      p_processors: "Poly doesn't run its own servers. It relies on a small number of infrastructure providers:",
+      proc_1: "<strong>Supabase</strong> — database, authentication, file storage, and the backend functions that power the site, CLI, and MCP server.",
+      proc_2: "<strong>Stripe</strong> — payment processing for the one-time Pro purchase. Poly never sees or stores your card details.",
+      proc_3: "<strong>Hostinger</strong> — hosts the static website (poly.candygate.eu).",
+      proc_4: "<strong>GitHub</strong> — hosts the open source code and CLI release downloads.",
+      h_cookies: "Cookies and local storage",
+      p_cookies: "No advertising or tracking cookies. The site stores a couple of small preferences in your browser's local storage — theme (dark/light) and language — and Supabase stores your sign-in session so you don't have to log in on every page. Nothing is shared with ad networks or analytics trackers.",
+      h_retention: "Retention and deletion",
+      p_retention: "Your data is kept while your account is active. You can permanently delete your account and all associated data (profile, packages, tokens, social graph, notifications) from <a href=\"account.html\">your account settings</a> at any time — this can't be undone. You can also email <a href=\"mailto:open.corp.2030@gmail.com\">open.corp.2030@gmail.com</a> to request deletion or an export of your data.",
+      h_rights: "Your rights",
+      p_rights: "If you're in the EU/EEA or a similar jurisdiction, you have the right to access, correct, export, and delete your personal data, and to object to specific processing (like optional notifications). Most of this is self-service in account settings; anything else, email us.",
+      h_children: "Children",
+      p_children: "Poly isn't directed at children and shouldn't be used by anyone under 16.",
+      h_changes: "Changes",
+      p_changes: "This policy may be updated as the product evolves. Meaningful changes will be reflected here with an updated date at the top.",
+      h_contact: "Contact",
+      p_contact: "Questions, exports, or deletion requests: <a href=\"mailto:open.corp.2030@gmail.com\">open.corp.2030@gmail.com</a>. See also the <a href=\"terms.html\">Terms of Service</a>.",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
+      back: "← Retour à Poly",
+      title: "Politique de confidentialité",
+      updated: "Dernière mise à jour : 12 juillet 2026",
+      intro: "Poly est un petit projet géré de façon indépendante. Cette page explique quelles données sont collectées, pourquoi, et comment y accéder, les exporter, ou les supprimer — en langage simple.",
+      h_what: "Ce qui est collecté",
+      th_data: "Donnée", th_why: "Pourquoi",
+      d_account: "E-mail, mot de passe haché, nom d'utilisateur", w_account: "Création de compte et connexion",
+      d_profile: "Bio, avatar, photos de bio, badges", w_profile: "Ton profil public",
+      d_packages: "Paquets publiés, nombre de téléchargements", w_packages: "Le registre communautaire",
+      d_social: "Abonnements, amis, notifications", w_social: "Fonctionnalités sociales, désactivable par type dans les paramètres du compte",
+      d_tokens: "Tokens d'accès personnels hachés", w_tokens: "Connexion du CLI et des assistants IA (MCP), révocable à tout moment",
+      d_push: "Endpoint d'abonnement aux notifications push du navigateur", w_push: "Vraies notifications système, uniquement si tu actives l'option ; révocable à tout moment",
+      d_payment: "Confirmation de paiement (pas les détails complets de carte)", w_payment: "Achat unique Poly Pro, entièrement géré par Stripe",
+      h_processors: "Qui traite ces données",
+      p_processors: "Poly ne fait pas tourner ses propres serveurs. Il s'appuie sur un petit nombre de prestataires :",
+      proc_1: "<strong>Supabase</strong> — base de données, authentification, stockage de fichiers, et les fonctions backend qui font tourner le site, le CLI et le serveur MCP.",
+      proc_2: "<strong>Stripe</strong> — traitement du paiement pour l'achat unique Pro. Poly ne voit et ne stocke jamais les détails de ta carte.",
+      proc_3: "<strong>Hostinger</strong> — héberge le site statique (poly.candygate.eu).",
+      proc_4: "<strong>GitHub</strong> — héberge le code open source et les téléchargements de versions du CLI.",
+      h_cookies: "Cookies et stockage local",
+      p_cookies: "Aucun cookie publicitaire ou de suivi. Le site stocke quelques petites préférences dans le stockage local de ton navigateur — thème (sombre/clair) et langue — et Supabase conserve ta session de connexion pour éviter de te reconnecter à chaque page. Rien n'est partagé avec des régies publicitaires ou des traqueurs analytiques.",
+      h_retention: "Conservation et suppression",
+      p_retention: "Tes données sont conservées tant que ton compte est actif. Tu peux supprimer définitivement ton compte et toutes les données associées (profil, paquets, tokens, graphe social, notifications) depuis <a href=\"account.html\">les paramètres de ton compte</a> à tout moment — c'est irréversible. Tu peux aussi écrire à <a href=\"mailto:open.corp.2030@gmail.com\">open.corp.2030@gmail.com</a> pour demander la suppression ou l'export de tes données.",
+      h_rights: "Tes droits",
+      p_rights: "Si tu es dans l'UE/EEE ou une juridiction similaire, tu as le droit d'accéder à tes données personnelles, de les rectifier, de les exporter, de les supprimer, et de t'opposer à certains traitements (comme les notifications optionnelles). La majorité de ces actions sont en libre-service dans les paramètres du compte ; pour le reste, écris-nous.",
+      h_children: "Mineurs",
+      p_children: "Poly ne s'adresse pas aux enfants et ne doit pas être utilisé par une personne de moins de 16 ans.",
+      h_changes: "Modifications",
+      p_changes: "Cette politique peut être mise à jour à mesure que le produit évolue. Les changements significatifs seront reflétés ici avec une date de mise à jour en haut de page.",
+      h_contact: "Contact",
+      p_contact: "Questions, exports ou demandes de suppression : <a href=\"mailto:open.corp.2030@gmail.com\">open.corp.2030@gmail.com</a>. Voir aussi les <a href=\"terms.html\">Conditions d'utilisation</a>.",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+</script>
+
+</body>
+</html>

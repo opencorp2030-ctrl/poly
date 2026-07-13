@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Connect an assistant · Poly</title>
+<link rel="icon" href="logo.png" />
 <meta name="robots" content="noindex" />
 <style>
   :root {
@@ -61,7 +62,7 @@
 
   <div data-view="form">
     <h1>Connect this assistant to Poly</h1>
-    <p>Paste a Poly personal access token so it can search and publish to the community registry as you. Generate one from <a href="account.html" target="_blank">your account page</a>, under "AI assistants (MCP)" — it's shown once, so keep this tab open until you've copied it.</p>
+    <p>Paste a Poly personal access token so it can search and publish to the community registry as you. Generate one from <a href="account.html" target="_blank">your account page</a>, under "AI assistants (MCP)". It's shown once, so keep this tab open until you've copied it.</p>
     <div class="client-note" id="client-note"></div>
     <p class="err" id="err" style="display:none"></p>
     <form method="POST" action="https://iuymslcbbrbahxbfuzrr.supabase.co/functions/v1/mcp/authorize" id="authorize-form">
@@ -77,7 +78,7 @@
   </div>
 
   <div data-view="missing" class="missing">
-    <p>This page is opened by an AI assistant during setup — there's nothing to do here directly. If you were sent here by mistake, go to <a href="account.html">your account page</a> instead.</p>
+    <p>This page is opened by an AI assistant during setup, there's nothing to do here directly. If you were sent here by mistake, go to <a href="account.html">your account page</a> instead.</p>
   </div>
 </div>
 

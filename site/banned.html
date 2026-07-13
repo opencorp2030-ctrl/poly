@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Account suspended · Poly</title>
+<link rel="icon" href="logo.png" />
+<meta name="robots" content="noindex" />
+<style>
+  :root {
+    --ink: #14171d;
+    --ink-raised: #1b1f27;
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #e9e4d8;
+    --text-dim: #9c9686;
+    --accent: #f0a93e;
+    --accent-ink: #14171d;
+    --danger: #e0664a;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
+      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
+      color-scheme: light;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); overflow-x: hidden; }
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; max-width: 460px; width: 100%; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+  .wordmark span { color: var(--accent); }
+  .icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(224,102,74,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+  .icon svg { width: 20px; height: 20px; }
+  h1 { font-size: 1.15rem; margin: 0 0 0.6rem; }
+  p { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; margin: 0 0 1rem; }
+  p a { color: var(--accent); }
+  .reason-box { font-size: 0.85rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 0.9rem; margin-bottom: 1rem; }
+  .reason-box .label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 0.3rem; }
+  button {
+    padding: 0.7rem 1.1rem; background: var(--ink); color: var(--text); border: 1px solid var(--border); border-radius: 6px;
+    font-weight: 600; font-family: var(--sans); font-size: 0.85rem; cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="wordmark">poly<span>&gt;</span></div>
+  <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="#e0664a" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+  <h1 id="title">Your account has been suspended</h1>
+  <p id="until-note" style="display:none"></p>
+  <div class="reason-box" id="reason-box" style="display:none">
+    <div class="label">Reason</div>
+    <div id="reason-text"></div>
+  </div>
+  <p>If you think this is a mistake, email <a href="mailto:open.corp.2030@gmail.com">open.corp.2030@gmail.com</a>.</p>
+  <button type="button" id="signout-btn">Sign out</button>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  async function load() {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) { window.location.href = 'account.html'; return; }
+
+    const { data } = await supabase.rpc('check_banned');
+    const row = data && data[0];
+    if (!row || !row.banned) { window.location.href = 'account.html'; return; }
+
+    if (row.banned_until) {
+      document.getElementById('title').textContent = 'Your account is temporarily suspended';
+      const until = document.getElementById('until-note');
+      until.textContent = 'Access will be restored on ' + new Date(row.banned_until).toLocaleString();
+      until.style.display = 'block';
+    }
+    if (row.banned_reason) {
+      document.getElementById('reason-text').textContent = row.banned_reason;
+      document.getElementById('reason-box').style.display = 'block';
+    }
+  }
+  load();
+
+  document.getElementById('signout-btn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = 'account.html';
+  });
+</script>
+
+</body>
+</html>

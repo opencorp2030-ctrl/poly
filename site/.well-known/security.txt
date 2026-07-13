@@ -1,0 +1,11 @@
+Contact: mailto:open.corp.2030@gmail.com
+Expires: 2027-07-12T00:00:00.000Z
+Preferred-Languages: en, fr
+Canonical: https://poly.candygate.eu/.well-known/security.txt
+Policy: https://poly.candygate.eu/terms.html
+
+# Found a security issue in Poly (the CLI, poly.candygate.eu, the Supabase
+# backend, or the MCP server)? Please report it privately to the address
+# above before any public disclosure. Include steps to reproduce and, if
+# relevant, which account/package was involved. We'll acknowledge reports
+# within a few days.

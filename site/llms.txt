@@ -64,8 +64,21 @@ app -- published packages are CLI scripts/binaries, not web pages), `search_memb
 `get_profile`, `update_profile`, `update_avatar`, `delete_package`, `get_stats`
 (`update_profile`/`update_avatar`/`delete_package` act only on the token's own account/
 packages; `delete_package` removes both the DB entry and the stored file and cannot be
-undone). Deliberately NOT exposed via MCP: creating, listing, or revoking personal access
-tokens -- an assistant can use the access it's given but never grant or manage its own.
+undone). Also exposed: social (`follow_user`, `unfollow_user`, `list_followers`,
+`list_following`, `get_follow_status`, `send_friend_request`, `accept_friend_request`,
+`decline_friend_request`, `remove_friend`, `list_friend_requests`, `list_friends`),
+notifications (`list_notifications`, `mark_notification_read`,
+`mark_all_notifications_read`, `delete_notification`, `get_notification_prefs`,
+`update_notification_prefs`), profile extras (`update_bio_rich` — up to 3500 chars, light
+HTML formatting; `update_bio_photo` — base64 image into one of 2 photo slots; `set_dev_mode`;
+`check_banned`), and admin/staff-only tools mirroring the hidden admin.html page
+(`admin_ban_user`, `admin_unban_user`, `admin_block_package`, `admin_unblock_package`,
+`admin_search_users`, `admin_search_packages`, `admin_send_notification`,
+`admin_list_banned_users`, `admin_list_blocked_packages` — authorization is enforced
+server-side per-token; staff can only broadcast notifications to everyone, only the admin
+account can target specific usernames or ban/block anything). Deliberately NOT exposed via
+MCP: creating, listing, or revoking personal access tokens, and badges (admin-SQL-only,
+no bypass) -- an assistant can use the access it's given but never grant or manage its own.
 Full setup instructions, including the Claude Desktop/Code config JSON:
 https://poly.candygate.eu/docs.html#mcp
 

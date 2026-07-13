@@ -44,7 +44,7 @@ const CORS_HEADERS = {
 const TOOLS = [
   {
     name: "whoami",
-    description: "Return the signed-in Poly account this token belongs to: username, email, plan, and whether it's the official account.",
+    description: "Return the signed-in Poly account this token belongs to: username, email, plan, badges, and whether it's the official account.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
@@ -122,7 +122,7 @@ const TOOLS = [
   },
   {
     name: "get_profile",
-    description: "Get a Poly user's public profile by exact username: bio, avatar, plan, official status, member since, and their published packages. Mirrors profile.html.",
+    description: "Get a Poly user's public profile by exact username: bio, avatar, plan, official status, badges, member since, and their published packages. Mirrors profile.html.",
     inputSchema: {
       type: "object",
       properties: { username: { type: "string", description: "Exact username" } },
@@ -170,6 +170,201 @@ const TOOLS = [
     description: "Get Poly's live public stats: total members and pro members. Mirrors the numbers shown on community.html.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   },
+
+  // --- Social ---
+  {
+    name: "follow_user",
+    description: "Follow a Poly user with this token's account.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "unfollow_user",
+    description: "Unfollow a Poly user.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "list_followers",
+    description: "List a user's followers.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "list_following",
+    description: "List who a user follows.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "get_follow_status",
+    description: "Check this token's relationship with another user: whether you follow them, they follow you, and any friend request status.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "send_friend_request",
+    description: "Send a friend request to a Poly user.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "accept_friend_request",
+    description: "Accept a pending incoming friend request from a user.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "decline_friend_request",
+    description: "Decline (or cancel your own outgoing) a pending friend request with a user.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "remove_friend",
+    description: "Remove an existing friend.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "list_friend_requests",
+    description: "List this token's pending friend requests, both incoming and outgoing.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "list_friends",
+    description: "List this token's confirmed friends.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+
+  // --- Notifications ---
+  {
+    name: "list_notifications",
+    description: "List this token's 30 most recent notifications (follows, friend requests, downloads, staff/admin announcements).",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "mark_notification_read",
+    description: "Mark one notification as read.",
+    inputSchema: { type: "object", properties: { notification_id: { type: "string", description: "UUID from list_notifications" } }, required: ["notification_id"], additionalProperties: false },
+  },
+  {
+    name: "mark_all_notifications_read",
+    description: "Mark all of this token's notifications as read.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "delete_notification",
+    description: "Delete one notification.",
+    inputSchema: { type: "object", properties: { notification_id: { type: "string", description: "UUID from list_notifications" } }, required: ["notification_id"], additionalProperties: false },
+  },
+  {
+    name: "get_notification_prefs",
+    description: "Get which notification types this account currently receives (service/staff announcements are always delivered regardless).",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "update_notification_prefs",
+    description: "Change which optional notification types this account receives. Only fields you provide are changed.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        follow: { type: "boolean" },
+        download: { type: "boolean" },
+        friend_request: { type: "boolean" },
+        friend_accept: { type: "boolean" },
+      },
+      additionalProperties: false,
+    },
+  },
+
+  // --- Profile extras ---
+  {
+    name: "update_bio_rich",
+    description: "Set this token's rich bio (up to 3500 characters of text; light HTML formatting like <b>/<i>/<u>/<a> is allowed).",
+    inputSchema: { type: "object", properties: { bio_html: { type: "string" } }, required: ["bio_html"], additionalProperties: false },
+  },
+  {
+    name: "update_bio_photo",
+    description: "Set one of this token's 2 bio photo slots.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slot: { type: "integer", description: "1 or 2" },
+        file_base64: { type: "string", description: "Base64-encoded image bytes (max ~2.6MB base64, 2MB decoded)" },
+        file_name: { type: "string", description: "Original file name, used to infer the image extension" },
+      },
+      required: ["slot", "file_base64"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "set_dev_mode",
+    description: "Enable or disable developer mode on this account (shows advanced account details on account.html).",
+    inputSchema: { type: "object", properties: { enabled: { type: "boolean" } }, required: ["enabled"], additionalProperties: false },
+  },
+  {
+    name: "check_banned",
+    description: "Check whether this token's account is currently banned or suspended.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+
+  // --- Admin / staff only (server-side authorization, same rules as
+  // the website's hidden /admin.html page) ---
+  {
+    name: "admin_ban_user",
+    description: "[Admin/staff only] Ban or temporarily suspend a user.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        username: { type: "string" },
+        reason: { type: "string", description: "Shown to the banned user" },
+        days: { type: "integer", description: "Temporary ban length in days; omit for a permanent ban" },
+      },
+      required: ["username"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "admin_unban_user",
+    description: "[Admin/staff only] Lift a user's ban.",
+    inputSchema: { type: "object", properties: { username: { type: "string" } }, required: ["username"], additionalProperties: false },
+  },
+  {
+    name: "admin_block_package",
+    description: "[Admin/staff only] Block a community package from search/install.",
+    inputSchema: { type: "object", properties: { name: { type: "string" }, reason: { type: "string" } }, required: ["name"], additionalProperties: false },
+  },
+  {
+    name: "admin_unblock_package",
+    description: "[Admin/staff only] Unblock a community package.",
+    inputSchema: { type: "object", properties: { name: { type: "string" } }, required: ["name"], additionalProperties: false },
+  },
+  {
+    name: "admin_search_users",
+    description: "[Admin/staff only] Search all users by username or email, including private fields (email, ban status).",
+    inputSchema: { type: "object", properties: { query: { type: "string" } }, additionalProperties: false },
+  },
+  {
+    name: "admin_search_packages",
+    description: "[Admin/staff only] Search all packages including blocked ones.",
+    inputSchema: { type: "object", properties: { query: { type: "string" } }, additionalProperties: false },
+  },
+  {
+    name: "admin_send_notification",
+    description: "[Admin/staff only] Send a notification. Staff can only broadcast to everyone; only the admin account can target specific usernames.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        title: { type: "string" },
+        body_html: { type: "string", description: "Optional rich HTML body" },
+        target_usernames: { type: "array", items: { type: "string" }, description: "Omit to broadcast to everyone (admin or staff). Provide to target specific users (admin only)." },
+      },
+      required: ["title"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "admin_list_banned_users",
+    description: "[Admin/staff only] List all currently banned users.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "admin_list_blocked_packages",
+    description: "[Admin/staff only] List all currently blocked packages.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
 ];
 
 function jsonRpcResult(id: unknown, result: unknown) {
@@ -214,7 +409,8 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
       const rows = await callRpc("mcp_whoami", { p_token: token });
       if (!rows?.length) return toolText("Token did not resolve to an account.", true);
       const p = rows[0];
-      return toolText(`Signed in as @${p.username} (${p.email}), plan: ${p.plan}${p.is_official ? ", official ✓" : ""}.`);
+      const badges = p.badges?.length ? `, badges: ${p.badges.join(", ")}` : "";
+      return toolText(`Signed in as @${p.username} (${p.email}), plan: ${p.plan}${p.is_official ? ", official ✓" : ""}${badges}.`);
     }
 
     case "search_packages": {
@@ -369,9 +565,10 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
       const q = String(args.query ?? "");
       const rows = await callRpc("mcp_search_members", { p_token: token, p_query: q });
       if (!rows?.length) return toolText(`No members match "${q}".`);
-      const lines = rows.map((m: any) =>
-        `- @${m.username}${m.is_official ? " (official ✓)" : ""} — ${m.plan}${m.bio ? " — " + m.bio : ""}`
-      );
+      const lines = rows.map((m: any) => {
+        const badges = m.badges?.length ? ` [${m.badges.join(", ")}]` : "";
+        return `- @${m.username}${m.is_official ? " (official ✓)" : ""}${badges} — ${m.plan}${m.bio ? " — " + m.bio : ""}`;
+      });
       return toolText(lines.join("\n"));
     }
 
@@ -389,7 +586,8 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
       );
       const pkgs = pkgResp.ok ? await pkgResp.json() : [];
 
-      let text = `@${p.username}${p.is_official ? " (official ✓)" : ""} — ${p.plan} — member since ${p.created_at}\n${p.bio || "(no bio)"}`;
+      const badges = p.badges?.length ? ` — badges: ${p.badges.join(", ")}` : "";
+      let text = `@${p.username}${p.is_official ? " (official ✓)" : ""} — ${p.plan} — member since ${p.created_at}${badges}\n${p.bio || "(no bio)"}`;
       if (pkgs.length) {
         text += "\nPublished packages:\n" + pkgs.map((pk: any) => `- ${pk.name}@${pk.version}${pk.is_official ? " (official ✓)" : ""} — ${pk.download_count} downloads`).join("\n");
       } else {
@@ -494,6 +692,358 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
       const s = rows?.[0];
       if (!s) return toolText("Stats unavailable.", true);
       return toolText(`${s.total_members} members, ${s.pro_members} on Pro.`);
+    }
+
+    // --- Social ---
+    case "follow_user": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        await callRpc("mcp_follow_user", { p_token: token, p_username: username });
+        return toolText(`Now following @${username}.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "unfollow_user": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        await callRpc("mcp_unfollow_user", { p_token: token, p_username: username });
+        return toolText(`Unfollowed @${username}.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "list_followers": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        const rows = await callRpc("mcp_list_followers", { p_token: token, p_username: username });
+        if (!rows?.length) return toolText(`@${username} has no followers yet.`);
+        return toolText(rows.map((r: any) => `- @${r.username}${r.is_official ? " (official ✓)" : ""}`).join("\n"));
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "list_following": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        const rows = await callRpc("mcp_list_following", { p_token: token, p_username: username });
+        if (!rows?.length) return toolText(`@${username} isn't following anyone yet.`);
+        return toolText(rows.map((r: any) => `- @${r.username}${r.is_official ? " (official ✓)" : ""}`).join("\n"));
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "get_follow_status": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        const rows = await callRpc("mcp_get_follow_status", { p_token: token, p_username: username });
+        const r = rows?.[0];
+        if (!r) return toolText("Status unavailable.", true);
+        return toolText(`You follow @${username}: ${r.you_follow_them}. @${username} follows you: ${r.they_follow_you}. Friend status: ${r.friend_status}.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "send_friend_request": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        await callRpc("mcp_send_friend_request", { p_token: token, p_username: username });
+        return toolText(`Friend request sent to @${username}.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "accept_friend_request": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        await callRpc("mcp_accept_friend_request", { p_token: token, p_username: username });
+        return toolText(`You and @${username} are now friends.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "decline_friend_request": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        await callRpc("mcp_decline_friend_request", { p_token: token, p_username: username });
+        return toolText(`Friend request with @${username} cleared.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "remove_friend": {
+      if (!token) return toolText("No token provided.", true);
+      const username = String(args.username ?? "");
+      try {
+        await callRpc("mcp_remove_friend", { p_token: token, p_username: username });
+        return toolText(`Removed @${username} as a friend.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "list_friend_requests": {
+      if (!token) return toolText("No token provided.", true);
+      const rows = await callRpc("mcp_list_friend_requests", { p_token: token });
+      if (!rows?.length) return toolText("No pending friend requests.");
+      return toolText(rows.map((r: any) => `- @${r.username} (${r.direction})`).join("\n"));
+    }
+
+    case "list_friends": {
+      if (!token) return toolText("No token provided.", true);
+      const rows = await callRpc("mcp_list_friends", { p_token: token });
+      if (!rows?.length) return toolText("No friends yet.");
+      return toolText(rows.map((r: any) => `- @${r.username}${r.is_official ? " (official ✓)" : ""}`).join("\n"));
+    }
+
+    // --- Notifications ---
+    case "list_notifications": {
+      if (!token) return toolText("No token provided.", true);
+      const rows = await callRpc("mcp_list_notifications", { p_token: token });
+      if (!rows?.length) return toolText("No notifications.");
+      return toolText(rows.map((n: any) =>
+        `- [${n.read_at ? "read" : "unread"}] ${n.id} · ${n.type} · ${n.title}${n.from_username ? " (from @" + n.from_username + ")" : ""} · ${n.created_at}`
+      ).join("\n"));
+    }
+
+    case "mark_notification_read": {
+      if (!token) return toolText("No token provided.", true);
+      await callRpc("mcp_mark_notification_read", { p_token: token, p_id: String(args.notification_id ?? "") });
+      return toolText("Marked as read.");
+    }
+
+    case "mark_all_notifications_read": {
+      if (!token) return toolText("No token provided.", true);
+      await callRpc("mcp_mark_all_notifications_read", { p_token: token });
+      return toolText("All notifications marked as read.");
+    }
+
+    case "delete_notification": {
+      if (!token) return toolText("No token provided.", true);
+      await callRpc("mcp_delete_notification", { p_token: token, p_id: String(args.notification_id ?? "") });
+      return toolText("Notification deleted.");
+    }
+
+    case "get_notification_prefs": {
+      if (!token) return toolText("No token provided.", true);
+      const prefs = await callRpc("mcp_get_notification_prefs", { p_token: token });
+      return toolText(JSON.stringify(prefs));
+    }
+
+    case "update_notification_prefs": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        const prefs = await callRpc("mcp_update_notification_prefs", {
+          p_token: token,
+          p_follow: args.follow ?? null,
+          p_download: args.download ?? null,
+          p_friend_request: args.friend_request ?? null,
+          p_friend_accept: args.friend_accept ?? null,
+        });
+        return toolText(`Updated. Now: ${JSON.stringify(prefs)}`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    // --- Profile extras ---
+    case "update_bio_rich": {
+      if (!token) return toolText("No token provided.", true);
+      const bioHtml = String(args.bio_html ?? "");
+      try {
+        await callRpc("mcp_update_bio_rich", { p_token: token, p_bio_html: bioHtml });
+        return toolText("Bio updated.");
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "update_bio_photo": {
+      if (!token) return toolText("No token provided. Configure a Poly personal access token as this connector's Authorization header.", true);
+      const slot = Number(args.slot ?? 0);
+      const fileBase64 = String(args.file_base64 ?? "");
+      const fileName = args.file_name ? String(args.file_name) : "photo.jpg";
+      if (slot !== 1 && slot !== 2) return toolText("slot must be 1 or 2.", true);
+      if (!fileBase64) return toolText("file_base64 is required.", true);
+
+      const who = await callRpc("mcp_whoami", { p_token: token });
+      if (!who?.length) return toolText("Invalid or revoked token.", true);
+      const userId = who[0].user_id;
+
+      let bytes: Uint8Array;
+      try {
+        bytes = Uint8Array.from(atob(fileBase64), (c) => c.charCodeAt(0));
+      } catch {
+        return toolText("file_base64 is not valid base64.", true);
+      }
+      if (bytes.length > 2 * 1024 * 1024) return toolText("Image exceeds the 2MB limit.", true);
+
+      const dotIdx = fileName.lastIndexOf(".");
+      const ext = (dotIdx > 0 ? fileName.slice(dotIdx + 1) : "jpg").toLowerCase();
+      const storagePath = `${userId}/bio-${slot}.${ext}`;
+      const MIME_BY_EXT: Record<string, string> = { png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif" };
+      const mimeType = MIME_BY_EXT[ext] || "image/jpeg";
+
+      const uploadResp = await fetch(`${SUPABASE_URL}/storage/v1/object/avatars/${storagePath}`, {
+        method: "POST",
+        headers: {
+          apikey: SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+          "Content-Type": mimeType,
+          "x-upsert": "true",
+        },
+        body: bytes,
+      });
+      if (!uploadResp.ok) {
+        const body = await uploadResp.text();
+        return toolText(`Upload failed: ${uploadResp.status} ${body}`, true);
+      }
+
+      const photoUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${storagePath}?t=${Date.now()}`;
+      try {
+        await callRpc("mcp_set_bio_photo", { p_token: token, p_slot: slot, p_url: photoUrl });
+      } catch (e) {
+        return toolText(`Saved image but failed to update profile: ${(e as Error).message}`, true);
+      }
+      return toolText(`Bio photo ${slot} updated: ${photoUrl}`);
+    }
+
+    case "set_dev_mode": {
+      if (!token) return toolText("No token provided.", true);
+      const enabled = !!args.enabled;
+      await callRpc("mcp_set_dev_mode", { p_token: token, p_enabled: enabled });
+      return toolText(`Developer mode ${enabled ? "enabled" : "disabled"}.`);
+    }
+
+    case "check_banned": {
+      if (!token) return toolText("No token provided.", true);
+      const rows = await callRpc("mcp_check_banned", { p_token: token });
+      const r = rows?.[0];
+      if (!r) return toolText("Status unavailable.", true);
+      if (!r.banned) return toolText("Not banned.");
+      return toolText(`Banned${r.banned_until ? " until " + r.banned_until : " permanently"}.${r.banned_reason ? " Reason: " + r.banned_reason : ""}`, true);
+    }
+
+    // --- Admin / staff only ---
+    case "admin_ban_user": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        await callRpc("mcp_admin_ban_user", { p_token: token, p_username: String(args.username ?? ""), p_reason: args.reason ? String(args.reason) : null, p_days: args.days ?? null });
+        return toolText(`@${args.username} banned.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_unban_user": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        await callRpc("mcp_admin_unban_user", { p_token: token, p_username: String(args.username ?? "") });
+        return toolText(`@${args.username} unbanned.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_block_package": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        await callRpc("mcp_admin_block_package", { p_token: token, p_name: String(args.name ?? ""), p_reason: args.reason ? String(args.reason) : null });
+        return toolText(`${args.name} blocked.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_unblock_package": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        await callRpc("mcp_admin_unblock_package", { p_token: token, p_name: String(args.name ?? "") });
+        return toolText(`${args.name} unblocked.`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_search_users": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        const rows = await callRpc("mcp_admin_search_users", { p_token: token, p_query: args.query ? String(args.query) : "" });
+        if (!rows?.length) return toolText("No matches.");
+        return toolText(rows.map((u: any) =>
+          `- @${u.username} (${u.email}) · ${u.plan}${u.badge_staff ? " · staff" : ""}${u.banned ? " · BANNED" + (u.banned_reason ? ": " + u.banned_reason : "") : ""}`
+        ).join("\n"));
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_search_packages": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        const rows = await callRpc("mcp_admin_search_packages", { p_token: token, p_query: args.query ? String(args.query) : "" });
+        if (!rows?.length) return toolText("No matches.");
+        return toolText(rows.map((p: any) =>
+          `- ${p.name}@${p.version} by @${p.uploader_username} · ${p.download_count} downloads${p.blocked ? " · BLOCKED" + (p.blocked_reason ? ": " + p.blocked_reason : "") : ""}`
+        ).join("\n"));
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_send_notification": {
+      if (!token) return toolText("No token provided.", true);
+      const title = String(args.title ?? "");
+      if (!title) return toolText("title is required.", true);
+      try {
+        const n = await callRpc("mcp_admin_send_notification", {
+          p_token: token,
+          p_title: title,
+          p_body_html: args.body_html ? String(args.body_html) : null,
+          p_target_usernames: Array.isArray(args.target_usernames) && args.target_usernames.length ? args.target_usernames : null,
+        });
+        return toolText(`Sent to ${n} recipient(s).`);
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_list_banned_users": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        const rows = await callRpc("mcp_admin_list_banned_users", { p_token: token });
+        if (!rows?.length) return toolText("No banned users.");
+        return toolText(rows.map((u: any) => `- @${u.username}${u.banned_until ? " until " + u.banned_until : " (permanent)"}${u.banned_reason ? ": " + u.banned_reason : ""}`).join("\n"));
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+    }
+
+    case "admin_list_blocked_packages": {
+      if (!token) return toolText("No token provided.", true);
+      try {
+        const rows = await callRpc("mcp_admin_list_blocked_packages", { p_token: token });
+        if (!rows?.length) return toolText("No blocked packages.");
+        return toolText(rows.map((p: any) => `- ${p.name} by @${p.uploader_username}${p.blocked_reason ? ": " + p.blocked_reason : ""}`).join("\n"));
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
     }
 
     default:
