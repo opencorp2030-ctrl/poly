@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"poly/internal/httpclient"
 )
 
 // Go shells out to a local `go install` to fetch and build binaries
@@ -97,10 +98,17 @@ func installedModuleVersion(goBin, binPath, module string) string {
 	if err != nil {
 		return ""
 	}
+	return moduleVersionFromBuildInfo(out)
+}
+
+// moduleVersionFromBuildInfo scans `go version -m <bin>` output for the
+// "mod <module> <version>" line, which carries the resolved module
+// version; the "path <module>" first line does not.
+func moduleVersionFromBuildInfo(out []byte) string {
 	scanner := bufio.NewScanner(strings.NewReader(string(out)))
 	for scanner.Scan() {
 		fields := strings.Fields(scanner.Text())
-		if len(fields) >= 3 && (fields[0] == "mod" || fields[0] == "path") && fields[0] == "mod" {
+		if len(fields) >= 3 && fields[0] == "mod" {
 			return fields[2]
 		}
 	}
@@ -131,19 +139,18 @@ func (g Go) Search(module string) (SearchResult, error) {
 }
 
 func latestModuleVersion(module string) (version string, found bool, err error) {
-	resp, err := http.Get("https://proxy.golang.org/" + escapeGoModulePath(module) + "/@latest")
+	resp, err := httpclient.Get("https://proxy.golang.org/" + escapeGoModulePath(module) + "/@latest")
 	if err != nil {
 		return "", false, err
 	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusGone {
+		resp.Body.Close()
 		return "", false, nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return "", false, fmt.Errorf("go module proxy lookup failed: %s: %s", resp.Status, body)
+		return "", false, fmt.Errorf("go module proxy lookup failed: %w", httpclient.ErrorStatus(resp))
 	}
+	defer resp.Body.Close()
 
 	var payload struct {
 		Version string `json:"Version"`

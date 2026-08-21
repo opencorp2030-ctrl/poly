@@ -18,11 +18,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
+
+	"poly/internal/httpclient"
 )
 
 // Same public Supabase project/anon key as internal/account -- kept as
@@ -60,16 +61,14 @@ func fetchCommunityPackage(name string) (row communityPackageRow, found bool, er
 	}
 	req.Header.Set("apikey", supabaseAnonKey)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return row, false, err
 	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return row, false, fmt.Errorf("community registry lookup failed: %s: %s", resp.Status, body)
+		return row, false, fmt.Errorf("community registry lookup failed: %w", httpclient.ErrorStatus(resp))
 	}
+	defer resp.Body.Close()
 
 	var rows []communityPackageRow
 	if err := json.NewDecoder(resp.Body).Decode(&rows); err != nil {
@@ -96,6 +95,15 @@ func (c Community) Search(name string) (SearchResult, error) {
 	return SearchResult{Found: true, Version: row.Version, Summary: summary}, nil
 }
 
+// AvailableVersion returns the currently published version of name.
+func (c Community) AvailableVersion(name string) (string, bool) {
+	row, found, err := fetchCommunityPackage(name)
+	if err != nil || !found {
+		return "", false
+	}
+	return row.Version, true
+}
+
 func (c Community) Install(name, version string) (installedVersion string, err error) {
 	binDir, err := polyBinDir()
 	if err != nil {
@@ -105,10 +113,13 @@ func (c Community) Install(name, version string) (installedVersion string, err e
 }
 
 // InstallTo is like Install but writes the binary into destDir instead
-// of ~/.poly/bin. Used by `poly exec`/`poly x` to run a community
-// package once, from a throwaway directory, without persisting an install.
-func (c Community) InstallTo(name, version, destDir string) (installedVersion string, err error) {
-	return c.installTo(name, version, destDir)
+// of ~/.poly/bin, returning the installed version and the executable
+// file name (sans extension). Used by `poly exec`/`poly x` to run a
+// community package once, from a throwaway directory, without
+// persisting an install.
+func (c Community) InstallTo(name, version, destDir string) (installedVersion, binaryName string, err error) {
+	v, err := c.installTo(name, version, destDir)
+	return v, name, err
 }
 
 func (c Community) installTo(name, version, destDir string) (installedVersion string, err error) {
@@ -185,7 +196,7 @@ func recordCommunityDownload(name string) {
 	}
 	req.Header.Set("apikey", supabaseAnonKey)
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return
 	}

@@ -16,6 +16,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"poly/internal/httpclient"
 )
 
 const releasesAPI = "https://api.github.com/repos/opencorp2030-ctrl/poly/releases/latest"
@@ -35,16 +37,14 @@ func latestRelease() (*release, error) {
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("checking latest release failed: %s: %s", resp.Status, body)
+		return nil, fmt.Errorf("checking latest release failed: %w", httpclient.ErrorStatus(resp))
 	}
+	defer resp.Body.Close()
 
 	var r release
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
@@ -132,15 +132,50 @@ func Apply() (newVersion string, err error) {
 	if err := os.Chmod(tmpPath, 0o755); err != nil {
 		return "", err
 	}
-	if err := os.Rename(tmpPath, execPath); err != nil {
-		return "", fmt.Errorf("replacing %s: %w", execPath, err)
+	if err := replaceExecutable(tmpPath, execPath); err != nil {
+		return "", err
 	}
 
 	return strings.TrimPrefix(r.TagName, "v"), nil
 }
 
+// replaceExecutable atomically swaps tmpPath in over execPath. On Unix a
+// plain rename suffices. Windows keeps the running executable locked
+// against overwrite, so it renames the running exe aside to
+// "poly.exe.old" first (allowed even for a running image), moves the new
+// binary into place, and leaves the stale .old for CleanupStale to
+// remove on the next invocation.
+func replaceExecutable(tmpPath, execPath string) error {
+	if err := os.Rename(tmpPath, execPath); err == nil {
+		return nil
+	} else if runtime.GOOS != "windows" {
+		return fmt.Errorf("replacing %s: %w", execPath, err)
+	}
+
+	oldPath := execPath + ".old"
+	if err := os.Rename(execPath, oldPath); err != nil {
+		return fmt.Errorf("replacing %s (tried moving the running binary aside): %w", execPath, err)
+	}
+	if err := os.Rename(tmpPath, execPath); err != nil {
+		os.Rename(oldPath, execPath) // best-effort rollback
+		return fmt.Errorf("replacing %s: %w", execPath, err)
+	}
+	return nil
+}
+
+// CleanupStale removes the .old binary a Windows self-update leaves
+// behind once the new one is in place. Best-effort; called on every
+// command start via cmd.maybeAutoUpdate.
+func CleanupStale() {
+	execPath, err := os.Executable()
+	if err != nil {
+		return
+	}
+	os.Remove(execPath + ".old")
+}
+
 func download(url, dest string) error {
-	resp, err := http.Get(url)
+	resp, err := httpclient.GetDownload(url)
 	if err != nil {
 		return err
 	}
@@ -161,7 +196,7 @@ func download(url, dest string) error {
 }
 
 func fetchChecksum(checksumURL, assetName string) (string, error) {
-	resp, err := http.Get(checksumURL)
+	resp, err := httpclient.Get(checksumURL)
 	if err != nil {
 		return "", err
 	}

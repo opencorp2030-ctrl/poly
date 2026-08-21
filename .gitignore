@@ -3,3 +3,4 @@
 .DS_Store
 installers/macos/*.pkg
 installers/windows/*.exe
+/poly.exe

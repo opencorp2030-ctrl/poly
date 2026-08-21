@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 	"text/tabwriter"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -12,6 +13,16 @@ import (
 	"poly/internal/manifest"
 	"poly/internal/ui"
 )
+
+// listPackage mirrors one manifest entry for the --json output.
+type listPackage struct {
+	Name        string    `json:"name"`
+	Version     string    `json:"version"`
+	Adapter     string    `json:"adapter"`
+	InstalledAt time.Time `json:"installed_at"`
+}
+
+var listJSON bool
 
 var listCmd = &cobra.Command{
 	Use:   "list",
@@ -23,6 +34,9 @@ var listCmd = &cobra.Command{
 		}
 
 		if len(m.Packages) == 0 {
+			if listJSON {
+				return printJSON([]listPackage{})
+			}
 			fmt.Println(ui.Dim("no packages installed via poly yet"))
 			return nil
 		}
@@ -32,6 +46,15 @@ var listCmd = &cobra.Command{
 			names = append(names, name)
 		}
 		sort.Strings(names)
+
+		if listJSON {
+			out := make([]listPackage, 0, len(names))
+			for _, name := range names {
+				e := m.Packages[name]
+				out = append(out, listPackage{Name: e.Name, Version: e.Version, Adapter: e.Adapter, InstalledAt: e.InstalledAt})
+			}
+			return printJSON(out)
+		}
 
 		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("%d packages installed via poly", len(names))))
 
@@ -56,5 +79,6 @@ var listCmd = &cobra.Command{
 }
 
 func init() {
+	listCmd.Flags().BoolVar(&listJSON, "json", false, "output as JSON")
 	rootCmd.AddCommand(listCmd)
 }

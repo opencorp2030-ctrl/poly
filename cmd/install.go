@@ -28,7 +28,7 @@ func installOne(spec string) installResult {
 	adapterPrefix, name, version := parseSpec(spec)
 	r := installResult{spec: spec, adapterPrefix: adapterPrefix, name: name, version: version}
 
-	a, err := resolveAdapter(adapterPrefix, name)
+	a, err := resolveAdapter(adapterPrefix, name, version)
 	if err != nil {
 		r.err = err
 		return r
@@ -67,6 +67,28 @@ func installParallel(specs []string) []installResult {
 	return results
 }
 
+// planInstall resolves a spec to the adapter that would install it and
+// reports the version it would install, without actually installing
+// anything. Only VersionLimited adapters (tap/community) know their
+// exact version up front; for the others the real version only exists
+// once the delegate tool runs, so installedVersion stays "".
+func planInstall(spec string) (installResult, error) {
+	adapterPrefix, name, version := parseSpec(spec)
+	a, err := resolveAdapter(adapterPrefix, name, version)
+	if err != nil {
+		return installResult{}, err
+	}
+	r := installResult{spec: spec, adapterPrefix: adapterPrefix, name: name, version: version, a: a}
+	if vl, ok := a.(adapters.VersionLimited); ok {
+		if v, ok := vl.AvailableVersion(name); ok {
+			r.installedVersion = v
+		}
+	}
+	return r, nil
+}
+
+var installDryRun bool
+
 var installCmd = &cobra.Command{
 	Use:   "install [[adapter:]package[@version] ...]",
 	Short: "Install one or more packages, or everything listed in poly.json",
@@ -98,6 +120,29 @@ Examples:
 			fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installing %d package(s) from %s", len(args), lockfile.FileName)))
 		}
 
+		if installDryRun {
+			var firstErr error
+			for _, spec := range args {
+				r, err := planInstall(spec)
+				if err != nil {
+					fmt.Println(ui.Red(fmt.Sprintf("would not be able to install %s: %v", spec, err)))
+					if firstErr == nil {
+						firstErr = err
+					}
+					continue
+				}
+				v := r.installedVersion
+				if v == "" {
+					v = "latest"
+				}
+				fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("would install %s %s (via %s)", r.name, v, r.a.Name())))
+			}
+			if firstErr == nil {
+				fmt.Println(ui.Dim("dry run: nothing was installed"))
+			}
+			return firstErr
+		}
+
 		var results []installResult
 		if len(args) > 1 {
 			if account.IsPro() {
@@ -115,34 +160,19 @@ Examples:
 		if err != nil {
 			return err
 		}
-
-		var firstErr error
-		usedTap := false
-		for _, r := range results {
-			if r.err != nil {
-				fmt.Println(ui.Red(fmt.Sprintf("failed to install %s: %v", r.spec, r.err)))
-				if firstErr == nil {
-					firstErr = r.err
-				}
-				continue
-			}
-
-			m.Add(manifest.Entry{
-				Name:        r.name,
-				Adapter:     r.a.Name(),
-				Version:     r.installedVersion,
-				InstalledAt: time.Now(),
-			})
-			fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installed %s %s (via %s)", r.name, r.installedVersion, r.a.Name())))
-			if r.a.Name() == "tap" {
-				usedTap = true
-			}
-		}
+		firstErr := recordResults(m, results, "installed")
 
 		if err := m.Save(); err != nil {
 			return err
 		}
 
+		usedTap := false
+		for _, r := range results {
+			if r.err == nil && r.a.Name() == "tap" {
+				usedTap = true
+				break
+			}
+		}
 		if usedTap {
 			binDir, err := adapters.BinDir()
 			if err == nil {
@@ -156,6 +186,32 @@ Examples:
 
 		return firstErr
 	},
+}
+
+// recordResults reports each install result (success or failure) and
+// records successful installs into the manifest. It returns the first
+// error encountered, if any, without aborting the remaining results --
+// so a failing package doesn't prevent the others from being recorded.
+func recordResults(m *manifest.Manifest, results []installResult, verb string) error {
+	var firstErr error
+	for _, r := range results {
+		if r.err != nil {
+			fmt.Println(ui.Red(fmt.Sprintf("failed to install %s: %v", r.spec, r.err)))
+			if firstErr == nil {
+				firstErr = r.err
+			}
+			continue
+		}
+
+		m.Add(manifest.Entry{
+			Name:        r.name,
+			Adapter:     r.a.Name(),
+			Version:     r.installedVersion,
+			InstalledAt: time.Now(),
+		})
+		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("%s %s %s (via %s)", verb, r.name, r.installedVersion, r.a.Name())))
+	}
+	return firstErr
 }
 
 // updateLock records exact resolved versions (and, for tap/community,
@@ -192,5 +248,6 @@ func updateLock(results []installResult) error {
 }
 
 func init() {
+	installCmd.Flags().BoolVar(&installDryRun, "dry-run", false, "show what would be installed without installing anything")
 	rootCmd.AddCommand(installCmd)
 }

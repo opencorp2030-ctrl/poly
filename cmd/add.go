@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/spf13/cobra"
 
 	"poly/internal/lockfile"
 	"poly/internal/manifest"
-	"poly/internal/ui"
 )
 
 var addCmd = &cobra.Command{
@@ -34,27 +32,14 @@ URL -- in ./poly.lock. Mirrors npm/yarn/cargo's "add".`,
 			f = &lockfile.File{}
 		}
 
-		var firstErr error
+		firstErr := recordResults(m, results, "added")
+
 		for _, r := range results {
 			if r.err != nil {
-				fmt.Println(ui.Red(fmt.Sprintf("failed to install %s: %v", r.spec, r.err)))
-				if firstErr == nil {
-					firstErr = r.err
-				}
 				continue
 			}
-
-			m.Add(manifest.Entry{
-				Name:        r.name,
-				Adapter:     r.a.Name(),
-				Version:     r.installedVersion,
-				InstalledAt: time.Now(),
-			})
-
 			spec := fmt.Sprintf("%s:%s@%s", r.a.Name(), r.name, r.installedVersion)
 			f.Packages = addOrReplaceSpec(f.Packages, r.name, spec)
-
-			fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("added %s %s (via %s)", r.name, r.installedVersion, r.a.Name())))
 		}
 
 		if err := m.Save(); err != nil {

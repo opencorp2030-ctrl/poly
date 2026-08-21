@@ -8,12 +8,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"poly/internal/httpclient"
 )
 
 const (
@@ -51,13 +52,13 @@ func Login(email, password string) (*Credentials, error) {
 	req.Header.Set("apikey", supabaseAnonKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	data, err := io.ReadAll(resp.Body)
+	data, err := httpclient.ReadAll(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -188,13 +189,13 @@ func refreshSession(creds *Credentials) (*Credentials, error) {
 	req.Header.Set("apikey", supabaseAnonKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	data, err := io.ReadAll(resp.Body)
+	data, err := httpclient.ReadAll(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -259,7 +260,7 @@ func IsPro() bool {
 	req.Header.Set("apikey", supabaseAnonKey)
 	req.Header.Set("Authorization", "Bearer "+creds.AccessToken)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return false
 	}
@@ -316,15 +317,14 @@ func GetProfile() (*Profile, error) {
 	req.Header.Set("apikey", supabaseAnonKey)
 	req.Header.Set("Authorization", "Bearer "+creds.AccessToken)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("fetching profile failed: %s: %s", resp.Status, body)
+		return nil, fmt.Errorf("fetching profile failed: %w", httpclient.ErrorStatus(resp))
 	}
 
 	var rows []Profile

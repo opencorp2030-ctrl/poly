@@ -19,6 +19,7 @@ import (
 
 	"poly/internal/account"
 	"poly/internal/cache"
+	"poly/internal/httpclient"
 	"poly/internal/registry/embedded"
 	"poly/internal/ui"
 )
@@ -104,10 +105,20 @@ func (t Tap) Install(name, version string) (installedVersion string, err error) 
 }
 
 // InstallTo is like Install but writes the binary into destDir instead
-// of ~/.poly/bin. Used by `poly exec`/`poly x` to run a tap formula
-// once, from a throwaway directory, without persisting an install.
-func (t Tap) InstallTo(name, version, destDir string) (installedVersion string, err error) {
-	return t.installTo(name, version, destDir)
+// of ~/.poly/bin, returning the installed version and the executable
+// file name (sans extension) that was placed there. Used by `poly
+// exec`/`poly x` to run a tap formula once, from a throwaway directory,
+// without persisting an install.
+func (t Tap) InstallTo(name, version, destDir string) (installedVersion, binaryName string, err error) {
+	f, found, err := loadFormula(name)
+	if err != nil {
+		return "", "", err
+	}
+	if !found {
+		return "", "", fmt.Errorf("no tap formula for %s", name)
+	}
+	v, err := t.installTo(name, version, destDir)
+	return v, f.Binary, err
 }
 
 func (t Tap) installTo(name, version, destDir string) (installedVersion string, err error) {
@@ -128,7 +139,7 @@ func (t Tap) installTo(name, version, destDir string) (installedVersion string, 
 	key := runtime.GOOS + "_" + runtime.GOARCH
 	artifact, ok := f.Artifacts[key]
 	if !ok {
-		return "", fmt.Errorf("%s has no prebuilt binary for %s", name, key)
+		return "", fmt.Errorf("%s has no prebuilt binary for %s (some projects dropped older platforms — try `poly install brew:%s` or `poly install cargo:%s` instead)", name, key, name, name)
 	}
 
 	archivePath, err := downloadToTemp(artifact.URL, name)
@@ -226,6 +237,15 @@ func (t Tap) Search(name string) (SearchResult, error) {
 	return SearchResult{Found: true, Version: f.Version, Summary: summary, Homepage: f.Homepage}, nil
 }
 
+// AvailableVersion returns the single version this tap formula offers.
+func (t Tap) AvailableVersion(name string) (string, bool) {
+	f, found, err := loadFormula(name)
+	if err != nil || !found {
+		return "", false
+	}
+	return f.Version, true
+}
+
 // BinDir exposes ~/.poly/bin so the CLI layer can tell the user to add it
 // to PATH after a tap install.
 func BinDir() (string, error) {
@@ -244,7 +264,7 @@ func downloadToTemp(url, label string) (string, error) {
 		return cachedPath, nil
 	}
 
-	resp, err := http.Get(url)
+	resp, err := httpclient.GetDownload(url)
 	if err != nil {
 		return "", err
 	}
@@ -403,11 +423,29 @@ func extractZip(archivePath, destDir string) error {
 	return nil
 }
 
+// isVolumePath reports whether name starts with a Windows drive
+// ("C:/..." or "C:\...") or a UNC share ("\\server\share"), even when
+// compiled for Unix, so such archive entries are rejected uniformly.
+func isVolumePath(name string) bool {
+	if len(name) >= 3 {
+		if (name[0] >= 'A' && name[0] <= 'Z') || (name[0] >= 'a' && name[0] <= 'z') {
+			if name[1] == ':' && (name[2] == '\\' || name[2] == '/') {
+				return true
+			}
+		}
+	}
+	return len(name) >= 2 && name[0] == '\\' && name[1] == '\\'
+}
+
 // safeJoin joins base and name, rejecting archive entries that would
-// escape base via ".." (zip-slip).
+// escape base via ".." (zip-slip) or that are absolute paths.
 func safeJoin(base, name string) (string, error) {
+	if filepath.IsAbs(name) || isVolumePath(name) {
+		return "", fmt.Errorf("illegal archive entry path: %s", name)
+	}
 	target := filepath.Join(base, name)
-	if !strings.HasPrefix(target, filepath.Clean(base)+string(os.PathSeparator)) && target != filepath.Clean(base) {
+	cleanBase := filepath.Clean(base)
+	if target != cleanBase && !strings.HasPrefix(target, cleanBase+string(os.PathSeparator)) {
 		return "", fmt.Errorf("illegal archive entry path: %s", name)
 	}
 	return target, nil

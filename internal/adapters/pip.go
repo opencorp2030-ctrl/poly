@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+
+	"poly/internal/httpclient"
 )
 
 // Pip shells out to a local pip3/pip binary to install and remove packages,
@@ -78,19 +79,18 @@ func (p Pip) Remove(name string) error {
 // returns its latest version and summary. PyPI dropped free-text search
 // years ago, so this is an exact-name lookup rather than a fuzzy search.
 func (p Pip) Search(name string) (SearchResult, error) {
-	resp, err := http.Get("https://pypi.org/pypi/" + name + "/json")
+	resp, err := httpclient.Get("https://pypi.org/pypi/" + name + "/json")
 	if err != nil {
 		return SearchResult{}, err
 	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode == http.StatusNotFound {
+		resp.Body.Close()
 		return SearchResult{Found: false}, nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return SearchResult{}, fmt.Errorf("pypi lookup failed: %s: %s", resp.Status, body)
+		return SearchResult{}, fmt.Errorf("pypi lookup failed: %w", httpclient.ErrorStatus(resp))
 	}
+	defer resp.Body.Close()
 
 	var payload struct {
 		Info struct {

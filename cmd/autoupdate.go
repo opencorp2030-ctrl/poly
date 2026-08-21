@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"poly/internal/account"
+	"poly/internal/selfupdate"
 )
 
 const autoCheckInterval = 24 * time.Hour
@@ -16,6 +17,7 @@ const autoCheckInterval = 24 * time.Hour
 // Pro accounts. Both run as detached background processes so they never
 // add latency to the command the user actually typed.
 func maybeAutoUpdate() {
+	selfupdate.CleanupStale()
 	maybeSpawn("last-selfupdate-check", "self-update")
 	if account.IsPro() {
 		maybeSpawn("last-autoupgrade-check", "upgrade")

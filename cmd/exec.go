@@ -14,11 +14,15 @@ import (
 
 // ephemeralInstaller is implemented by adapters that can install into an
 // arbitrary directory instead of always ~/.poly/bin -- currently tap and
-// community, the only two where poly itself downloads a single binary
+// gh/community, the only ones where poly itself downloads a single binary
 // (pip/npm/cargo/go/brew delegate to tools with their own install
 // layouts, so there's no clean "throwaway directory" for them yet).
 type ephemeralInstaller interface {
-	InstallTo(name, version, destDir string) (string, error)
+	// InstallTo installs name into destDir and returns the installed
+	// version plus the executable file name (sans extension) that was
+	// placed there -- which may differ from name, e.g. the ripgrep tap
+	// formula's binary is "rg".
+	InstallTo(name, version, destDir string) (installedVersion, binaryName string, err error)
 }
 
 var execCmd = &cobra.Command{
@@ -36,7 +40,7 @@ install those normally and use "poly run" instead.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		spec := args[0]
 		rest := args[1:]
-		_, name, version := parseSpec(spec)
+		_, name, _ := parseSpec(spec)
 
 		m, err := manifest.Load()
 		if err != nil {
@@ -50,8 +54,8 @@ install those normally and use "poly run" instead.`,
 			return execBinary(binPath, rest)
 		}
 
-		adapterPrefix, _, _ := parseSpec(spec)
-		a, err := resolveAdapter(adapterPrefix, name)
+		adapterPrefix, _, version := parseSpec(spec)
+		a, err := resolveAdapter(adapterPrefix, name, version)
 		if err != nil {
 			return err
 		}
@@ -68,11 +72,11 @@ install those normally and use "poly run" instead.`,
 		defer os.RemoveAll(tmpDir)
 
 		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("running %s once (not installed)", name)))
-		if _, err := ei.InstallTo(name, version, tmpDir); err != nil {
+		_, binName, err := ei.InstallTo(name, version, tmpDir)
+		if err != nil {
 			return err
 		}
 
-		binName := name
 		if runtime.GOOS == "windows" {
 			binName += ".exe"
 		}

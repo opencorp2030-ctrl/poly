@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"poly/internal/httpclient"
 )
 
 // PublishPackage uploads localPath (a file, or a directory that gets
@@ -75,15 +77,14 @@ func uploadToStorage(accessToken, storagePath string, data []byte) error {
 	req.Header.Set("Content-Type", "application/octet-stream")
 	req.Header.Set("x-upsert", "true")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.DoUpload(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("%s: %s", resp.Status, body)
+		return fmt.Errorf("%w", httpclient.ErrorStatus(resp))
 	}
 	return nil
 }
@@ -110,7 +111,7 @@ func callPublishPackage(accessToken, name, version, storagePath, sha256Hex strin
 	req.Header.Set("apikey", supabaseAnonKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpclient.Do(req)
 	if err != nil {
 		return err
 	}

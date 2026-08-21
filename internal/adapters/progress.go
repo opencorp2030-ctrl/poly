@@ -31,7 +31,7 @@ func (pw *progressWriter) render() {
 	label := ui.Orange(pw.label)
 
 	if pw.total <= 0 {
-		fmt.Fprintf(os.Stderr, "\r%s  %s", label, humanBytes(pw.written))
+		fmt.Fprintf(os.Stderr, "\r%s  %s", label, ui.HumanBytes(pw.written))
 		return
 	}
 
@@ -43,25 +43,12 @@ func (pw *progressWriter) render() {
 	bar := ui.Orange(strings.Repeat("#", filled)) + strings.Repeat(" ", progressBarWidth-filled)
 
 	fmt.Fprintf(os.Stderr, "\r%s  [%s] %3.0f%%  %s/%s",
-		label, bar, frac*100, humanBytes(pw.written), humanBytes(pw.total))
+		label, bar, frac*100, ui.HumanBytes(pw.written), ui.HumanBytes(pw.total))
 }
 
 func (pw *progressWriter) done() {
 	pw.render()
 	fmt.Fprintln(os.Stderr)
-}
-
-func humanBytes(n int64) string {
-	const unit = 1024
-	if n < unit {
-		return fmt.Sprintf("%dB", n)
-	}
-	div, exp := int64(unit), 0
-	for m := n / unit; m >= unit; m /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f%ciB", float64(n)/float64(div), "KMGTPE"[exp])
 }
 
 // copyWithProgress copies src into dst while rendering a progress bar to

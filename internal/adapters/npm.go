@@ -3,10 +3,11 @@ package adapters
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/exec"
+
+	"poly/internal/httpclient"
 )
 
 // Npm shells out to a local npm binary to install and remove global
@@ -78,19 +79,18 @@ func (n Npm) Remove(name string) error {
 // Search checks whether a package with this exact name exists on the npm
 // registry and returns its latest version and description.
 func (n Npm) Search(name string) (SearchResult, error) {
-	resp, err := http.Get("https://registry.npmjs.org/" + name + "/latest")
+	resp, err := httpclient.Get("https://registry.npmjs.org/" + name + "/latest")
 	if err != nil {
 		return SearchResult{}, err
 	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode == http.StatusNotFound {
+		resp.Body.Close()
 		return SearchResult{Found: false}, nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return SearchResult{}, fmt.Errorf("npm registry lookup failed: %s: %s", resp.Status, body)
+		return SearchResult{}, fmt.Errorf("npm registry lookup failed: %w", httpclient.ErrorStatus(resp))
 	}
+	defer resp.Body.Close()
 
 	var payload struct {
 		Version     string `json:"version"`

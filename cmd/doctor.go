@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
@@ -139,7 +140,9 @@ var doctorCmd = &cobra.Command{
 		cmd.Println()
 		if anyError {
 			cmd.Println(ui.Red("some checks failed -- see above"))
-			os.Exit(1)
+			// Return, rather than os.Exit(1), so the failure goes through
+			// cobra's normal error handling and exit path.
+			return fmt.Errorf("poly doctor found problems")
 		}
 		cmd.Println(ui.Green("poly looks healthy"))
 		return nil

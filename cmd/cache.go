@@ -26,7 +26,7 @@ var cacheSizeCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("%s across %d cached download(s)", humanBytes(size), count)))
+		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("%s across %d cached download(s)", ui.HumanBytes(size), count)))
 		return nil
 	},
 }
@@ -39,22 +39,9 @@ var cacheCleanCmd = &cobra.Command{
 		if err := cache.Clean(); err != nil {
 			return err
 		}
-		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange("cache cleared, freed "+humanBytes(size)))
+		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange("cache cleared, freed "+ui.HumanBytes(size)))
 		return nil
 	},
-}
-
-func humanBytes(n int64) string {
-	const unit = 1024
-	if n < unit {
-		return fmt.Sprintf("%d B", n)
-	}
-	div, exp := int64(unit), 0
-	for n2 := n / unit; n2 >= unit; n2 /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f %ciB", float64(n)/float64(div), "KMGTPE"[exp])
 }
 
 func init() {

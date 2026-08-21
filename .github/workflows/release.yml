@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build binaries
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.26'
+        cache: true
+
+    - name: Build all targets
+      run: VERSION="${{ github.ref_name }}" scripts/build-all.sh
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist
+        if-no-files-found: error
+
+  installer-windows:
+    name: Windows installer
+    runs-on: windows-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist
+
+    - name: Install NSIS
+      run: choco install nsis -y
+
+    - name: Build setup
+      shell: bash
+      run: |
+        cd installers/windows
+        makensis -DVERSION="${{ github.ref_name }}" -DSOURCE_EXE="$GITHUB_WORKSPACE/dist/poly-windows-amd64.exe" poly-installer.nsi
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: installer-windows
+        path: installers/windows/poly-setup-${{ github.ref_name }}.exe
+        if-no-files-found: error
+
+  installer-macos:
+    name: macOS installer
+    runs-on: macos-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist
+
+    - name: Build pkg
+      shell: bash
+      run: |
+        mkdir -p "$RUNNER_TEMP/pkgroot/usr/local/bin"
+        lipo -create dist/poly-darwin-amd64 dist/poly-darwin-arm64 -output "$RUNNER_TEMP/pkgroot/usr/local/bin/poly"
+        chmod 755 "$RUNNER_TEMP/pkgroot/usr/local/bin/poly"
+        mkdir -p installers/macos
+        pkgbuild --root "$RUNNER_TEMP/pkgroot" \
+          --identifier eu.candygate.poly \
+          --version "${{ github.ref_name }}" \
+          --install-location / \
+          "installers/macos/poly-macos-${{ github.ref_name }}.pkg"
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: installer-macos
+        path: installers/macos/poly-macos-${{ github.ref_name }}.pkg
+        if-no-files-found: error
+
+  release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: [ build, installer-windows, installer-macos ]
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        path: assets
+        merge-multiple: true
+
+    - name: Create GitHub release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      shell: bash
+      run: |
+        cd assets
+        gh release create "${{ github.ref_name }}" \
+          poly-* checksums.txt poly-setup-*.exe poly-macos-*.pkg \
+          --generate-notes

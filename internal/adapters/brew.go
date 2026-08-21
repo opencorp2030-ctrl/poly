@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+
+	"poly/internal/httpclient"
 )
 
 // Brew shells out to a local Homebrew install to install and remove
@@ -83,19 +84,18 @@ func (b Brew) Remove(name string) error {
 // Search checks whether a formula with this exact name exists via the
 // public formulae.brew.sh API, an exact-name lookup.
 func (b Brew) Search(name string) (SearchResult, error) {
-	resp, err := http.Get("https://formulae.brew.sh/api/formula/" + name + ".json")
+	resp, err := httpclient.Get("https://formulae.brew.sh/api/formula/" + name + ".json")
 	if err != nil {
 		return SearchResult{}, err
 	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode == http.StatusNotFound {
+		resp.Body.Close()
 		return SearchResult{Found: false}, nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return SearchResult{}, fmt.Errorf("homebrew lookup failed: %s: %s", resp.Status, body)
+		return SearchResult{}, fmt.Errorf("homebrew lookup failed: %w", httpclient.ErrorStatus(resp))
 	}
+	defer resp.Body.Close()
 
 	var payload struct {
 		Desc     string `json:"desc"`

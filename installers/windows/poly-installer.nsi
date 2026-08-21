@@ -2,7 +2,8 @@
 ; Builds with: makensis /DVERSION=0.5.0 /DSOURCE_EXE=path\to\poly-windows-amd64.exe poly-installer.nsi
 ;
 ; Installs poly.exe into %LOCALAPPDATA%\Poly (no admin rights needed),
-; adds that folder to the current user's PATH, and writes an uninstaller.
+; adds that folder to the current user's PATH, registers itself in
+; Add/Remove Programs, and writes an uninstaller.
 
 !ifndef VERSION
   !define VERSION "0.0.0"
@@ -11,7 +12,10 @@
   !error "Pass /DSOURCE_EXE=path\to\poly-windows-amd64.exe"
 !endif
 
+!define REG_UNINSTALL "Software\Microsoft\Windows\CurrentVersion\Uninstall\Poly"
+
 !include "MUI2.nsh"
+!include "WinMessages.nsh"
 
 Name "Poly"
 OutFile "poly-setup-${VERSION}.exe"
@@ -39,9 +43,17 @@ Section "Poly" SecPoly
   WriteRegStr HKCU "Software\Poly" "InstallDir" "$INSTDIR"
   WriteUninstaller "$INSTDIR\uninstall.exe"
 
+  ; Register in Add/Remove Programs so users can uninstall from Settings.
+  WriteRegStr HKCU "${REG_UNINSTALL}" "DisplayName" "Poly"
+  WriteRegStr HKCU "${REG_UNINSTALL}" "DisplayVersion" "${VERSION}"
+  WriteRegStr HKCU "${REG_UNINSTALL}" "Publisher" "Poly"
+  WriteRegStr HKCU "${REG_UNINSTALL}" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKCU "${REG_UNINSTALL}" "DisplayIcon" "$INSTDIR\poly.exe"
+  WriteRegStr HKCU "${REG_UNINSTALL}" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKCU "${REG_UNINSTALL}" "NoModify" 1
+  WriteRegDWORD HKCU "${REG_UNINSTALL}" "NoRepair" 1
+
   ; Add $INSTDIR to the current user's PATH if it isn't there already.
-  ReadRegStr $0 HKCU "Environment" "Path"
-  Push "$0"
   Push "$INSTDIR"
   Call AddToPath
 
@@ -57,38 +69,42 @@ Section "Uninstall"
   Call un.RemoveFromPath
 
   DeleteRegKey HKCU "Software\Poly"
+  DeleteRegKey HKCU "${REG_UNINSTALL}"
   RMDir "$INSTDIR"
 
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd
 
 ; --- PATH helpers -----------------------------------------------------
-; Adapted from the standard NSIS "add to PATH" recipe: appends a
-; directory to HKCU\Environment\Path if it isn't already a substring.
+; Adds a directory to HKCU\Environment\Path (preserving any %VAR% tokens
+; by writing REG_EXPAND_SZ), skipping the add when the directory is
+; already listed as its own ";"-delimited element -- so C:\Poly never
+; matches inside C:\PolyExtra.
 
 Function AddToPath
   Exch $1 ; dir to add
-  Exch
-  Exch $0 ; current PATH value
+  Push $0
   Push $2
   Push $3
 
+  ReadRegStr $0 HKCU "Environment" "Path"
+  StrCmp $0 "" writeNew
   StrCpy $2 "$0;"
   StrCpy $3 "$1;"
   Push $2
   Push $3
   Call StrStr
   Pop $2
-  StrCmp $2 "" doAdd alreadyThere
+  StrCmp $2 "" doAdd done
 
   doAdd:
-    StrCmp $0 "" writeNew
     StrCpy $0 "$0;$1"
-    Goto writeNew
+    Goto write
   writeNew:
+    ; No user PATH yet: write the directory itself instead of an empty string.
+    StrCpy $0 "$1"
+  write:
     WriteRegExpandStr HKCU "Environment" "Path" "$0"
-    Goto done
-  alreadyThere:
   done:
     Pop $3
     Pop $2
@@ -98,7 +114,10 @@ FunctionEnd
 
 Function un.RemoveFromPath
   Exch $0 ; dir to remove
+  Push $1
   ReadRegStr $1 HKCU "Environment" "Path"
+  StrCmp $1 "" done            ; nothing to clean
+  StrCmp $1 $0 exactMatch      ; the dir is the whole PATH
   Push $1
   Push "$0;"
   Call un.StrRep
@@ -107,8 +126,18 @@ Function un.RemoveFromPath
   Push ";$0"
   Call un.StrRep
   Pop $1
-  WriteRegExpandStr HKCU "Environment" "Path" "$1"
-  Pop $0
+  Goto write
+  exactMatch:
+    StrCpy $1 ""
+  write:
+    StrCmp $1 "" deleteValue
+    WriteRegExpandStr HKCU "Environment" "Path" "$1"
+    Goto done
+  deleteValue:
+    DeleteRegValue HKCU "Environment" "Path"
+  done:
+    Pop $1
+    Pop $0
 FunctionEnd
 
 Function StrStr
@@ -128,9 +157,8 @@ Function StrStr
     Goto loop
   found:
     StrCpy $R1 $R2 "" $R4
-    Goto end
   notfound:
-    StrCpy $R1 ""
+    StrCpy $R5 ""
   end:
     Pop $R5
     Pop $R4

@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+
+	"poly/internal/httpclient"
 )
 
 // Cargo shells out to a local `cargo` to install and remove crates with
@@ -66,27 +67,19 @@ func (c Cargo) Remove(name string) error {
 }
 
 // Search checks whether a crate with this exact name exists on crates.io.
-// The API requires a descriptive User-Agent or it returns 403.
 func (c Cargo) Search(name string) (SearchResult, error) {
-	req, err := http.NewRequest("GET", "https://crates.io/api/v1/crates/"+name, nil)
+	resp, err := httpclient.Get("https://crates.io/api/v1/crates/" + name)
 	if err != nil {
 		return SearchResult{}, err
 	}
-	req.Header.Set("User-Agent", "poly-package-manager (https://github.com/opencorp2030-ctrl/poly)")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return SearchResult{}, err
-	}
-	defer resp.Body.Close()
-
 	if resp.StatusCode == http.StatusNotFound {
+		resp.Body.Close()
 		return SearchResult{Found: false}, nil
 	}
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return SearchResult{}, fmt.Errorf("crates.io lookup failed: %s: %s", resp.Status, body)
+		return SearchResult{}, fmt.Errorf("crates.io lookup failed: %w", httpclient.ErrorStatus(resp))
 	}
+	defer resp.Body.Close()
 
 	var payload struct {
 		Crate struct {

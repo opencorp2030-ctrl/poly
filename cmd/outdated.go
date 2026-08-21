@@ -3,15 +3,23 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"sort"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 
-	"poly/internal/adapters"
 	"poly/internal/manifest"
 	"poly/internal/ui"
 )
+
+// outdatedPackage is one row of the --json output of "poly outdated".
+type outdatedPackage struct {
+	Name    string `json:"name"`
+	Current string `json:"current"`
+	Latest  string `json:"latest"`
+	Adapter string `json:"adapter"`
+}
+
+var outdatedJSON bool
 
 var outdatedCmd = &cobra.Command{
 	Use:   "outdated",
@@ -22,32 +30,21 @@ var outdatedCmd = &cobra.Command{
 			return err
 		}
 		if len(m.Packages) == 0 {
+			if outdatedJSON {
+				return printJSON([]outdatedPackage{})
+			}
 			fmt.Println(ui.Dim("no packages installed via poly yet"))
 			return nil
 		}
 
-		type row struct{ name, current, latest, adapter string }
-		var rows []row
+		rows, _, _ := findOutdated(m)
 
-		names := make([]string, 0, len(m.Packages))
-		for name := range m.Packages {
-			names = append(names, name)
-		}
-		sort.Strings(names)
-
-		for _, name := range names {
-			e := m.Packages[name]
-			a, ok := adapters.ByName(e.Adapter)
-			if !ok {
-				continue
+		if outdatedJSON {
+			out := make([]outdatedPackage, 0, len(rows))
+			for _, r := range rows {
+				out = append(out, outdatedPackage{Name: r.name, Current: r.current, Latest: r.latest, Adapter: r.adapter})
 			}
-			result, err := a.Search(name)
-			if err != nil || !result.Found {
-				continue
-			}
-			if result.Version != e.Version {
-				rows = append(rows, row{name, e.Version, result.Version, e.Adapter})
-			}
+			return printJSON(out)
 		}
 
 		if len(rows) == 0 {
@@ -70,5 +67,6 @@ var outdatedCmd = &cobra.Command{
 }
 
 func init() {
+	outdatedCmd.Flags().BoolVar(&outdatedJSON, "json", false, "output as JSON")
 	rootCmd.AddCommand(outdatedCmd)
 }

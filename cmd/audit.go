@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"poly/internal/httpclient"
 	"poly/internal/manifest"
 	"poly/internal/ui"
 )
@@ -81,7 +82,7 @@ var auditCmd = &cobra.Command{
 			return err
 		}
 
-		resp, err := http.Post("https://api.osv.dev/v1/querybatch", "application/json", bytes.NewReader(body))
+		resp, err := httpclient.Post("https://api.osv.dev/v1/querybatch", "application/json", bytes.NewReader(body))
 		if err != nil {
 			return fmt.Errorf("checking osv.dev: %w", err)
 		}
