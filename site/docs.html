@@ -353,10 +353,19 @@
             <tr><td><code>npm</code></td><td data-i18n="ad_npm_install"><code>npm install -g name@latest</code> (or <code>@version</code> when pinned)</td><td><code>registry.npmjs.org/&lt;name&gt;/latest</code></td></tr>
             <tr><td><code>cargo</code></td><td data-i18n="ad_cargo_install"><code>cargo install --force</code></td><td><code>crates.io/api/v1/crates/&lt;name&gt;</code></td></tr>
             <tr><td><code>go</code></td><td data-i18n="ad_go_install"><code>go install &lt;module&gt;@version</code>; requires a full module path, not a short name</td><td data-i18n="ad_go_search">Go module proxy, walking the path upward to find the enclosing module</td></tr>
+            <tr><td><code>gem</code></td><td data-i18n="ad_gem_install"><code>gem install</code> (or <code>--version</code> when pinned)</td><td><code>rubygems.org/api/v1/gems/&lt;name&gt;.json</code></td></tr>
+            <tr><td><code>apt</code></td><td data-i18n="ad_apt_install"><code>apt-get install</code> (or <code>name=version</code> when pinned), explicit <code>apt:</code> prefix only</td><td data-i18n="ad_apt_search">Local <code>apt-cache show</code>, no separate API</td></tr>
+            <tr><td><code>dnf</code></td><td data-i18n="ad_dnf_install"><code>dnf install</code> (or <code>name-version</code> when pinned), explicit <code>dnf:</code> prefix only</td><td data-i18n="ad_dnf_search">Local <code>dnf info</code>, no separate API</td></tr>
+            <tr><td><code>pacman</code></td><td data-i18n="ad_pacman_install"><code>pacman -S</code>, explicit <code>pacman:</code> prefix only; no version pinning</td><td data-i18n="ad_pacman_search">Local <code>pacman -Si</code>, no separate API</td></tr>
+            <tr><td><code>winget</code></td><td data-i18n="ad_winget_install"><code>winget install --exact</code> (or <code>--version</code> when pinned), explicit <code>winget:</code> prefix only</td><td data-i18n="ad_winget_search">Local <code>winget show --exact</code>, no separate API</td></tr>
+            <tr><td><code>choco</code></td><td data-i18n="ad_choco_install"><code>choco install</code> (or <code>--version=</code> when pinned), explicit <code>choco:</code> prefix only</td><td data-i18n="ad_choco_search">Local <code>choco search --exact</code>, no separate API</td></tr>
+            <tr><td><code>gh</code></td><td data-i18n="ad_gh_install">Latest GitHub release asset for your OS/arch, SHA-256 verified when the release ships one, explicit <code>gh:owner/repo</code> only</td><td data-i18n="ad_gh_search"><code>api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/releases/latest</code></td></tr>
+            <tr><td><code>community</code></td><td data-i18n="ad_community_install">Poly's own registry, explicit <code>community:</code> prefix only</td><td data-i18n="ad_community_search">Poly's Supabase-backed package table</td></tr>
           </tbody>
         </table>
       </div>
-      <p data-i18n="adapters_p">Every adapter that shells out to a real package manager (pip/npm/brew/cargo) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.</p>
+      <p data-i18n="adapters_p">Every adapter that shells out to a real package manager (pip/npm/brew/cargo/gem/apt/dnf/pacman/winget/choco) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.</p>
+      <p data-i18n="adapters_p2"><code>apt</code>, <code>dnf</code>, <code>pacman</code>, <code>winget</code>, <code>choco</code>, and <code>gem</code> are reachable only via their explicit prefix (e.g. <code>poly install apt:ripgrep</code>) -- they're never tried by a bare <code>poly install name</code>, so a system package or a single-language gem never silently shadows the tap/brew/pip/npm/cargo/go chain below.</p>
     </section>
 
     <section class="doc-section" id="resolution">
@@ -581,7 +590,23 @@ poly install community:hello-world</div>
       ad_cargo_install: '<code>cargo install --force</code>',
       ad_go_install: '<code>go install &lt;module&gt;@version</code>; requires a full module path, not a short name',
       ad_go_search: "Go module proxy, walking the path upward to find the enclosing module",
-      adapters_p: "Every adapter that shells out to a real package manager (pip/npm/brew/cargo) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.",
+      ad_gem_install: '<code>gem install</code> (or <code>--version</code> when pinned)',
+      ad_apt_install: '<code>apt-get install</code> (or <code>name=version</code> when pinned), explicit <code>apt:</code> prefix only',
+      ad_apt_search: "Local <code>apt-cache show</code>, no separate API",
+      ad_dnf_install: '<code>dnf install</code> (or <code>name-version</code> when pinned), explicit <code>dnf:</code> prefix only',
+      ad_dnf_search: "Local <code>dnf info</code>, no separate API",
+      ad_pacman_install: '<code>pacman -S</code>, explicit <code>pacman:</code> prefix only; no version pinning',
+      ad_pacman_search: "Local <code>pacman -Si</code>, no separate API",
+      ad_winget_install: '<code>winget install --exact</code> (or <code>--version</code> when pinned), explicit <code>winget:</code> prefix only',
+      ad_winget_search: "Local <code>winget show --exact</code>, no separate API",
+      ad_choco_install: '<code>choco install</code> (or <code>--version=</code> when pinned), explicit <code>choco:</code> prefix only',
+      ad_choco_search: "Local <code>choco search --exact</code>, no separate API",
+      ad_gh_install: 'Latest GitHub release asset for your OS/arch, SHA-256 verified when the release ships one, explicit <code>gh:owner/repo</code> only',
+      ad_gh_search: '<code>api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/releases/latest</code>',
+      ad_community_install: "Poly's own registry, explicit <code>community:</code> prefix only",
+      ad_community_search: "Poly's Supabase-backed package table",
+      adapters_p: "Every adapter that shells out to a real package manager (pip/npm/brew/cargo/gem/apt/dnf/pacman/winget/choco) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.",
+      adapters_p2: "<code>apt</code>, <code>dnf</code>, <code>pacman</code>, <code>winget</code>, <code>choco</code>, and <code>gem</code> are reachable only via their explicit prefix (e.g. <code>poly install apt:ripgrep</code>) -- they're never tried by a bare <code>poly install name</code>, so a system package or a single-language gem never silently shadows the tap/brew/pip/npm/cargo/go chain below.",
       resolution_h: "Resolution order &amp; prefixes",
       resolution_p: 'Without a prefix, <code>poly install name</code> tries each adapter\'s <code>Search</code> in this order and installs through the first hit:',
       resolution_p2: 'Force a specific one with <code>adapter:name</code>, and pin a version with <code>name@version</code> (or combine: <code>pip:requests@2.31.0</code>).',
@@ -662,7 +687,7 @@ poly install community:hello-world</div>
       faq_q1: "Is poly really free?",
       faq_a1: "Yes, entirely, including the built-in tap catalog. Pro is a small optional pack (see above), not a paywall on anything that already works.",
       faq_q2: "Which package managers does poly wrap?",
-      faq_a2: "pip, npm, Homebrew, plus poly's own built-in tap catalog and community registry for things none of those carry. See the adapters table above.",
+      faq_a2: "pip, npm, Homebrew, cargo, go, gem, apt, dnf, pacman, winget, and Chocolatey, plus poly's own built-in tap catalog and community registry for things none of those carry. See the adapters table above.",
       faq_q3: "Are community packages safe to install?",
       faq_a3: 'There\'s no automated malware scanning. A package marked with the "safe" badge has been manually reviewed by the Poly team; anything else, install only from publishers you trust. The SHA-256 check at install time only guards against corruption/tampering in transit, not a malicious upload.',
       faq_q4: "Do I need an account to use poly?",
@@ -705,7 +730,23 @@ poly install community:hello-world</div>
       ad_cargo_install: '<code>cargo install --force</code>',
       ad_go_install: '<code>go install &lt;module&gt;@version</code> ; demande un chemin de module complet, pas un nom court',
       ad_go_search: "Proxy des modules Go, en remontant le chemin jusqu'à trouver le module englobant",
-      adapters_p: "Chaque adapter qui appelle un vrai gestionnaire de paquets (pip/npm/brew/cargo) streame la sortie native de cet outil en direct, donc tu vois sa vraie progression. L'adapter <code>tap</code> affiche sa propre barre de progression puisqu'il parle directement à un téléchargement HTTP.",
+      ad_gem_install: '<code>gem install</code> (ou <code>--version</code> si figé)',
+      ad_apt_install: '<code>apt-get install</code> (ou <code>name=version</code> si figé), uniquement via le préfixe explicite <code>apt:</code>',
+      ad_apt_search: "<code>apt-cache show</code> local, pas d'API séparée",
+      ad_dnf_install: '<code>dnf install</code> (ou <code>name-version</code> si figé), uniquement via le préfixe explicite <code>dnf:</code>',
+      ad_dnf_search: "<code>dnf info</code> local, pas d'API séparée",
+      ad_pacman_install: '<code>pacman -S</code>, uniquement via le préfixe explicite <code>pacman:</code> ; pas de version figée',
+      ad_pacman_search: "<code>pacman -Si</code> local, pas d'API séparée",
+      ad_winget_install: '<code>winget install --exact</code> (ou <code>--version</code> si figé), uniquement via le préfixe explicite <code>winget:</code>',
+      ad_winget_search: "<code>winget show --exact</code> local, pas d'API séparée",
+      ad_choco_install: '<code>choco install</code> (ou <code>--version=</code> si figé), uniquement via le préfixe explicite <code>choco:</code>',
+      ad_choco_search: "<code>choco search --exact</code> local, pas d'API séparée",
+      ad_gh_install: 'Dernier asset de release GitHub pour ton OS/architecture, vérifié SHA-256 quand la release en fournit un, uniquement via <code>gh:owner/repo</code>',
+      ad_gh_search: '<code>api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/releases/latest</code>',
+      ad_community_install: "Le registre de Poly, uniquement via le préfixe explicite <code>community:</code>",
+      ad_community_search: "Table de paquets Poly (Supabase)",
+      adapters_p: "Chaque adapter qui appelle un vrai gestionnaire de paquets (pip/npm/brew/cargo/gem/apt/dnf/pacman/winget/choco) streame la sortie native de cet outil en direct, donc tu vois sa vraie progression. L'adapter <code>tap</code> affiche sa propre barre de progression puisqu'il parle directement à un téléchargement HTTP.",
+      adapters_p2: "<code>apt</code>, <code>dnf</code>, <code>pacman</code>, <code>winget</code>, <code>choco</code> et <code>gem</code> ne sont accessibles que via leur préfixe explicite (ex. <code>poly install apt:ripgrep</code>) -- jamais essayés par un <code>poly install name</code> sans préfixe, pour qu'un paquet système ou une gem ne masque jamais silencieusement la chaîne tap/brew/pip/npm/cargo/go ci-dessous.",
       resolution_h: "Ordre de résolution &amp; préfixes",
       resolution_p: 'Sans préfixe, <code>poly install name</code> essaie la recherche de chaque adapter dans cet ordre et installe via le premier qui répond :',
       resolution_p2: 'Force un adapter précis avec <code>adapter:name</code>, et fige une version avec <code>name@version</code> (ou combine : <code>pip:requests@2.31.0</code>).',
@@ -786,7 +827,7 @@ poly install community:hello-world</div>
       faq_q1: "Est-ce que poly est vraiment gratuit ?",
       faq_a1: "Oui, entièrement, y compris le catalogue tap intégré. Pro est un petit pack optionnel (voir plus haut), pas un péage sur quelque chose qui marche déjà.",
       faq_q2: "Quels gestionnaires de paquets poly encapsule-t-il ?",
-      faq_a2: "pip, npm, Homebrew, plus le catalogue tap intégré de poly et le registre communautaire pour ce qu'aucun des trois ne propose. Voir le tableau des adapters plus haut.",
+      faq_a2: "pip, npm, Homebrew, cargo, go, gem, apt, dnf, pacman, winget et Chocolatey, plus le catalogue tap intégré de poly et le registre communautaire pour ce qu'aucun des autres ne propose. Voir le tableau des adapters plus haut.",
       faq_q3: "Les paquets communautaires sont-ils sûrs à installer ?",
       faq_a3: 'Il n\'y a pas de scan anti-malware automatique. Un paquet marqué du badge "safe" a été vérifié manuellement par l\'équipe Poly ; pour le reste, n\'installe que depuis des publieurs en qui tu as confiance. La vérification SHA-256 à l\'installation protège seulement contre la corruption ou l\'altération en transit, pas contre un upload malveillant.',
       faq_q4: "Faut-il un compte pour utiliser poly ?",

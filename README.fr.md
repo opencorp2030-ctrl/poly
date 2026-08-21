@@ -86,6 +86,17 @@ avec un préfixe :
 | `poly install npm:lodash` | `npm install -g lodash` forcé |
 | `poly install cargo:ripgrep` | `cargo install ripgrep` forcé |
 | `poly install go:golang.org/x/tools/cmd/goimports` | `go install <module>@latest` forcé |
+| `poly install gem:rails` | `gem install rails` forcé |
+| `poly install apt:ripgrep` | `apt-get install ripgrep` forcé (Debian/Ubuntu) |
+| `poly install dnf:ripgrep` | `dnf install ripgrep` forcé (Fedora/RHEL) |
+| `poly install pacman:ripgrep` | `pacman -S ripgrep` forcé (Arch) |
+| `poly install winget:BurntSushi.ripgrep` | `winget install --exact` forcé (Windows) |
+| `poly install choco:ripgrep` | `choco install ripgrep` forcé (Windows) |
+
+`gem`, `apt`, `dnf`, `pacman`, `winget` et `choco` ne sont accessibles
+que via leur préfixe explicite, comme `community` et `gh` plus bas —
+jamais essayés automatiquement, pour qu'un paquet système ou une gem ne
+masque jamais silencieusement la chaîne tap/brew/pip/npm/cargo/go.
 
 Ajoute `@version` pour figer une version : `poly install requests@2.31.0`.
 pip, npm et cargo la transmettent directement ; l'adapter tap n'offre
@@ -177,6 +188,26 @@ de formule.
   téléchargement, vérifiés par un checksum SHA-256, puis extraits
   (`.tar.gz`/`.zip`) ou copiés dans `~/.poly/bin`. Pas besoin de
   runtime Python, Node, Rust, ou Homebrew.
+- **gem** — appelle `gem install`/`gem uninstall` en local. La recherche
+  interroge l'API publique `rubygems.org/api/v1/gems/<name>.json`.
+  Uniquement via le préfixe explicite `gem:`, comme `cargo`/`go`.
+- **apt** — appelle `apt-get install`/`apt-get remove` en local sur
+  Debian/Ubuntu. La recherche lit la sortie locale de `apt-cache show`,
+  sans appel réseau. Uniquement via le préfixe explicite `apt:` —
+  résoudre un nom nu vers un paquet système surprendrait sur Linux.
+- **dnf** — même principe sur Fedora/RHEL, via `dnf install`/`dnf
+  remove` et `dnf info`. Uniquement via le préfixe explicite `dnf:`.
+- **pacman** — même principe sur Arch, via `pacman -S`/`pacman -R` et
+  `pacman -Si` contre les dépôts synchronisés (pas l'AUR). Uniquement
+  via le préfixe explicite `pacman:` ; pacman n'a pas de moyen intégré
+  de figer une version arbitraire depuis les dépôts standards, donc les
+  versions figées sont refusées.
+- **winget** — appelle `winget install --exact`/`winget uninstall` en
+  local sur Windows. La recherche lit la sortie locale de `winget show
+  --exact`. Uniquement via le préfixe explicite `winget:`.
+- **choco** — appelle `choco install`/`choco uninstall` (Chocolatey) en
+  local sur Windows. La recherche lit la sortie locale de `choco search
+  --exact --limit-output`. Uniquement via le préfixe explicite `choco:`.
 
 ## Ajouter une formule tap
 
@@ -213,7 +244,7 @@ main.go                          point d'entrée
 cmd/                              commandes cobra (install, upgrade, init, info, account, self-update, ...)
 internal/manifest/                lecture/écriture de ~/.poly/manifest.json
 internal/lockfile/                lecture/écriture de poly.json
-internal/adapters/                interface Adapter + implémentations pip, npm, brew, cargo, go, tap
+internal/adapters/                interface Adapter + implémentations pip, npm, brew, cargo, go, tap, gem, apt, dnf, pacman, winget, choco
 internal/registry/embedded/       formules tap intégrées au binaire
 internal/account/                 client Supabase Auth (login/formule/profil)
 internal/selfupdate/              télécharge + vérifie + remplace le binaire poly
@@ -225,9 +256,9 @@ scripts/build-all.sh              build cross-plateforme pour les releases
 ## État
 
 Fonctionne : install/remove/list/search/info/upgrade/init sur pip, npm,
-brew, cargo, go et tap ; version figée ; auto-update et (Pro) upgrade
-auto des paquets ; installeurs macOS/Windows ; système de compte
-Supabase avec annuaire communautaire. Pas encore construit : installeurs
-signés/notariés, une UI de recherche couvrant le catalogue complet de
-chaque adapter (vs. recherche par nom exact), et les gestionnaires de
-paquets des distros Linux (apt/dnf/pacman).
+brew, cargo, go, tap, gem, apt, dnf, pacman, winget et choco ; version
+figée (là où le backend le permet) ; auto-update et (Pro) upgrade auto
+des paquets ; installeurs macOS/Windows ; système de compte Supabase
+avec annuaire communautaire. Pas encore construit : installeurs
+signés/notariés, et une UI de recherche couvrant le catalogue complet de
+chaque adapter (vs. recherche par nom exact).

@@ -84,6 +84,17 @@ that reports the package exists. Force a specific backend with a prefix:
 | `poly install npm:lodash` | forced `npm install -g lodash` |
 | `poly install cargo:ripgrep` | forced `cargo install ripgrep` |
 | `poly install go:golang.org/x/tools/cmd/goimports` | forced `go install <module>@latest` |
+| `poly install gem:rails` | forced `gem install rails` |
+| `poly install apt:ripgrep` | forced `apt-get install ripgrep` (Debian/Ubuntu) |
+| `poly install dnf:ripgrep` | forced `dnf install ripgrep` (Fedora/RHEL) |
+| `poly install pacman:ripgrep` | forced `pacman -S ripgrep` (Arch) |
+| `poly install winget:BurntSushi.ripgrep` | forced `winget install --exact` (Windows) |
+| `poly install choco:ripgrep` | forced `choco install ripgrep` (Windows) |
+
+`gem`, `apt`, `dnf`, `pacman`, `winget`, and `choco` are explicit-prefix
+only, like `community` and `gh` below — never auto-resolved, so a
+system package or a single-language gem can't silently shadow the
+tap/brew/pip/npm/cargo/go chain.
 
 Append `@version` to pin: `poly install requests@2.31.0`. pip, npm, and
 cargo pass that straight through; the tap adapter only offers the
@@ -173,6 +184,25 @@ lives.
   live byte-progress bar during download, verified against a SHA-256
   checksum, then extracted (`.tar.gz`/`.zip`) or copied into
   `~/.poly/bin`. No Python, Node, Rust, or Homebrew needed.
+- **gem** — shells out to a local `gem install`/`gem uninstall`. Search
+  hits the public `rubygems.org/api/v1/gems/<name>.json` API. Explicit
+  `gem:` prefix only, like `cargo`/`go`.
+- **apt** — shells out to a local `apt-get install`/`apt-get remove` on
+  Debian/Ubuntu. Search reads local `apt-cache show` output, no network
+  call needed. Explicit `apt:` prefix only — auto-resolving a bare name
+  to a system package would be a surprise on Linux.
+- **dnf** — same idea on Fedora/RHEL, via `dnf install`/`dnf remove` and
+  `dnf info`. Explicit `dnf:` prefix only.
+- **pacman** — same idea on Arch, via `pacman -S`/`pacman -R` and
+  `pacman -Si` against the synced repos (not the AUR). Explicit
+  `pacman:` prefix only; pacman has no built-in way to pin an arbitrary
+  version from the regular repos, so version pins are rejected.
+- **winget** — shells out to a local `winget install --exact`/`winget
+  uninstall` on Windows. Search reads local `winget show --exact`
+  output. Explicit `winget:` prefix only.
+- **choco** — shells out to a local `choco install`/`choco uninstall`
+  (Chocolatey) on Windows. Search reads local `choco search --exact
+  --limit-output` output. Explicit `choco:` prefix only.
 
 ## Adding a tap formula
 
@@ -208,7 +238,7 @@ main.go                          entrypoint
 cmd/                              cobra commands (install, upgrade, init, info, account, self-update, ...)
 internal/manifest/                ~/.poly/manifest.json read/write
 internal/lockfile/                poly.json read/write
-internal/adapters/                Adapter interface + pip, npm, brew, cargo, go, tap implementations
+internal/adapters/                Adapter interface + pip, npm, brew, cargo, go, tap, gem, apt, dnf, pacman, winget, choco implementations
 internal/registry/embedded/       tap formulas built into the binary
 internal/account/                 Supabase Auth client (login/plan/profile)
 internal/selfupdate/              downloads + verifies + replaces the poly binary
@@ -220,9 +250,9 @@ scripts/build-all.sh              cross-platform release build
 ## Status
 
 Working: install/remove/list/search/info/upgrade/init across pip, npm,
-brew, cargo, go, and tap; version pinning; automatic self-update and
-(Pro) automatic package upgrades; macOS/Windows installers; a Supabase-
-backed account system with a community directory. Not yet built: signed/
-notarized installers, a package search UI covering every adapter's full
-catalog (vs. exact-name lookups), and Linux distro package managers
-(apt/dnf/pacman).
+brew, cargo, go, tap, gem, apt, dnf, pacman, winget, and choco; version
+pinning (where the backend supports it); automatic self-update and (Pro)
+automatic package upgrades; macOS/Windows installers; a Supabase-backed
+account system with a community directory. Not yet built: signed/
+notarized installers and a package search UI covering every adapter's
+full catalog (vs. exact-name lookups).
