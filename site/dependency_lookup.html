@@ -1,0 +1,2705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Dependency Lookup · Poly</title>
+
+<link rel="icon" href="logo.png" />
+<link rel="apple-touch-icon" href="logo.png" />
+<link rel="manifest" href="site.webmanifest" />
+
+<meta name="description" content="Look up dependencies across every Poly-supported registry." />
+<link rel="canonical" href="https://poly.candygate.eu/dependency-lookup" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Dependency Lookup · Poly" />
+<meta property="og:description" content="Look up dependencies across every Poly-supported registry." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/dependency-lookup" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Dependency Lookup · Poly" />
+<meta name="twitter:description" content="Look up dependencies across every Poly-supported registry." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+
+<style>
+:root {
+  --ink:#14171d;
+  --ink-raised:#1b1f27;
+  --border:rgba(255,255,255,.10);
+  --text:#e9e4d8;
+  --text-dim:#9c9686;
+  --accent:#f0a93e;
+  --accent-ink:#14171d;
+  --danger:#e0664a;
+  --ok:#6fbf8b;
+
+  --mono:ui-monospace,"SF Mono","Cascadia Code","JetBrains Mono",Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+
+  --container:1080px;
+  color-scheme:dark;
+}
+
+:root[data-theme="light"] {
+  --ink:#eff1f4;
+  --ink-raised:#fff;
+  --border:rgba(20,23,29,.10);
+  --text:#1b1e24;
+  --text-dim:#5b6270;
+  --accent:#a8660a;
+  --accent-ink:#fff;
+  color-scheme:light;
+}
+
+@media(prefers-color-scheme:light) {
+  :root:not([data-theme="dark"]) {
+    --ink:#eff1f4;
+    --ink-raised:#fff;
+    --border:rgba(20,23,29,.10);
+    --text:#1b1e24;
+    --text-dim:#5b6270;
+    --accent:#a8660a;
+    --accent-ink:#fff;
+    color-scheme:light;
+  }
+}
+
+* {
+  box-sizing:border-box;
+}
+
+html,
+body {
+  margin:0;
+  padding:0;
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+body {
+  font-size:16px;
+  line-height:1.6;
+  min-height:100vh;
+}
+
+a {
+  color:var(--accent);
+  text-decoration:none;
+}
+
+a:hover {
+  text-decoration:underline;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+.skip-link {
+  position:absolute;
+  left:-9999px;
+  top:0;
+  background:var(--accent);
+  color:var(--accent-ink);
+  padding:.6rem 1rem;
+  z-index:1000;
+  font-family:var(--mono);
+  font-size:.85rem;
+  border-radius:0 0 8px 0;
+}
+
+.skip-link:focus {
+  left:0;
+}
+
+.wrap {
+  max-width:var(--container);
+  margin:0 auto;
+  padding-left:clamp(1.25rem,4vw,2rem);
+  padding-right:clamp(1.25rem,4vw,2rem);
+}
+
+/* HEADER */
+
+header.top {
+  border-bottom:1px solid var(--border);
+}
+
+header.top .wrap {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  min-height:64px;
+}
+
+.wordmark {
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:1.05rem;
+  letter-spacing:-.02em;
+  color:var(--text);
+}
+
+.wordmark span {
+  color:var(--accent);
+}
+
+nav.top-links {
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  font-family:var(--mono);
+  font-size:.85rem;
+}
+
+nav.top-links a {
+  color:var(--text-dim);
+}
+
+nav.top-links a:hover,
+nav.top-links a.current {
+  color:var(--accent);
+}
+
+.header-actions {
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  flex-shrink:0;
+}
+
+.nav-toggle {
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--ink-raised);
+  cursor:pointer;
+  padding:0;
+}
+
+.nav-toggle span {
+  display:block;
+  width:16px;
+  height:2px;
+  background:var(--text);
+  border-radius:1px;
+}
+
+@media(max-width:960px) {
+  .nav-toggle {
+    display:flex;
+  }
+
+  header.top .wrap {
+    position:relative;
+  }
+
+  nav.top-links {
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    background:var(--ink-raised);
+    border-bottom:1px solid var(--border);
+    padding:.4rem clamp(1.25rem,4vw,2rem) .9rem;
+    z-index:40;
+  }
+
+  nav.top-links.open {
+    display:flex;
+  }
+
+  nav.top-links a {
+    padding:.65rem 0;
+    border-bottom:1px solid var(--border);
+  }
+
+  nav.top-links a:last-child {
+    border-bottom:none;
+  }
+}
+
+/* USER */
+
+.user-menu {
+  position:relative;
+  display:none;
+}
+
+.user-menu-btn {
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:var(--ink-raised);
+  cursor:pointer;
+  padding:0;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.user-menu-btn img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.user-menu-btn .initial {
+  font-family:var(--mono);
+  font-size:.85rem;
+  color:var(--text-dim);
+}
+
+.user-menu-dropdown {
+  position:absolute;
+  top:calc(100% + .5rem);
+  right:0;
+  min-width:190px;
+  background:var(--ink-raised);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:.4rem;
+  display:none;
+  flex-direction:column;
+  gap:.1rem;
+  z-index:50;
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+}
+
+.user-menu-dropdown.open {
+  display:flex;
+}
+
+.user-menu-name {
+  font-family:var(--mono);
+  font-size:.76rem;
+  color:var(--text-dim);
+  padding:.4rem .6rem .55rem;
+  border-bottom:1px solid var(--border);
+  margin-bottom:.3rem;
+  overflow-wrap:anywhere;
+}
+
+.user-menu-item {
+  display:block;
+  text-align:left;
+  width:100%;
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-family:var(--sans);
+  font-size:.85rem;
+  color:var(--text);
+  padding:.45rem .6rem;
+  border-radius:6px;
+  text-decoration:none;
+}
+
+.user-menu-item:hover {
+  background:var(--ink);
+}
+
+.user-menu-item.danger {
+  color:var(--danger);
+}
+
+/* MAIN */
+
+main {
+  padding:clamp(2.5rem,6vw,4.5rem) 0 5rem;
+}
+
+.eyebrow {
+  font-family:var(--mono);
+  font-size:.75rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin:0 0 .9rem;
+}
+
+h1 {
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:clamp(1.9rem,4vw,2.6rem);
+  letter-spacing:-.02em;
+  margin:0 0 .6rem;
+}
+
+.lede {
+  color:var(--text-dim);
+  max-width:68ch;
+  margin:0 0 2rem;
+  font-size:1.05rem;
+}
+
+/* SEARCH */
+
+.search-box {
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  background:var(--ink-raised);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:.9rem 1.1rem;
+  margin-bottom:.75rem;
+}
+
+.search-box:focus-within {
+  border-color:var(--accent);
+}
+
+.search-box input {
+  flex:1;
+  border:none;
+  background:none;
+  outline:none;
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:1rem;
+  min-width:0;
+}
+
+.search-box svg {
+  color:var(--text-dim);
+  flex-shrink:0;
+}
+
+.search-hint {
+  font-size:.8rem;
+  color:var(--text-dim);
+  margin:0 0 1.5rem;
+}
+
+.search-hint code {
+  font-family:var(--mono);
+  background:var(--ink-raised);
+  padding:.1rem .35rem;
+  border-radius:3px;
+}
+
+/* TOOLBAR */
+
+.results-toolbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:1rem;
+  flex-wrap:wrap;
+}
+
+.registry-filters {
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  flex-wrap:wrap;
+}
+
+.registry-filter {
+  border:1px solid var(--border);
+  background:var(--ink-raised);
+  color:var(--text-dim);
+  font-family:var(--mono);
+  font-size:.72rem;
+  padding:.4rem .65rem;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.registry-filter:hover {
+  color:var(--text);
+  border-color:var(--accent);
+}
+
+.registry-filter.active {
+  color:var(--accent-ink);
+  background:var(--accent);
+  border-color:var(--accent);
+}
+
+.sort-box {
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+
+.sort-box label {
+  color:var(--text-dim);
+  font-family:var(--mono);
+  font-size:.72rem;
+}
+
+.sort-box select {
+  border:1px solid var(--border);
+  background:var(--ink-raised);
+  color:var(--text);
+  border-radius:6px;
+  padding:.4rem .55rem;
+  font-family:var(--mono);
+  font-size:.72rem;
+}
+
+/* STATUS */
+
+.results-status {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  margin-bottom:.75rem;
+  color:var(--text-dim);
+  font-family:var(--mono);
+  font-size:.72rem;
+}
+
+.status-left {
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+
+.status-dot {
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--border);
+}
+
+.status-dot.loading {
+  background:var(--accent);
+}
+
+.status-dot.ready {
+  background:var(--ok);
+}
+
+/* RESULTS */
+
+.dependency-list {
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  background:var(--ink-raised);
+}
+
+.dependency-row {
+  border-bottom:1px solid var(--border);
+}
+
+.dependency-row:last-child {
+  border-bottom:none;
+}
+
+.dependency-head {
+  width:100%;
+  border:0;
+  background:none;
+  color:var(--text);
+  cursor:pointer;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 150px 120px 28px;
+  gap:1rem;
+  align-items:center;
+  padding:.85rem 1rem;
+  text-align:left;
+}
+
+.dependency-head:hover {
+  background:var(--ink);
+}
+
+.dependency-name {
+  min-width:0;
+}
+
+.name-line {
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+  flex-wrap:wrap;
+}
+
+.package-name {
+  font-weight:600;
+  font-size:.92rem;
+  overflow-wrap:anywhere;
+}
+
+.package-summary {
+  color:var(--text-dim);
+  font-size:.75rem;
+  margin-top:.15rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.registry-badge {
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  font-family:var(--mono);
+  font-size:.62rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  padding:.12rem .4rem;
+  border-radius:999px;
+  border:1px solid var(--border);
+  color:var(--text-dim);
+}
+
+.package-version {
+  font-family:var(--mono);
+  font-size:.76rem;
+  color:var(--accent);
+  overflow-wrap:anywhere;
+}
+
+.package-meta {
+  font-family:var(--mono);
+  font-size:.68rem;
+  color:var(--text-dim);
+}
+
+.chevron {
+  color:var(--text-dim);
+  transition:transform .15s ease;
+}
+
+.dependency-row.open .chevron {
+  transform:rotate(90deg);
+}
+
+.dependency-body {
+  display:none;
+  border-top:1px solid var(--border);
+  padding:1rem;
+}
+
+.dependency-row.open .dependency-body {
+  display:block;
+}
+
+.details-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.75rem;
+  margin-bottom:1rem;
+}
+
+.detail {
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:.7rem;
+}
+
+.detail-label {
+  font-family:var(--mono);
+  font-size:.65rem;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--text-dim);
+  margin-bottom:.25rem;
+}
+
+.detail-value {
+  font-size:.82rem;
+  overflow-wrap:anywhere;
+}
+
+.install-command {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  background:var(--ink);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:.65rem .75rem;
+  cursor:pointer;
+}
+
+.install-command:hover {
+  border-color:var(--accent);
+}
+
+.install-command code {
+  font-family:var(--mono);
+  font-size:.75rem;
+  overflow-x:auto;
+  white-space:nowrap;
+}
+
+.copy-label {
+  flex-shrink:0;
+  color:var(--text-dim);
+  font-family:var(--mono);
+  font-size:.65rem;
+}
+
+.package-links {
+  display:flex;
+  gap:1rem;
+  flex-wrap:wrap;
+  margin-top:.7rem;
+  font-size:.76rem;
+}
+
+.official-badge {
+  display:inline-flex;
+  vertical-align:middle;
+}
+
+.official-badge svg {
+  width:.85rem;
+  height:.85rem;
+  display:block;
+}
+
+.pkg-badge {
+  font-family:var(--mono);
+  font-size:.6rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  padding:.1rem .4rem;
+  border-radius:999px;
+  vertical-align:middle;
+  color:#fff;
+  display:inline-block;
+}
+
+.pkg-badge.pkg-new {
+  background:var(--accent);
+  color:var(--accent-ink);
+}
+
+.pkg-badge.pkg-safe {
+  background:#218f5c;
+}
+
+/* EMPTY */
+
+.empty-results {
+  padding:3rem 1rem;
+  text-align:center;
+  color:var(--text-dim);
+}
+
+.empty-results strong {
+  display:block;
+  color:var(--text);
+  font-family:var(--mono);
+  margin-bottom:.35rem;
+}
+
+.load-more {
+  width:100%;
+  margin-top:.75rem;
+  border:1px solid var(--border);
+  background:var(--ink-raised);
+  color:var(--text);
+  border-radius:7px;
+  padding:.7rem;
+  font-family:var(--mono);
+  font-size:.75rem;
+  cursor:pointer;
+}
+
+.load-more:hover {
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+/* CTA */
+
+.cta-row {
+  margin-top:3rem;
+  text-align:center;
+}
+
+.cta-row p {
+  color:var(--text-dim);
+  font-size:.9rem;
+  margin-bottom:.75rem;
+}
+
+.btn {
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:.9rem;
+  font-weight:600;
+  padding:.65rem 1.2rem;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:var(--accent);
+  color:var(--accent-ink);
+}
+
+.btn:hover {
+  opacity:.92;
+  text-decoration:none;
+}
+
+/* FOOTER */
+
+footer.site-footer {
+  padding:2.5rem 0 3.5rem;
+  margin-top:2rem;
+  border-top:1px solid var(--border);
+  color:var(--text-dim);
+  font-size:.85rem;
+}
+
+footer.site-footer .wrap {
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:1rem;
+}
+
+.footer-brand a {
+  color:var(--text-dim);
+  margin-left:.3rem;
+}
+
+.footer-brand a:hover {
+  color:var(--accent);
+}
+
+.footer-links {
+  display:flex;
+  gap:1.25rem;
+}
+
+.footer-links a {
+  color:var(--text-dim);
+}
+
+.footer-links a:hover {
+  color:var(--accent);
+}
+
+/* COOKIE */
+
+.cookie-banner {
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:200;
+  background:var(--ink-raised);
+  border-top:1px solid var(--border);
+  box-shadow:0 -4px 20px rgba(0,0,0,.25);
+  display:none;
+}
+
+.cookie-banner.show {
+  display:block;
+}
+
+.cookie-banner-inner {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+  flex-wrap:wrap;
+  padding:1rem clamp(1.25rem,4vw,2rem);
+}
+
+.cookie-banner p {
+  margin:0;
+  font-size:.85rem;
+  color:var(--text-dim);
+  max-width:60ch;
+}
+
+.cookie-actions {
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+.cookie-actions a {
+  font-size:.82rem;
+  color:var(--text-dim);
+}
+
+.cookie-actions button {
+  font-family:var(--mono);
+  font-size:.8rem;
+  font-weight:700;
+  padding:.5rem 1rem;
+  background:var(--accent);
+  color:var(--accent-ink);
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* MOBILE */
+
+@media(max-width:700px) {
+  .dependency-head {
+    grid-template-columns:minmax(0,1fr) 90px 24px;
+  }
+
+  .dependency-head .package-meta {
+    display:none;
+  }
+
+  .details-grid {
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:520px) {
+  .results-toolbar {
+    align-items:stretch;
+  }
+
+  .registry-filters {
+    width:100%;
+  }
+
+  .sort-box {
+    width:100%;
+  }
+
+  .sort-box select {
+    flex:1;
+  }
+
+  .dependency-head {
+    grid-template-columns:minmax(0,1fr) 75px 20px;
+    gap:.5rem;
+    padding:.75rem;
+  }
+
+  .package-summary {
+    max-width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+
+    <a href="/" class="wordmark">poly<span>&gt;</span></a>
+
+    <nav class="top-links" id="top-links">
+      <a href="dependencies" class="current">dependencies</a>
+      <a href="docs">docs</a>
+      <a href="community">community</a>
+      <a href="integrations">integrations</a>
+      <a href="search">search</a>
+      <a href="account">account</a>
+      <a href="https://github.com/opencorp2030-ctrl/poly">github</a>
+    </nav>
+
+    <div class="header-actions">
+
+      <button
+        type="button"
+        class="nav-toggle"
+        id="nav-toggle"
+        aria-label="Menu"
+        aria-expanded="false"
+        aria-controls="top-links">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="user-menu" id="user-menu">
+
+        <button
+          type="button"
+          class="user-menu-btn"
+          id="user-menu-btn"
+          aria-haspopup="true"
+          aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+
+        <div class="user-menu-dropdown" id="user-menu-dropdown">
+
+          <div class="user-menu-name" id="user-menu-name">…</div>
+
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+
+          <button
+            type="button"
+            class="user-menu-item danger"
+            id="user-menu-signout">
+            Sign out
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+(function(){
+
+  const toggle = document.getElementById('nav-toggle');
+  const links = document.getElementById('top-links');
+
+  toggle.addEventListener('click', function(){
+
+    const open = links.classList.toggle('open');
+
+    toggle.setAttribute(
+      'aria-expanded',
+      open ? 'true' : 'false'
+    );
+
+  });
+
+  links.querySelectorAll('a').forEach(function(a){
+
+    a.addEventListener('click', function(){
+
+      links.classList.remove('open');
+
+      toggle.setAttribute(
+        'aria-expanded',
+        'false'
+      );
+
+    });
+
+  });
+
+})();
+</script>
+
+<main id="main">
+
+<div class="wrap">
+
+  <p class="eyebrow">Dependency Lookup</p>
+
+  <h1>Search every registry at once</h1>
+
+  <p class="lede">
+    Search Poly's built-in catalog, Homebrew, PyPI, npm, crates.io,
+    Go modules, and the Poly community registry from one place.
+  </p>
+
+  <div class="search-box">
+
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true">
+
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+
+    </svg>
+
+    <input
+      id="search-input"
+      type="text"
+      autocomplete="off"
+      autofocus
+      placeholder="requests, lodash, ripgrep, serde, cobra…" />
+
+  </div>
+
+  <p class="search-hint">
+    Results are gathered directly from the registries Poly supports.
+    Go expects a module path such as
+    <code>github.com/spf13/cobra</code>.
+  </p>
+
+
+  <div class="results-toolbar">
+
+    <div class="registry-filters">
+
+      <button class="registry-filter active" data-filter="all">
+        all
+      </button>
+
+      <button class="registry-filter" data-filter="tap">
+        tap
+      </button>
+
+      <button class="registry-filter" data-filter="brew">
+        brew
+      </button>
+
+      <button class="registry-filter" data-filter="pip">
+        pip
+      </button>
+
+      <button class="registry-filter" data-filter="npm">
+        npm
+      </button>
+
+      <button class="registry-filter" data-filter="cargo">
+        cargo
+      </button>
+
+      <button class="registry-filter" data-filter="go">
+        go
+      </button>
+
+      <button class="registry-filter" data-filter="community">
+        community
+      </button>
+
+    </div>
+
+    <div class="sort-box">
+
+      <label for="sort-select">sort</label>
+
+      <select id="sort-select">
+        <option value="name-asc">Name A → Z</option>
+        <option value="name-desc">Name Z → A</option>
+        <option value="registry">Registry</option>
+        <option value="version">Version</option>
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <div class="results-status">
+
+    <div class="status-left">
+
+      <span class="status-dot" id="status-dot"></span>
+
+      <span id="results-status">
+        Type a package name to search.
+      </span>
+
+    </div>
+
+    <span id="result-count"></span>
+
+  </div>
+
+
+  <section
+    id="dependency-list"
+    class="dependency-list"
+    aria-live="polite">
+
+    <div class="empty-results">
+
+      <strong>No dependency selected</strong>
+
+      Start typing above to search every supported registry.
+
+    </div>
+
+  </section>
+
+
+  <button
+    type="button"
+    id="load-more"
+    class="load-more"
+    style="display:none">
+
+    Show more results
+
+  </button>
+
+
+  <div class="cta-row">
+
+    <p>
+      Published something of your own?
+      Ship it to the Poly community registry.
+    </p>
+
+    <a class="btn" href="docs#registry">
+      poly send name version path →
+    </a>
+
+  </div>
+
+</div>
+
+</main>
+
+
+<footer class="site-footer">
+
+  <div class="wrap">
+
+    <span class="footer-brand">
+      Poly is open source, MIT licensed.
+      <a
+        href="https://github.com/opencorp2030-ctrl/poly"
+        target="_blank"
+        rel="noopener">
+        GitHub
+      </a>
+    </span>
+
+    <nav class="footer-links">
+      <a href="terms">Terms</a>
+      <a href="privacy">Privacy</a>
+      <a href="/.well-known/security.txt">Security</a>
+    </nav>
+
+  </div>
+
+</footer>
+
+
+<div class="cookie-banner" id="cookie-banner">
+
+  <div class="wrap cookie-banner-inner">
+
+    <p>
+      Poly only uses essential local storage for your session,
+      theme, and language preference. No tracking, no ads,
+      no third-party cookies.
+    </p>
+
+    <div class="cookie-actions">
+
+      <a href="privacy">Learn more</a>
+
+      <button type="button" id="cookie-dismiss">
+        Got it
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+  createClient
+} from 'https://esm.sh/@supabase/supabase-js@2';
+
+
+/* ============================================================
+   SUPABASE
+   ============================================================ */
+
+const SUPABASE_URL =
+  'https://iuymslcbbrbahxbfuzrr.supabase.co';
+
+const SUPABASE_ANON_KEY =
+  'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
+
+const supabase =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+let results = [];
+
+let activeFilter = 'all';
+
+let currentVisible = 30;
+
+let debounce = null;
+
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+function escapeHtml(value) {
+
+  const div = document.createElement('div');
+
+  div.textContent =
+    value == null ? '' : String(value);
+
+  return div.innerHTML;
+}
+
+
+function setStatus(text, state = '') {
+
+  document.getElementById(
+    'results-status'
+  ).textContent = text;
+
+  const dot =
+    document.getElementById('status-dot');
+
+  dot.className = 'status-dot';
+
+  if (state) {
+    dot.classList.add(state);
+  }
+
+}
+
+
+function registryName(source) {
+
+  const names = {
+    tap: 'tap',
+    brew: 'brew',
+    pip: 'pip',
+    npm: 'npm',
+    cargo: 'cargo',
+    go: 'go',
+    community: 'community'
+  };
+
+  return names[source] || source;
+
+}
+
+
+function addResult(result) {
+
+  results.push(result);
+
+}
+
+
+/* ============================================================
+   BUILT-IN TAP
+   ============================================================ */
+
+const BUILTIN_TAPS = {
+
+  ripgrep: {
+    version: '15.1.0',
+    desc:
+      'Line-oriented search tool that recursively searches directories for a regex pattern'
+  },
+
+  fd: {
+    version: '10.4.2',
+    desc:
+      'A simple, fast and user-friendly alternative to find'
+  },
+
+  jq: {
+    version: '1.8.2',
+    desc:
+      'Lightweight and flexible command-line JSON processor'
+  }
+
+};
+
+
+async function searchTap(q) {
+
+  const hit =
+    BUILTIN_TAPS[q.toLowerCase()];
+
+  if (!hit) return;
+
+  addResult({
+
+    source: 'tap',
+
+    name: q,
+
+    version: hit.version,
+
+    summary: hit.desc,
+
+    install: 'tap:' + q,
+
+    meta: 'local embedded formula'
+
+  });
+
+}
+
+
+/* ============================================================
+   HOMEBREW
+   ============================================================ */
+
+async function searchBrew(q) {
+
+  try {
+
+    const resp =
+      await fetch(
+        'https://formulae.brew.sh/api/formula/' +
+        encodeURIComponent(q) +
+        '.json'
+      );
+
+    if (resp.status === 404) return;
+
+    if (!resp.ok)
+      throw new Error();
+
+    const data =
+      await resp.json();
+
+    addResult({
+
+      source: 'brew',
+
+      name: data.name || q,
+
+      version:
+        data.versions &&
+        data.versions.stable,
+
+      summary: data.desc,
+
+      install: 'brew:' + q,
+
+      meta: 'Homebrew formula',
+
+      homepage: data.homepage
+
+    });
+
+  } catch {}
+
+}
+
+
+/* ============================================================
+   PYPI
+   ============================================================ */
+
+async function searchPip(q) {
+
+  try {
+
+    const resp =
+      await fetch(
+        'https://pypi.org/pypi/' +
+        encodeURIComponent(q) +
+        '/json'
+      );
+
+    if (resp.status === 404) return;
+
+    if (!resp.ok)
+      throw new Error();
+
+    const data =
+      await resp.json();
+
+    addResult({
+
+      source: 'pip',
+
+      name: data.info.name || q,
+
+      version: data.info.version,
+
+      summary: data.info.summary,
+
+      install: 'pip:' + q,
+
+      meta: 'PyPI',
+
+      homepage:
+        data.info.home_page ||
+        data.info.project_url
+
+    });
+
+  } catch {}
+
+}
+
+
+/* ============================================================
+   NPM
+   ============================================================ */
+
+async function searchNpm(q) {
+
+  try {
+
+    const resp =
+      await fetch(
+        'https://registry.npmjs.org/' +
+        encodeURIComponent(q) +
+        '/latest'
+      );
+
+    if (resp.status === 404) return;
+
+    if (!resp.ok)
+      throw new Error();
+
+    const data =
+      await resp.json();
+
+    addResult({
+
+      source: 'npm',
+
+      name: data.name || q,
+
+      version: data.version,
+
+      summary: data.description,
+
+      install: 'npm:' + q,
+
+      meta: 'npm registry'
+
+    });
+
+  } catch {}
+
+}
+
+
+/* ============================================================
+   CRATES.IO
+   ============================================================ */
+
+async function searchCargo(q) {
+
+  try {
+
+    const resp =
+      await fetch(
+        'https://crates.io/api/v1/crates/' +
+        encodeURIComponent(q)
+      );
+
+    if (resp.status === 404) return;
+
+    if (!resp.ok)
+      throw new Error();
+
+    const data =
+      await resp.json();
+
+    addResult({
+
+      source: 'cargo',
+
+      name:
+        data.crate.name || q,
+
+      version:
+        data.crate.newest_version,
+
+      summary:
+        data.crate.description,
+
+      install:
+        'cargo:' + q,
+
+      meta:
+        'crates.io',
+
+      homepage:
+        data.crate.homepage
+
+    });
+
+  } catch {}
+
+}
+
+
+/* ============================================================
+   GO MODULES
+   ============================================================ */
+
+async function searchGo(q) {
+
+  try {
+
+    const resp =
+      await fetch(
+        'https://proxy.golang.org/' +
+        q +
+        '/@latest'
+      );
+
+    if (resp.status === 404) return;
+
+    if (!resp.ok)
+      throw new Error();
+
+    const data =
+      await resp.json();
+
+    const version =
+      data.Version || '';
+
+    const time =
+      data.Time
+        ? new Date(data.Time)
+            .toISOString()
+            .slice(0,10)
+        : '';
+
+    addResult({
+
+      source: 'go',
+
+      name: q,
+
+      version,
+
+      summary: 'Go module',
+
+      install:
+        'go:' + q + '@' + version,
+
+      meta:
+        time
+          ? 'published ' + time
+          : 'Go module proxy'
+
+    });
+
+  } catch {}
+
+}
+
+
+/* ============================================================
+   COMMUNITY / SUPABASE
+   ============================================================ */
+
+async function searchCommunity(q) {
+
+  try {
+
+    const {
+      data,
+      error
+    } = await supabase
+
+      .from(
+        'community_packages_public'
+      )
+
+      .select(
+        'name,version,description,uploader_username,download_count,is_official,badges'
+      )
+
+      .ilike(
+        'name',
+        '%' + q + '%'
+      )
+
+      .limit(50);
+
+
+    if (
+      error ||
+      !data ||
+      !data.length
+    ) {
+      return;
+    }
+
+
+    data.forEach(function(p) {
+
+      addResult({
+
+        source: 'community',
+
+        name: p.name,
+
+        version: p.version,
+
+        summary: p.description,
+
+        install:
+          'community:' + p.name,
+
+        meta:
+          Number(
+            p.download_count || 0
+          ).toLocaleString() +
+          ' downloads',
+
+        uploader:
+          p.uploader_username,
+
+        official:
+          p.is_official,
+
+        badges:
+          p.badges || [],
+
+        packageUrl:
+          'package?name=' +
+          encodeURIComponent(p.name),
+
+        profileUrl:
+          p.uploader_username
+            ? 'profile?u=' +
+              encodeURIComponent(
+                p.uploader_username
+              )
+            : null
+
+      });
+
+    });
+
+  } catch {}
+
+}
+
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+
+async function runSearch(q) {
+
+  results = [];
+
+  currentVisible = 30;
+
+  if (!q) {
+
+    render();
+
+    setStatus(
+      'Type a package name to search.',
+      ''
+    );
+
+    return;
+
+  }
+
+
+  setStatus(
+    'Searching all registries…',
+    'loading'
+  );
+
+
+  await Promise.allSettled([
+
+    searchTap(q),
+
+    searchBrew(q),
+
+    searchPip(q),
+
+    searchNpm(q),
+
+    searchCargo(q),
+
+    searchGo(q),
+
+    searchCommunity(q)
+
+  ]);
+
+
+  setStatus(
+    'Search complete.',
+    'ready'
+  );
+
+
+  render();
+
+}
+
+
+/* ============================================================
+   SORTING
+   ============================================================ */
+
+function getFilteredResults() {
+
+  let filtered =
+    activeFilter === 'all'
+      ? [...results]
+      : results.filter(
+          r => r.source === activeFilter
+        );
+
+
+  const sort =
+    document.getElementById(
+      'sort-select'
+    ).value;
+
+
+  filtered.sort(function(a,b) {
+
+    if (sort === 'name-asc') {
+
+      return a.name.localeCompare(
+        b.name,
+        undefined,
+        { sensitivity:'base' }
+      );
+
+    }
+
+
+    if (sort === 'name-desc') {
+
+      return b.name.localeCompare(
+        a.name,
+        undefined,
+        { sensitivity:'base' }
+      );
+
+    }
+
+
+    if (sort === 'registry') {
+
+      return a.source.localeCompare(
+        b.source
+      );
+
+    }
+
+
+    if (sort === 'version') {
+
+      return String(
+        b.version || ''
+      ).localeCompare(
+        String(a.version || ''),
+        undefined,
+        { numeric:true }
+      );
+
+    }
+
+
+    return 0;
+
+  });
+
+
+  return filtered;
+
+}
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+function renderBadges(item) {
+
+  let html = '';
+
+
+  if (item.official) {
+
+    html += `
+      <span
+        class="official-badge"
+        title="Official app">
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true">
+
+          <path
+            fill="#3897f0"
+            d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/>
+
+          <path
+            fill="#fff"
+            d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+
+        </svg>
+
+      </span>
+    `;
+
+  }
+
+
+  if (
+    Array.isArray(item.badges)
+  ) {
+
+    item.badges.forEach(function(b) {
+
+      html += `
+        <span
+          class="pkg-badge pkg-${escapeHtml(b)}">
+
+          ${
+            b === 'safe'
+              ? '✓ '
+              : ''
+          }
+
+          ${escapeHtml(b)}
+
+        </span>
+      `;
+
+    });
+
+  }
+
+
+  return html;
+
+}
+
+
+/* ============================================================
+   RENDER LIST
+   ============================================================ */
+
+function render() {
+
+  const list =
+    document.getElementById(
+      'dependency-list'
+    );
+
+  const count =
+    document.getElementById(
+      'result-count'
+    );
+
+  const loadMore =
+    document.getElementById(
+      'load-more'
+    );
+
+
+  const filtered =
+    getFilteredResults();
+
+
+  count.textContent =
+    filtered.length
+      ? filtered.length +
+        ' result' +
+        (filtered.length === 1
+          ? ''
+          : 's')
+      : '';
+
+
+  if (!filtered.length) {
+
+    list.innerHTML = `
+
+      <div class="empty-results">
+
+        <strong>
+          ${
+            results.length
+              ? 'No results in this registry'
+              : 'No dependencies found'
+          }
+        </strong>
+
+        ${
+          results.length
+            ? 'Try another registry filter.'
+            : 'Try another package name.'
+        }
+
+      </div>
+
+    `;
+
+    loadMore.style.display =
+      'none';
+
+    return;
+
+  }
+
+
+  const visible =
+    filtered.slice(
+      0,
+      currentVisible
+    );
+
+
+  list.innerHTML =
+    visible
+      .map(
+        (item,index) =>
+          renderItem(item,index)
+      )
+      .join('');
+
+
+  loadMore.style.display =
+    filtered.length > currentVisible
+      ? 'block'
+      : 'none';
+
+
+  loadMore.textContent =
+    'Show more results (' +
+    Math.min(
+      30,
+      filtered.length - currentVisible
+    ) +
+    ')';
+
+}
+
+
+/* ============================================================
+   RENDER ITEM
+   ============================================================ */
+
+function renderItem(item,index) {
+
+  const id =
+    'dependency-' + index;
+
+
+  const homepage =
+    item.homepage
+      ? `
+        <a
+          href="${escapeHtml(item.homepage)}"
+          target="_blank"
+          rel="noopener">
+          Homepage →
+        </a>
+      `
+      : '';
+
+
+  const packageLink =
+    item.packageUrl
+      ? `
+        <a href="${item.packageUrl}">
+          Package →
+        </a>
+      `
+      : '';
+
+
+  const profileLink =
+    item.profileUrl
+      ? `
+        <a href="${item.profileUrl}">
+          @${escapeHtml(item.uploader)}
+        </a>
+      `
+      : '';
+
+
+  return `
+
+    <article
+      class="dependency-row"
+      data-source="${escapeHtml(item.source)}">
+
+      <button
+        type="button"
+        class="dependency-head"
+        aria-expanded="false"
+        aria-controls="${id}-body">
+
+        <span class="dependency-name">
+
+          <span class="name-line">
+
+            <span class="package-name">
+              ${escapeHtml(item.name)}
+            </span>
+
+            ${renderBadges(item)}
+
+            <span class="registry-badge">
+              ${escapeHtml(
+                registryName(item.source)
+              )}
+            </span>
+
+          </span>
+
+          ${
+            item.summary
+              ? `
+                <span class="package-summary">
+                  ${escapeHtml(item.summary)}
+                </span>
+              `
+              : ''
+          }
+
+        </span>
+
+
+        <span class="package-version">
+
+          ${escapeHtml(
+            item.version || '—'
+          )}
+
+        </span>
+
+
+        <span class="package-meta">
+
+          ${escapeHtml(
+            item.meta || ''
+          )}
+
+        </span>
+
+
+        <span
+          class="chevron"
+          aria-hidden="true">
+          ▸
+        </span>
+
+      </button>
+
+
+      <div
+        id="${id}-body"
+        class="dependency-body">
+
+        <div class="details-grid">
+
+          <div class="detail">
+
+            <div class="detail-label">
+              Registry
+            </div>
+
+            <div class="detail-value">
+              ${escapeHtml(
+                registryName(item.source)
+              )}
+            </div>
+
+          </div>
+
+
+          <div class="detail">
+
+            <div class="detail-label">
+              Version
+            </div>
+
+            <div class="detail-value">
+              ${escapeHtml(
+                item.version || 'Unknown'
+              )}
+            </div>
+
+          </div>
+
+
+          <div class="detail">
+
+            <div class="detail-label">
+              Description
+            </div>
+
+            <div class="detail-value">
+
+              ${
+                item.summary
+                  ? escapeHtml(
+                      item.summary
+                    )
+                  : 'No description available.'
+              }
+
+            </div>
+
+          </div>
+
+
+          <div class="detail">
+
+            <div class="detail-label">
+              Registry metadata
+            </div>
+
+            <div class="detail-value">
+
+              ${escapeHtml(
+                item.meta || '—'
+              )}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="install-command"
+          data-copy="${escapeHtml(
+            item.install
+          )}">
+
+          <code>
+            poly install
+            ${escapeHtml(
+              item.install
+            )}
+          </code>
+
+          <span class="copy-label">
+            copy
+          </span>
+
+        </div>
+
+
+        <div class="package-links">
+
+          ${homepage}
+
+          ${packageLink}
+
+          ${profileLink}
+
+        </div>
+
+      </div>
+
+    </article>
+
+  `;
+
+}
+
+
+/* ============================================================
+   CLICK HANDLING
+   ============================================================ */
+
+document.addEventListener(
+  'click',
+  function(e) {
+
+
+    const head =
+      e.target.closest(
+        '.dependency-head'
+      );
+
+
+    if (head) {
+
+      const row =
+        head.closest(
+          '.dependency-row'
+        );
+
+      const open =
+        row.classList.toggle(
+          'open'
+        );
+
+
+      head.setAttribute(
+        'aria-expanded',
+        open ? 'true' : 'false'
+      );
+
+      return;
+
+    }
+
+
+    const install =
+      e.target.closest(
+        '.install-command'
+      );
+
+
+    if (install) {
+
+      const command =
+        'poly install ' +
+        install.getAttribute(
+          'data-copy'
+        );
+
+
+      if (
+        navigator.clipboard
+      ) {
+
+        navigator.clipboard
+          .writeText(command)
+          .then(function() {
+
+            const label =
+              install.querySelector(
+                '.copy-label'
+              );
+
+            const old =
+              label.textContent;
+
+            label.textContent =
+              'copied ✓';
+
+            setTimeout(
+              () => {
+                label.textContent =
+                  old;
+              },
+              1200
+            );
+
+          })
+          .catch(function(){});
+
+      }
+
+    }
+
+  }
+);
+
+
+/* ============================================================
+   FILTERS
+   ============================================================ */
+
+document
+  .querySelectorAll(
+    '.registry-filter'
+  )
+  .forEach(function(button) {
+
+    button.addEventListener(
+      'click',
+      function() {
+
+        document
+          .querySelectorAll(
+            '.registry-filter'
+          )
+          .forEach(
+            b =>
+              b.classList.remove(
+                'active'
+              )
+          );
+
+
+        button.classList.add(
+          'active'
+        );
+
+
+        activeFilter =
+          button.dataset.filter;
+
+
+        currentVisible = 30;
+
+        render();
+
+      }
+    );
+
+  });
+
+
+/* ============================================================
+   SORT
+   ============================================================ */
+
+document
+  .getElementById(
+    'sort-select'
+  )
+  .addEventListener(
+    'change',
+    function() {
+
+      currentVisible = 30;
+
+      render();
+
+    }
+  );
+
+
+/* ============================================================
+   LOAD MORE
+   ============================================================ */
+
+document
+  .getElementById(
+    'load-more'
+  )
+  .addEventListener(
+    'click',
+    function() {
+
+      currentVisible += 30;
+
+      render();
+
+    }
+  );
+
+
+/* ============================================================
+   SEARCH INPUT
+   ============================================================ */
+
+const input =
+  document.getElementById(
+    'search-input'
+  );
+
+
+input.addEventListener(
+  'input',
+  function(e) {
+
+    clearTimeout(debounce);
+
+    const q =
+      e.target.value.trim();
+
+
+    debounce =
+      setTimeout(
+        () => runSearch(q),
+        350
+      );
+
+  }
+);
+
+
+/* ============================================================
+   ACCOUNT / SESSION
+   ============================================================ */
+
+async function renderUserMenu(
+  session
+) {
+
+  const menu =
+    document.getElementById(
+      'user-menu'
+    );
+
+
+  if (!session) {
+
+    menu.style.display =
+      'none';
+
+    return;
+
+  }
+
+
+  const {
+    data
+  } = await supabase
+
+    .from(
+      'profiles_public'
+    )
+
+    .select(
+      'username,avatar_url'
+    )
+
+    .eq(
+      'id',
+      session.user.id
+    )
+
+    .single();
+
+
+  const slot =
+    document.getElementById(
+      'user-menu-avatar'
+    );
+
+
+  if (
+    data &&
+    data.avatar_url
+  ) {
+
+    const img =
+      document.createElement(
+        'img'
+      );
+
+    img.id =
+      'user-menu-avatar';
+
+    img.src =
+      data.avatar_url;
+
+    img.alt = '';
+
+    slot.replaceWith(img);
+
+  } else {
+
+    slot.textContent =
+      (
+        data &&
+        data.username
+      ) ||
+      session.user.email ||
+      '?';
+
+    slot.textContent =
+      slot.textContent
+        .charAt(0)
+        .toUpperCase();
+
+  }
+
+
+  document
+    .getElementById(
+      'user-menu-name'
+    )
+    .textContent =
+      data &&
+      data.username
+        ? '@' + data.username
+        : session.user.email;
+
+
+  menu.style.display =
+    'block';
+
+}
+
+
+document
+  .getElementById(
+    'user-menu-btn'
+  )
+  .addEventListener(
+    'click',
+    function() {
+
+      const dropdown =
+        document.getElementById(
+          'user-menu-dropdown'
+        );
+
+      dropdown.classList.toggle(
+        'open'
+      );
+
+    }
+  );
+
+
+document.addEventListener(
+  'click',
+  function(e) {
+
+    const menu =
+      document.getElementById(
+        'user-menu'
+      );
+
+    if (!menu.contains(e.target)) {
+
+      document
+        .getElementById(
+          'user-menu-dropdown'
+        )
+        .classList.remove(
+          'open'
+        );
+
+    }
+
+  }
+);
+
+
+document
+  .getElementById(
+    'user-menu-signout'
+  )
+  .addEventListener(
+    'click',
+    async function() {
+
+      await supabase.auth.signOut();
+
+      location.reload();
+
+    }
+  );
+
+
+supabase.auth.onAuthStateChange(
+  function(_event,session) {
+
+    renderUserMenu(
+      session
+    );
+
+  }
+);
+
+
+supabase.auth
+  .getSession()
+  .then(function({data}) {
+
+    renderUserMenu(
+      data.session
+    );
+
+  });
+
+
+/* ============================================================
+   COOKIE
+   ============================================================ */
+
+(function() {
+
+  const KEY =
+    'poly-cookie-notice-dismissed';
+
+  const banner =
+    document.getElementById(
+      'cookie-banner'
+    );
+
+
+  let dismissed = false;
+
+
+  try {
+
+    dismissed =
+      localStorage.getItem(
+        KEY
+      ) === '1';
+
+  } catch(e) {}
+
+
+  if (!dismissed) {
+
+    banner.classList.add(
+      'show'
+    );
+
+  }
+
+
+  document
+    .getElementById(
+      'cookie-dismiss'
+    )
+    .addEventListener(
+      'click',
+      function() {
+
+        banner.classList.remove(
+          'show'
+        );
+
+
+        try {
+
+          localStorage.setItem(
+            KEY,
+            '1'
+          );
+
+        } catch(e) {}
+
+      }
+    );
+
+})();
+
+</script>
+
+</body>
+</html>
