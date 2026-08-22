@@ -27,17 +27,59 @@ function showView(name) {
 }
 function showPanel(name) {
   document.querySelectorAll(".panel").forEach((el) => el.classList.toggle("active", el.dataset.panel === name));
-  document.querySelectorAll(".side-link").forEach((el) => el.classList.toggle("active", el.dataset.nav === name));
+  document.querySelectorAll(".side-link[data-nav]").forEach((el) => el.classList.toggle("active", el.dataset.nav === name));
 }
+
+// ---------------------------------------------------------------------
+// Titlebar
+// ---------------------------------------------------------------------
+
+$("tb-min").addEventListener("click", () => window.poly.win.minimize());
+$("tb-max").addEventListener("click", () => window.poly.win.toggleMaximize());
+$("tb-close").addEventListener("click", () => window.poly.win.close());
+window.poly.win.onState(({ maximized }) => {
+  $("tb-max").title = maximized ? "Restore" : "Maximize";
+});
+
+// ---------------------------------------------------------------------
+// Onboarding
+// ---------------------------------------------------------------------
+
+let onboardSlide = 0;
+const ONBOARD_SLIDES = 3;
+
+function goToOnboardSlide(n) {
+  onboardSlide = n;
+  document.querySelectorAll(".onboard-slide").forEach((el) => el.classList.toggle("active", Number(el.dataset.slide) === n));
+  document.querySelectorAll(".dot").forEach((el) => el.classList.toggle("active", Number(el.dataset.dot) === n));
+  $("onboard-next").textContent = n === ONBOARD_SLIDES - 1 ? "Sign in →" : "Continue →";
+}
+
+$("onboard-next").addEventListener("click", async () => {
+  if (onboardSlide < ONBOARD_SLIDES - 1) {
+    goToOnboardSlide(onboardSlide + 1);
+  } else {
+    await window.poly.onboarding.markSeen();
+    showView("login");
+  }
+});
 
 // ---------------------------------------------------------------------
 // Boot / auth
 // ---------------------------------------------------------------------
 
 async function boot() {
-  const user = await window.poly.auth.resume();
+  const [user, hasSeenOnboarding] = await Promise.all([
+    window.poly.auth.resume(),
+    window.poly.onboarding.hasSeen(),
+  ]);
   if (user) {
     await enterShell();
+    return;
+  }
+  if (!hasSeenOnboarding) {
+    goToOnboardSlide(0);
+    showView("onboarding");
   } else {
     showView("login");
   }
@@ -58,6 +100,7 @@ $("login-form").addEventListener("submit", async (e) => {
   $("login-submit").disabled = true;
   try {
     await window.poly.auth.login(email, password);
+    await window.poly.onboarding.markSeen();
     await enterShell();
   } catch (err) {
     $("login-error").textContent = err.message || "Sign-in failed.";
@@ -82,7 +125,7 @@ $("signout-btn").addEventListener("click", async () => {
   $("login-password").value = "";
 });
 
-document.querySelectorAll(".side-link").forEach((btn) => {
+document.querySelectorAll(".side-link[data-nav]").forEach((btn) => {
   btn.addEventListener("click", () => {
     const panel = btn.dataset.nav;
     if (panel === "publish") openWizard(null);
@@ -126,6 +169,10 @@ async function loadApps() {
     grid.innerHTML = `<p class="error-banner">${escapeHtml(err.message)}</p>`;
     return;
   }
+  const published = appsCache.filter((a) => a.status === "published").length;
+  $("apps-sub").textContent = appsCache.length
+    ? `${appsCache.length} app${appsCache.length === 1 ? "" : "s"} · ${published} published`
+    : "";
   $("apps-empty").style.display = appsCache.length ? "none" : "block";
   grid.innerHTML = appsCache.map(renderAppCard).join("");
 
@@ -147,22 +194,23 @@ function renderAppCard(a) {
   const price = a.is_paid ? `$${(a.price_cents / 100).toFixed(2)} ${String(a.currency).toUpperCase()}` : "Free";
   return `
     <div class="app-card">
-      <div class="app-card-head">
+      <div class="app-card-banner"></div>
+      <div class="app-card-body">
         ${icon}
-        <div style="min-width:0">
+        <div class="app-name-row">
           <div class="app-name">${escapeHtml(a.name)}</div>
-          <span class="status-pill ${a.status}">${a.status}</span>
         </div>
-      </div>
-      <div class="app-stats">
-        <span>${price}</span>
-        <span>v${escapeHtml(a.version || "-")}</span>
-        <span>${a.download_count || 0} installs</span>
-      </div>
-      <div class="app-card-actions">
-        <button class="btn" data-edit="${a.id}">Edit</button>
-        ${a.status === "published" ? `<button class="btn" data-open="${a.slug}">Open</button>` : ""}
-        <button class="btn danger" data-delete="${a.id}" data-name="${escapeHtml(a.name)}">Delete</button>
+        <div class="status-label"><span class="status-dot ${a.status}"></span>${a.status}</div>
+        <div class="app-stats">
+          <span>${price}</span>
+          <span>v${escapeHtml(a.version || "-")}</span>
+          <span>${a.download_count || 0} installs</span>
+        </div>
+        <div class="app-card-actions">
+          <button class="btn" data-edit="${a.id}">Edit</button>
+          ${a.status === "published" ? `<button class="btn" data-open="${a.slug}">Open</button>` : ""}
+          <button class="btn danger" data-delete="${a.id}" data-name="${escapeHtml(a.name)}">Delete</button>
+        </div>
       </div>
     </div>`;
 }
@@ -201,18 +249,22 @@ const TOTAL_STEPS = 4;
 let currentStep = 1;
 let wizardAppId = null;
 let isEditMode = false;
+let isPaidState = false;
+let downloadMethod = "url";
 let formState = { icon_url: null, screenshots: [], storage_path: null, size_bytes: null };
 
 function populateOptions() {
   $("f-category").innerHTML = CATEGORIES.map((c) => `<option value="${c[0]}">${escapeHtml(c[1])}</option>`).join("");
   $("f-content-rating").innerHTML = CONTENT_RATINGS.map((c) => `<option value="${c[0]}">${escapeHtml(c[1])}</option>`).join("");
-  $("f-platforms").innerHTML = PLATFORMS.map((p) => `<label class="toggle-row"><input type="checkbox" value="${p[0]}" class="platform-check" /> ${escapeHtml(p[1])}</label>`).join("");
-  $("f-permissions").innerHTML = PERMISSIONS.map((p) => `<label class="toggle-row"><input type="checkbox" value="${p[0]}" class="perm-check" /> ${escapeHtml(p[1])}</label>`).join("");
+  $("f-platforms").innerHTML = PLATFORMS.map((p) => `<label><input type="checkbox" value="${p[0]}" class="platform-check" /> ${escapeHtml(p[1])}</label>`).join("");
+  $("f-permissions").innerHTML = PERMISSIONS.map((p) => `<label><input type="checkbox" value="${p[0]}" class="perm-check" /> ${escapeHtml(p[1])}</label>`).join("");
 }
 populateOptions();
 
 function resetForm() {
   formState = { icon_url: null, screenshots: [], storage_path: null, size_bytes: null };
+  isPaidState = false;
+  downloadMethod = "url";
   $("f-name").value = "";
   $("f-tagline").value = "";
   $("f-website").value = "";
@@ -226,22 +278,68 @@ function resetForm() {
   $("f-release-notes").value = "";
   $("f-download-url").value = "";
   $("f-price").value = "";
-  document.querySelector('input[name="pricing"][value="free"]').checked = true;
+  setSegmented("pricing-segmented", "free", "pricing");
   $("price-fields").style.display = "none";
-  document.querySelector('input[name="download-method"][value="url"]').checked = true;
+  setSegmented("download-method-segmented", "url", "method");
   $("f-download-url").style.display = "block";
-  $("build-upload-row").style.display = "none";
-  $("icon-tile").innerHTML = "Icon";
-  $("build-tile").textContent = "Build file";
+  $("build-tile").style.display = "none";
+  $("icon-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">+</span><span>512×512 square</span></div>';
+  $("build-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">↥</span><span>Choose a build file</span></div>';
   document.querySelectorAll(".platform-check, .perm-check").forEach((el) => (el.checked = false));
   renderScreenshots();
-  updateDocPreview();
+  updatePreview();
 }
 
-function updateDocPreview() {
-  $("doc-preview").textContent = $("f-documentation").value || "Documentation preview appears here.";
+function setSegmented(groupId, value, dataAttr) {
+  document.querySelectorAll(`#${groupId} .seg-btn`).forEach((btn) =>
+    btn.classList.toggle("active", btn.dataset[dataAttr] === value)
+  );
 }
-$("f-documentation").addEventListener("input", updateDocPreview);
+
+document.querySelectorAll("#pricing-segmented .seg-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    isPaidState = btn.dataset.pricing === "paid";
+    setSegmented("pricing-segmented", btn.dataset.pricing, "pricing");
+    $("price-fields").style.display = isPaidState ? "flex" : "none";
+    updatePreview();
+  });
+});
+document.querySelectorAll("#download-method-segmented .seg-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    downloadMethod = btn.dataset.method;
+    setSegmented("download-method-segmented", downloadMethod, "method");
+    const isUpload = downloadMethod === "upload";
+    $("f-download-url").style.display = isUpload ? "none" : "block";
+    $("build-tile").style.display = isUpload ? "flex" : "none";
+  });
+});
+
+function updatePreview() {
+  const name = $("f-name").value.trim();
+  const tagline = $("f-tagline").value.trim();
+  $("preview-name").textContent = name || "Your app name";
+  $("preview-tagline").textContent = tagline || "Your tagline shows up here";
+  const catLabel = (CATEGORIES.find((c) => c[0] === $("f-category").value) || [])[1] || "Category";
+  $("preview-category").textContent = catLabel;
+  const price = isPaidState ? `$${(parseFloat($("f-price").value) || 0).toFixed(2)}` : "Free";
+  $("preview-price").textContent = price;
+  const checkedPlatforms = Array.from(document.querySelectorAll(".platform-check:checked")).map((el) => el.value);
+  $("preview-platforms").innerHTML = checkedPlatforms.map((p) => `<span class="chip">${escapeHtml((PLATFORMS.find((x) => x[0] === p) || [])[1] || p)}</span>`).join("");
+  if (formState.icon_url) {
+    $("preview-icon").innerHTML = `<img src="${escapeHtml(formState.icon_url)}" alt="" />`;
+  } else {
+    $("preview-icon").innerHTML = "";
+    $("preview-icon").textContent = (name || "?")[0].toUpperCase();
+  }
+  $("preview-shots").innerHTML = formState.screenshots.map((s) => `<img src="${escapeHtml(s)}" alt="" />`).join("");
+}
+["f-name", "f-tagline", "f-category", "f-price"].forEach((id) => {
+  $(id).addEventListener("input", updatePreview);
+  $(id).addEventListener("change", updatePreview);
+});
+document.addEventListener("change", (e) => {
+  if (e.target.classList.contains("platform-check")) updatePreview();
+});
 
 async function openWizard(app) {
   resetForm();
@@ -276,7 +374,8 @@ async function openWizard(app) {
     if (app.icon_url) $("icon-tile").innerHTML = `<img src="${escapeHtml(app.icon_url)}" alt="" />`;
     renderScreenshots();
     if (app.is_paid) {
-      document.querySelector('input[name="pricing"][value="paid"]').checked = true;
+      isPaidState = true;
+      setSegmented("pricing-segmented", "paid", "pricing");
       $("price-fields").style.display = "flex";
       $("f-price").value = (app.price_cents / 100).toFixed(2);
       $("f-currency").value = app.currency || "usd";
@@ -286,7 +385,7 @@ async function openWizard(app) {
     $("f-category").value = "productivity";
     $("f-content-rating").value = "everyone";
   }
-  updateDocPreview();
+  updatePreview();
   updateStepButtons();
 }
 
@@ -312,31 +411,19 @@ $("next-btn").addEventListener("click", async () => {
 });
 $("save-draft-btn").addEventListener("click", () => submitApp("draft"));
 
-document.querySelectorAll('input[name="pricing"]').forEach((r) => {
-  r.addEventListener("change", () => {
-    $("price-fields").style.display = document.querySelector('input[name="pricing"]:checked').value === "paid" ? "flex" : "none";
-  });
-});
-document.querySelectorAll('input[name="download-method"]').forEach((r) => {
-  r.addEventListener("change", () => {
-    const isUpload = document.querySelector('input[name="download-method"]:checked').value === "upload";
-    $("f-download-url").style.display = isUpload ? "none" : "block";
-    $("build-upload-row").style.display = isUpload ? "flex" : "none";
-  });
-});
-
 // --- File uploads ---
 $("icon-tile").addEventListener("click", async () => {
   const file = await window.poly.files.pickImage();
   if (!file) return;
-  $("icon-tile").textContent = "…";
+  $("icon-tile").innerHTML = '<div class="dropzone-empty"><span>…</span></div>';
   try {
     const url = await window.poly.media.uploadImage(wizardAppId, file.bytes, "icon");
     formState.icon_url = url;
     $("icon-tile").innerHTML = `<img src="${escapeHtml(url)}" alt="" />`;
+    updatePreview();
   } catch (err) {
     $("publish-error").textContent = err.message || "Icon upload failed.";
-    $("icon-tile").textContent = "Icon";
+    $("icon-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">+</span><span>512×512 square</span></div>';
   }
 });
 
@@ -348,6 +435,7 @@ $("screenshot-add-tile").addEventListener("click", async () => {
     const url = await window.poly.media.uploadImage(wizardAppId, file.bytes, "screenshot");
     formState.screenshots.push(url);
     renderScreenshots();
+    updatePreview();
   } catch (err) {
     $("publish-error").textContent = err.message || "Screenshot upload failed.";
   }
@@ -362,7 +450,7 @@ function renderScreenshots() {
     tile.className = "upload-tile shot-tile";
     tile.innerHTML = `<img src="${escapeHtml(url)}" alt="" />`;
     tile.title = "Click to remove";
-    tile.addEventListener("click", () => { formState.screenshots.splice(i, 1); renderScreenshots(); });
+    tile.addEventListener("click", () => { formState.screenshots.splice(i, 1); renderScreenshots(); updatePreview(); });
     row.insertBefore(tile, addTile);
   });
   addTile.style.display = formState.screenshots.length >= 8 ? "none" : "flex";
@@ -377,15 +465,15 @@ $("build-tile").addEventListener("click", async () => {
     return;
   }
   if (!file) return;
-  $("build-tile").textContent = "…";
+  $("build-tile").innerHTML = '<div class="dropzone-empty"><span>…</span></div>';
   try {
     const result = await window.poly.media.uploadBuild(wizardAppId, file.bytes, file.fileName);
     formState.storage_path = result.storage_path;
     formState.size_bytes = result.size_bytes;
-    $("build-tile").textContent = file.fileName;
+    $("build-tile").innerHTML = `<div class="dropzone-empty"><span>${escapeHtml(file.fileName)}</span></div>`;
   } catch (err) {
     $("publish-error").textContent = err.message || "Build upload failed.";
-    $("build-tile").textContent = "Build file";
+    $("build-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">↥</span><span>Choose a build file</span></div>';
   }
 });
 
@@ -395,7 +483,6 @@ async function submitApp(status) {
 
   const platforms = Array.from(document.querySelectorAll(".platform-check:checked")).map((el) => el.value);
   const permissions = Array.from(document.querySelectorAll(".perm-check:checked")).map((el) => el.value);
-  const isPaid = document.querySelector('input[name="pricing"]:checked').value === "paid";
   const priceValue = parseFloat($("f-price").value) || 0;
 
   $("publish-error").textContent = "";
@@ -421,15 +508,15 @@ async function submitApp(status) {
       p_support_email: $("f-support").value.trim() || null,
       p_contains_ads: $("f-ads").checked,
       p_has_iap: $("f-iap").checked,
-      p_is_paid: isPaid,
-      p_price_cents: isPaid ? Math.round(priceValue * 100) : 0,
+      p_is_paid: isPaidState,
+      p_price_cents: isPaidState ? Math.round(priceValue * 100) : 0,
       p_currency: $("f-currency").value,
       p_status: status,
       p_documentation_md: $("f-documentation").value.trim() || null,
     });
 
     const version = $("f-version").value.trim();
-    const isUploadMethod = document.querySelector('input[name="download-method"]:checked').value === "upload";
+    const isUploadMethod = downloadMethod === "upload";
     const downloadUrl = isUploadMethod ? null : ($("f-download-url").value.trim() || null);
 
     if (status === "published" && version && (downloadUrl || formState.storage_path)) {

@@ -31,4 +31,15 @@ contextBridge.exposeInMainWorld("poly", {
     getVersion: () => ipcRenderer.invoke("app:getVersion"),
     newAppId: () => ipcRenderer.invoke("app:newAppId"),
   },
+  onboarding: {
+    hasSeen: () => ipcRenderer.invoke("onboarding:hasSeen"),
+    markSeen: () => ipcRenderer.invoke("onboarding:markSeen"),
+  },
+  win: {
+    minimize: () => ipcRenderer.invoke("window:minimize"),
+    toggleMaximize: () => ipcRenderer.invoke("window:toggleMaximize"),
+    close: () => ipcRenderer.invoke("window:close"),
+    isMaximized: () => ipcRenderer.invoke("window:isMaximized"),
+    onState: (cb) => ipcRenderer.on("window:state", (_e, state) => cb(state)),
+  },
 });

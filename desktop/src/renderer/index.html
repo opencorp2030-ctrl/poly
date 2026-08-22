@@ -8,241 +8,349 @@
 </head>
 <body>
 
-<!-- Splash -->
-<section data-view="splash" class="view active">
-  <div class="splash-wrap">
-    <div class="wordmark-giant">poly<span>&gt;</span></div>
-    <div class="spinner" aria-hidden="true"></div>
+<!-- Custom titlebar, present in every view -->
+<div class="titlebar">
+  <div class="titlebar-drag">
+    <span class="titlebar-mark">poly<span>&gt;</span> <em>desktop</em></span>
   </div>
-</section>
+  <div class="titlebar-controls">
+    <button class="tb-btn" id="tb-min" title="Minimize"><svg viewBox="0 0 10 10"><path d="M1 5h8"/></svg></button>
+    <button class="tb-btn" id="tb-max" title="Maximize"><svg viewBox="0 0 10 10"><rect x="1.5" y="1.5" width="7" height="7" rx="1"/></svg></button>
+    <button class="tb-btn tb-close" id="tb-close" title="Close"><svg viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8"/></svg></button>
+  </div>
+</div>
 
-<!-- Login / onboarding -->
-<section data-view="login" class="view">
-  <div class="login-wrap">
-    <div class="login-card">
-      <div class="wordmark">poly<span>&gt;</span></div>
-      <h1>Sign in to Poly</h1>
-      <p class="lede">Manage and publish your apps to the Poly store.</p>
+<div class="app-body">
 
-      <form id="login-form">
-        <div class="field">
-          <label for="login-email">Email</label>
-          <input id="login-email" type="email" autocomplete="username" required />
-        </div>
-        <div class="field">
-          <label for="login-password">Password</label>
-          <input id="login-password" type="password" autocomplete="current-password" required />
-        </div>
-        <p class="error-banner" id="login-error"></p>
-        <button type="submit" class="btn primary full" id="login-submit">Sign in</button>
-      </form>
-
-      <p class="login-footer">
-        No account yet? <a href="#" id="create-account-link">Create one on poly.candygate.eu →</a>
-      </p>
+  <!-- Splash -->
+  <section data-view="splash" class="view active">
+    <div class="splash-wrap">
+      <div class="glow"></div>
+      <div class="wordmark-giant">poly<span>&gt;</span></div>
+      <div class="spinner" aria-hidden="true"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Main app shell -->
-<section data-view="shell" class="view">
-  <div class="shell">
-    <aside class="sidebar">
-      <div class="wordmark small">poly<span>&gt;</span></div>
-      <nav class="side-nav">
-        <button class="side-link active" data-nav="apps">My apps</button>
-        <button class="side-link" data-nav="publish">Publish new app</button>
-        <button class="side-link" data-nav="settings">Settings</button>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="account-chip" id="account-chip">
-          <span class="account-initial" id="account-initial">?</span>
-          <span class="account-email" id="account-email">…</span>
+  <!-- Onboarding (first run only) -->
+  <section data-view="onboarding" class="view">
+    <div class="onboard-wrap">
+      <div class="glow"></div>
+      <div class="onboard-track" id="onboard-track">
+
+        <div class="onboard-slide active" data-slide="0">
+          <div class="onboard-badge">DESKTOP</div>
+          <h1 class="onboard-h1">Your apps.<br />Off the browser.</h1>
+          <p class="onboard-p">Poly Desktop is where you build, ship, and maintain what you publish to the Poly Apps store — without a browser tab open.</p>
         </div>
+
+        <div class="onboard-slide" data-slide="1">
+          <div class="tour-grid">
+            <div class="tour-item">
+              <div class="tour-icon">↥</div>
+              <h3>Publish in minutes</h3>
+              <p>Icon, screenshots, pricing and a release — one guided flow, with a live preview of your store listing as you type.</p>
+            </div>
+            <div class="tour-item">
+              <div class="tour-icon">✎</div>
+              <h3>Real documentation</h3>
+              <p>Give every app a proper docs page — setup, usage, configuration — right next to the listing, not bolted on after.</p>
+            </div>
+            <div class="tour-item">
+              <div class="tour-icon">⇄</div>
+              <h3>One account, everywhere</h3>
+              <p>Signs in with the same account as <code>poly login</code> on the CLI. No separate password to manage.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboard-slide" data-slide="2">
+          <div class="onboard-badge">READY</div>
+          <h1 class="onboard-h1">Let's sign you in.</h1>
+          <p class="onboard-p">Use your Poly account — the one you already have from poly.candygate.eu or the CLI.</p>
+        </div>
+
       </div>
-    </aside>
 
-    <main class="content">
-
-      <!-- My apps -->
-      <div data-panel="apps" class="panel active">
-        <div class="panel-head">
-          <h1>My apps</h1>
-          <button class="btn primary" id="apps-new-btn">+ New app</button>
+      <div class="onboard-footer">
+        <div class="onboard-dots">
+          <span class="dot active" data-dot="0"></span>
+          <span class="dot" data-dot="1"></span>
+          <span class="dot" data-dot="2"></span>
         </div>
-        <div id="apps-empty" class="empty-state" style="display:none">
-          <p>You haven't published any apps yet.</p>
-          <button class="btn primary" id="apps-empty-new-btn">Publish your first app</button>
-        </div>
-        <div id="apps-grid" class="apps-grid"></div>
+        <button class="btn primary" id="onboard-next">Continue →</button>
       </div>
+    </div>
+  </section>
 
-      <!-- Publish / edit wizard -->
-      <div data-panel="publish" class="panel">
-        <div class="panel-head">
-          <h1 id="publish-title">Publish an app</h1>
+  <!-- Login -->
+  <section data-view="login" class="view">
+    <div class="login-wrap">
+      <div class="glow"></div>
+      <div class="login-card">
+        <div class="wordmark">poly<span>&gt;</span></div>
+        <h1>Sign in</h1>
+
+        <form id="login-form">
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input id="login-email" type="email" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input id="login-password" type="password" autocomplete="current-password" required />
+          </div>
+          <p class="error-banner" id="login-error"></p>
+          <button type="submit" class="btn primary full" id="login-submit">
+            <span class="btn-label">Sign in</span>
+          </button>
+        </form>
+
+        <p class="login-footer">
+          No account yet? <a href="#" id="create-account-link">Create one on poly.candygate.eu →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main app shell -->
+  <section data-view="shell" class="view">
+    <div class="shell">
+      <aside class="sidebar">
+        <nav class="side-nav">
+          <button class="side-link active" data-nav="apps">
+            <svg class="side-icon" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+            <span>My apps</span>
+          </button>
+          <button class="side-link" data-nav="publish">
+            <svg class="side-icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/></svg>
+            <span>Publish new app</span>
+          </button>
+          <button class="side-link" data-nav="settings">
+            <svg class="side-icon" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.5 4.5l1.4 1.4M14.1 14.1l1.4 1.4M4.5 15.5l1.4-1.4M14.1 5.9l1.4-1.4"/></svg>
+            <span>Settings</span>
+          </button>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="account-chip" id="account-chip" data-nav="settings">
+            <span class="account-initial" id="account-initial">?</span>
+            <span class="account-email" id="account-email">…</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+
+        <!-- My apps -->
+        <div data-panel="apps" class="panel active">
+          <div class="panel-head">
+            <div>
+              <h1>My apps</h1>
+              <p class="panel-sub" id="apps-sub"></p>
+            </div>
+            <button class="btn primary" id="apps-new-btn">+ New app</button>
+          </div>
+          <div id="apps-empty" class="empty-state" style="display:none">
+            <div class="empty-icon">↥</div>
+            <p>You haven't published anything yet.</p>
+            <button class="btn primary" id="apps-empty-new-btn">Publish your first app</button>
+          </div>
+          <div id="apps-grid" class="apps-grid"></div>
         </div>
 
-        <div class="wizard-steps">
-          <span class="wizard-step-pill active" data-step-pill="1">1. App info</span>
-          <span class="wizard-step-pill" data-step-pill="2">2. Store listing</span>
-          <span class="wizard-step-pill" data-step-pill="3">3. Pricing &amp; safety</span>
-          <span class="wizard-step-pill" data-step-pill="4">4. Release</span>
-        </div>
-
-        <p class="error-banner" id="publish-error"></p>
-        <p class="ok-banner" id="publish-ok"></p>
-
-        <div class="card" data-step="1">
-          <div class="field">
-            <label>App name</label>
-            <input type="text" id="f-name" maxlength="80" required />
-          </div>
-          <div class="field">
-            <label>Short tagline (max 80 characters)</label>
-            <input type="text" id="f-tagline" maxlength="80" />
-          </div>
-          <div class="field">
-            <label>Category</label>
-            <select id="f-category"></select>
-          </div>
-          <div class="field">
-            <label>Content rating</label>
-            <select id="f-content-rating"></select>
-          </div>
-          <div class="field">
-            <label>Platforms</label>
-            <div class="checkbox-grid" id="f-platforms"></div>
-          </div>
-          <div class="field">
-            <label>Website (optional)</label>
-            <input type="url" id="f-website" placeholder="https://..." />
-          </div>
-          <div class="field">
-            <label>Privacy policy URL (optional)</label>
-            <input type="url" id="f-privacy" placeholder="https://..." />
-          </div>
-          <div class="field">
-            <label>Support email (optional)</label>
-            <input type="email" id="f-support" />
-          </div>
-        </div>
-
-        <div class="card" data-step="2">
-          <div class="field">
-            <label>App icon (square, recommended 512×512)</label>
-            <div class="upload-row">
-              <div class="upload-tile" id="icon-tile">Icon</div>
+        <!-- Publish / edit wizard -->
+        <div data-panel="publish" class="panel">
+          <div class="panel-head">
+            <div>
+              <h1 id="publish-title">Publish an app</h1>
+              <p class="panel-sub">Fill in the details — the card on the right updates as you go.</p>
             </div>
+            <button class="btn" id="publish-cancel-btn">← Back to my apps</button>
           </div>
-          <div class="field">
-            <label>Screenshots (up to 8)</label>
-            <div class="upload-row" id="screenshots-row">
-              <div class="upload-tile" id="screenshot-add-tile">+ Add</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Full description</label>
-            <textarea id="f-description" rows="6"></textarea>
-          </div>
-          <div class="field">
-            <label>Documentation <span class="field-hint-inline">(setup, usage, configuration)</span></label>
-            <div class="doc-editor">
-              <textarea id="f-documentation" rows="10" placeholder="## Setup&#10;&#10;...&#10;&#10;## Usage&#10;&#10;..."></textarea>
-              <div class="doc-preview" id="doc-preview"></div>
-            </div>
-          </div>
-        </div>
 
-        <div class="card" data-step="3">
-          <div class="field">
-            <label>Pricing</label>
-            <div class="radio-row">
-              <label><input type="radio" name="pricing" value="free" checked /> Free</label>
-              <label><input type="radio" name="pricing" value="paid" /> Paid</label>
-            </div>
-            <div class="price-fields" id="price-fields" style="display:none">
-              <div class="field">
-                <label>Price</label>
-                <input type="number" id="f-price" min="0.01" step="0.01" placeholder="4.99" />
+          <div class="publish-layout">
+            <div class="publish-form-col">
+
+              <div class="wizard-steps">
+                <span class="wizard-step-pill active" data-step-pill="1">Info</span>
+                <span class="wizard-step-pill" data-step-pill="2">Listing</span>
+                <span class="wizard-step-pill" data-step-pill="3">Pricing</span>
+                <span class="wizard-step-pill" data-step-pill="4">Release</span>
               </div>
-              <div class="field">
-                <label>Currency</label>
-                <select id="f-currency">
-                  <option value="usd">USD $</option>
-                  <option value="eur">EUR €</option>
-                  <option value="gbp">GBP £</option>
-                </select>
+
+              <p class="error-banner" id="publish-error"></p>
+              <p class="ok-banner" id="publish-ok"></p>
+
+              <div class="card" data-step="1">
+                <div class="field">
+                  <label>App name</label>
+                  <input type="text" id="f-name" maxlength="80" required />
+                </div>
+                <div class="field">
+                  <label>Short tagline <span class="field-hint-inline">(max 80 characters)</span></label>
+                  <input type="text" id="f-tagline" maxlength="80" />
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label>Category</label>
+                    <select id="f-category"></select>
+                  </div>
+                  <div class="field">
+                    <label>Content rating</label>
+                    <select id="f-content-rating"></select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Platforms</label>
+                  <div class="chip-select" id="f-platforms"></div>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label>Website <span class="field-hint-inline">(optional)</span></label>
+                    <input type="url" id="f-website" placeholder="https://..." />
+                  </div>
+                  <div class="field">
+                    <label>Support email <span class="field-hint-inline">(optional)</span></label>
+                    <input type="email" id="f-support" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Privacy policy URL <span class="field-hint-inline">(optional)</span></label>
+                  <input type="url" id="f-privacy" placeholder="https://..." />
+                </div>
+              </div>
+
+              <div class="card" data-step="2">
+                <div class="field">
+                  <label>App icon</label>
+                  <div class="dropzone" id="icon-tile">
+                    <div class="dropzone-empty"><span class="dz-icon">+</span><span>512×512 square</span></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Screenshots <span class="field-hint-inline">(up to 8)</span></label>
+                  <div class="upload-row" id="screenshots-row">
+                    <div class="upload-tile" id="screenshot-add-tile">+</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Full description</label>
+                  <textarea id="f-description" rows="5"></textarea>
+                </div>
+                <div class="field">
+                  <label>Documentation <span class="field-hint-inline">— setup, usage, configuration</span></label>
+                  <textarea id="f-documentation" rows="7" placeholder="## Setup&#10;&#10;...&#10;&#10;## Usage&#10;&#10;..."></textarea>
+                </div>
+              </div>
+
+              <div class="card" data-step="3">
+                <div class="field">
+                  <label>Pricing</label>
+                  <div class="segmented" id="pricing-segmented">
+                    <button type="button" class="seg-btn active" data-pricing="free">Free</button>
+                    <button type="button" class="seg-btn" data-pricing="paid">Paid</button>
+                  </div>
+                  <div class="price-fields" id="price-fields" style="display:none">
+                    <div class="field">
+                      <label>Price</label>
+                      <input type="number" id="f-price" min="0.01" step="0.01" placeholder="4.99" />
+                    </div>
+                    <div class="field">
+                      <label>Currency</label>
+                      <select id="f-currency">
+                        <option value="usd">USD $</option>
+                        <option value="eur">EUR €</option>
+                        <option value="gbp">GBP £</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <label class="toggle-row"><input type="checkbox" id="f-ads" /> Contains ads</label>
+                <label class="toggle-row"><input type="checkbox" id="f-iap" /> Has in-app purchases</label>
+                <div class="field">
+                  <label>Permissions this app requests</label>
+                  <div class="chip-select" id="f-permissions"></div>
+                </div>
+              </div>
+
+              <div class="card" data-step="4">
+                <div class="field-row">
+                  <div class="field">
+                    <label>Version</label>
+                    <input type="text" id="f-version" placeholder="1.0.0" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label>What's new <span class="field-hint-inline">(release notes)</span></label>
+                  <textarea id="f-release-notes" rows="3"></textarea>
+                </div>
+                <div class="field">
+                  <label>How should people get this app?</label>
+                  <div class="segmented" id="download-method-segmented">
+                    <button type="button" class="seg-btn active" data-method="url">External link</button>
+                    <button type="button" class="seg-btn" data-method="upload">Upload a build</button>
+                  </div>
+                  <input type="url" id="f-download-url" placeholder="https://..." style="margin-top:0.6rem" />
+                  <div class="dropzone dropzone-file" id="build-tile" style="display:none;margin-top:0.6rem">
+                    <div class="dropzone-empty"><span class="dz-icon">↥</span><span>Choose a build file</span></div>
+                  </div>
+                  <p class="field-hint">Capped at 200 MB. Paid apps gate the download until purchase.</p>
+                </div>
+              </div>
+
+              <div class="wizard-actions">
+                <button type="button" class="btn" id="prev-btn" style="visibility:hidden">← Back</button>
+                <div class="wizard-actions-right">
+                  <button type="button" class="btn" id="save-draft-btn">Save draft</button>
+                  <button type="button" class="btn primary" id="next-btn">Next →</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="publish-preview-col">
+              <p class="preview-label">Store listing preview</p>
+              <div class="store-preview">
+                <div class="store-preview-icon" id="preview-icon">?</div>
+                <div class="store-preview-name" id="preview-name">Your app name</div>
+                <div class="store-preview-tagline" id="preview-tagline">Your tagline shows up here</div>
+                <div class="store-preview-row">
+                  <span class="chip" id="preview-category">Category</span>
+                  <span class="chip" id="preview-price">Free</span>
+                </div>
+                <div class="store-preview-platforms" id="preview-platforms"></div>
+                <div class="store-preview-shots" id="preview-shots"></div>
               </div>
             </div>
           </div>
-          <label class="toggle-row"><input type="checkbox" id="f-ads" /> Contains ads</label>
-          <label class="toggle-row"><input type="checkbox" id="f-iap" /> Has in-app purchases</label>
-          <div class="field">
-            <label>Permissions this app requests</label>
-            <div class="checkbox-grid" id="f-permissions"></div>
-          </div>
         </div>
 
-        <div class="card" data-step="4">
-          <div class="field">
-            <label>Version</label>
-            <input type="text" id="f-version" placeholder="1.0.0" />
-          </div>
-          <div class="field">
-            <label>What's new (release notes)</label>
-            <textarea id="f-release-notes" rows="4"></textarea>
-          </div>
-          <div class="field">
-            <label>How should people get this app?</label>
-            <div class="radio-row">
-              <label><input type="radio" name="download-method" value="url" checked /> External link</label>
-              <label><input type="radio" name="download-method" value="upload" /> Upload a build</label>
+        <!-- Settings -->
+        <div data-panel="settings" class="panel">
+          <div class="panel-head"><h1>Settings</h1></div>
+          <div class="card settings-card">
+            <div class="settings-row">
+              <span class="s-label">Signed in as</span>
+              <span id="settings-email">…</span>
             </div>
-            <input type="url" id="f-download-url" placeholder="https://..." />
-            <div class="upload-row" id="build-upload-row" style="display:none;margin-top:0.6rem">
-              <div class="upload-tile" id="build-tile">Build file</div>
+            <div class="settings-row">
+              <span class="s-label">Plan</span>
+              <span id="settings-plan">…</span>
             </div>
-            <p class="field-hint">Uploaded builds are capped at 200 MB. Paid apps gate the download until purchase.</p>
+            <div class="settings-row">
+              <span class="s-label">Poly Desktop</span>
+              <span id="settings-version">…</span>
+            </div>
+            <div class="settings-row">
+              <a href="#" id="settings-account-link">Manage account on poly.candygate.eu →</a>
+            </div>
           </div>
+          <button class="btn danger" id="signout-btn">Sign out</button>
         </div>
 
-        <div class="wizard-actions">
-          <button type="button" class="btn" id="publish-cancel-btn">Cancel</button>
-          <div class="wizard-actions-right">
-            <button type="button" class="btn" id="prev-btn" style="visibility:hidden">← Back</button>
-            <button type="button" class="btn" id="save-draft-btn">Save draft</button>
-            <button type="button" class="btn primary" id="next-btn">Next →</button>
-          </div>
-        </div>
-      </div>
+      </main>
+    </div>
+  </section>
 
-      <!-- Settings -->
-      <div data-panel="settings" class="panel">
-        <div class="panel-head"><h1>Settings</h1></div>
-        <div class="card">
-          <div class="settings-row">
-            <span class="s-label">Signed in as</span>
-            <span id="settings-email">…</span>
-          </div>
-          <div class="settings-row">
-            <span class="s-label">Plan</span>
-            <span id="settings-plan">…</span>
-          </div>
-          <div class="settings-row">
-            <span class="s-label">Poly Desktop</span>
-            <span id="settings-version">…</span>
-          </div>
-          <div class="settings-row">
-            <a href="#" id="settings-account-link">Manage account on poly.candygate.eu →</a>
-          </div>
-        </div>
-        <button class="btn danger" id="signout-btn">Sign out</button>
-      </div>
-
-    </main>
-  </div>
-</section>
+</div>
 
 <!-- Confirm delete modal -->
 <div class="modal-overlay" id="confirm-modal">

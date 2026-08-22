@@ -4,17 +4,18 @@ const fs = require("fs");
 
 const session = require("./src/session");
 const api = require("./src/api");
+const localState = require("./src/localstate");
 
 let mainWindow = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1180,
-    height: 780,
-    minWidth: 960,
-    minHeight: 640,
-    backgroundColor: "#101319",
-    autoHideMenuBar: true,
+    width: 1220,
+    height: 800,
+    minWidth: 980,
+    minHeight: 660,
+    backgroundColor: "#0c0e13",
+    frame: false,
     show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -26,6 +27,9 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, "src", "renderer", "index.html"));
   mainWindow.once("ready-to-show", () => mainWindow.show());
+
+  mainWindow.on("maximize", () => mainWindow.webContents.send("window:state", { maximized: true }));
+  mainWindow.on("unmaximize", () => mainWindow.webContents.send("window:state", { maximized: false }));
 }
 
 app.whenReady().then(() => {
@@ -93,3 +97,16 @@ ipcMain.handle("media:uploadBuild", async (_e, { appId, bytes, fileName }) =>
 ipcMain.handle("shell:openExternal", async (_e, url) => shell.openExternal(url));
 ipcMain.handle("app:getVersion", async () => app.getVersion());
 ipcMain.handle("app:newAppId", async () => require("crypto").randomUUID());
+
+// --- Onboarding (local-only, unrelated to the CLI session file) ---
+ipcMain.handle("onboarding:hasSeen", async () => localState.hasOnboarded());
+ipcMain.handle("onboarding:markSeen", async () => localState.setOnboarded());
+
+// --- Custom titlebar window controls (frameless window) ---
+ipcMain.handle("window:minimize", () => mainWindow.minimize());
+ipcMain.handle("window:toggleMaximize", () => {
+  if (mainWindow.isMaximized()) mainWindow.unmaximize();
+  else mainWindow.maximize();
+});
+ipcMain.handle("window:close", () => mainWindow.close());
+ipcMain.handle("window:isMaximized", () => mainWindow.isMaximized());
