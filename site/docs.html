@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Docs · Poly</title>
 <link rel="icon" href="logo.png" />
@@ -19,93 +20,31 @@
 <meta name="twitter:title" content="Docs · Poly" />
 <meta name="twitter:description" content="Full command reference, adapter details, poly.json and tap formula formats for Poly." />
 <meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
 <style>
-  :root {
-    --ink: #14171d;
-    --ink-raised: #1b1f27;
-    --border: rgba(255, 255, 255, 0.10);
-    --text: #e9e4d8;
-    --text-dim: #9c9686;
-    --accent: #f0a93e;
-    --accent-ink: #14171d;
-    --ok: #6fbf8b;
-
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
-    --container: 1080px;
-    color-scheme: dark;
-  }
-  :root[data-theme="light"] {
-    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-      color-scheme: light;
-    }
-  }
-
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  body { font-size: 16px; line-height: 1.65; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
-  .skip-link:focus { left: 0; }
-
-  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
-
-  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--ink); z-index: 10; }
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
   header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
   nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
-
-  .nav-toggle {
-    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
-    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
-  }
-  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  .nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0; color: var(--text); }
+  .nav-toggle svg { width: 18px; height: 18px; }
   @media (max-width: 960px) {
     .nav-toggle { display: flex; }
     header.top .wrap { position: relative; }
-    nav.top-links {
-      display: none; position: absolute; top: 100%; left: 0; right: 0;
-      flex-direction: column; align-items: stretch; gap: 0;
-      background: var(--ink-raised); border-bottom: 1px solid var(--border);
-      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
-    }
+    nav.top-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--ink-raised); border-bottom: 1px solid var(--border); padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40; }
     nav.top-links.open { display: flex; }
     nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
     nav.top-links a:last-child { border-bottom: none; }
   }
-
   .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; color: var(--text); }
+  .icon-btn svg { width: 17px; height: 17px; }
   .notif-bell { position: relative; display: none; }
-  .notif-bell-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .notif-bell-btn svg { width: 17px; height: 17px; }
-  .notif-count {
-    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
-    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
-    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
-  }
-  .notif-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .notif-dropdown.open { display: flex; }
+  .notif-count { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px; background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1; }
+  .notif-dropdown { width: 320px; max-width: calc(100vw - 2rem); }
   .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
   .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
   .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
@@ -115,7 +54,7 @@
   .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
   .notif-item:last-child { border-bottom: none; }
   .notif-item:hover { background: var(--ink); text-decoration: none; }
-  .notif-item.unread { background: rgba(240,169,62,0.06); }
+  .notif-item.unread { background: color-mix(in srgb, var(--accent) 8%, transparent); }
   .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
   .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
   .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
@@ -123,42 +62,17 @@
   .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
   .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
   .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
-
   .user-menu { position: relative; }
-  .user-menu-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .user-menu-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
-  .user-menu-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; min-width: 190px;
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.4rem; display: none; flex-direction: column; gap: 0.1rem; z-index: 50;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .user-menu-dropdown.open { display: flex; }
+  .user-menu-dropdown { min-width: 190px; padding: 0.4rem; gap: 0.1rem; }
   .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
-  .user-menu-item {
-    display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer;
-    font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px;
-    text-decoration: none; box-sizing: border-box;
-  }
-  .user-menu-item:hover { background: var(--ink); }
+  .user-menu-item { display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px; text-decoration: none; box-sizing: border-box; }
+  .user-menu-item:hover { background: var(--ink); text-decoration: none; }
   .user-menu-item.danger { color: var(--danger); }
 
   footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
-
-  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
-  .cookie-banner.show { display: block; }
-  .cookie-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding: 1rem clamp(1.25rem, 4vw, 2rem); }
-  .cookie-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dim); max-width: 60ch; }
-  .cookie-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
-  .cookie-actions a { font-size: 0.82rem; color: var(--text-dim); }
-  .cookie-actions a:hover { color: var(--accent); }
-  .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
-  .cookie-actions button:hover { opacity: 0.9; }
   footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
   footer.site-footer .footer-brand a:hover { color: var(--accent); }
@@ -166,9 +80,9 @@
   footer.site-footer .footer-links a { color: var(--text-dim); }
   footer.site-footer .footer-links a:hover { color: var(--accent); }
 
-  .layout { display: grid; grid-template-columns: minmax(0,1fr); gap: 2.5rem; padding: clamp(2rem, 5vw, 3.5rem) 0 5rem; }
+  main { --container: 1080px; display: grid; grid-template-columns: minmax(0,1fr); gap: 2.5rem; padding: clamp(2rem, 5vw, 3.5rem) 0 5rem; }
   @media (min-width: 900px) {
-    .layout { grid-template-columns: 200px minmax(0,1fr); align-items: start; }
+    main { grid-template-columns: 200px minmax(0,1fr); align-items: start; }
     .toc { position: sticky; top: 90px; }
   }
 
@@ -182,10 +96,8 @@
 
   section.doc-section { padding-top: 2.75rem; margin-top: 2.75rem; border-top: 1px solid var(--border); scroll-margin-top: 90px; }
   section.doc-section:first-of-type { padding-top: 0; margin-top: 0; border-top: none; }
-  h2 { font-family: var(--mono); font-size: 1.4rem; letter-spacing: -0.01em; margin: 0 0 0.75rem; }
   h3 { font-family: var(--sans); font-size: 1.02rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
   p { max-width: 74ch; }
-  code { font-family: var(--mono); font-size: 0.88em; background: var(--ink-raised); padding: 0.1rem 0.35rem; border-radius: 3px; }
 
   .code-block { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.2rem; font-family: var(--mono); font-size: 0.85rem; overflow-x: auto; white-space: pre; margin: 0.5rem 0 1.25rem; }
   .code-block code { background: none; padding: 0; }
@@ -193,13 +105,6 @@
 
   .doc-steps { max-width: 74ch; margin: 0.75rem 0 1.25rem; padding-left: 1.4rem; }
   .doc-steps li { margin-bottom: 0.5rem; line-height: 1.5; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1.25rem; }
-  th, td { text-align: left; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
-  th { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); background: var(--ink-raised); white-space: nowrap; }
-  td code { white-space: nowrap; }
-  tr:last-child td { border-bottom: none; }
 
   .note-box { border-left: 3px solid var(--accent); padding: 0.4rem 0 0.4rem 1rem; color: var(--text-dim); font-size: 0.9rem; margin: 1.25rem 0; max-width: 68ch; }
   ul.plain { padding-left: 1.2rem; }
@@ -223,79 +128,65 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 
-<header class="top">
+<header class="top glass" id="top-nav">
   <div class="wrap">
     <a href="/" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links" id="top-links">
       <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
-      <a href="docs" class="current" data-i18n="nav_docs">docs</a>
+      <a href="docs" data-i18n="nav_docs">docs</a>
       <a href="/#pro" data-i18n="nav_pro">pro</a>
       <a href="community" data-i18n="nav_community">community</a>
-<a href="integrations" data-i18n="nav_integrations">integrations</a>
-<a href="search" data-i18n="nav_search">search</a>
+      <a href="apps" data-i18n="nav_apps">apps</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
       <a href="account" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
     <div class="header-actions">
-    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="notif-bell" id="notif-bell">
-      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="notif-count" id="notif-count">0</span>
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
       </button>
-      <div class="notif-dropdown" id="notif-dropdown">
-        <div class="notif-dropdown-head">
-          <span class="title">Notifications</span>
-          <div class="head-actions">
-            <a class="notif-see-all" href="notifications">See all</a>
-            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
           </div>
         </div>
-        <div class="notif-list" id="notif-list"></div>
-        <div class="notif-staff-compose" id="notif-staff-compose">
-          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
-          <button type="button" id="notif-staff-send">Send</button>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
         </div>
       </div>
-    </div>
-    <div class="user-menu" id="user-menu" style="display:none">
-      <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
-        <span class="initial" id="user-menu-avatar">?</span>
-      </button>
-      <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">…</div>
-        <a href="account" class="user-menu-item">Account</a>
-        <a href="community" class="user-menu-item">Community</a>
-        <a href="docs" class="user-menu-item">Docs</a>
-        <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
-      </div>
-    </div>
     </div>
   </div>
 </header>
 
-<script>
-(function () {
-  var toggle = document.getElementById('nav-toggle');
-  var links = document.getElementById('top-links');
-  if (!toggle || !links) return;
-  toggle.addEventListener('click', function () {
-    var open = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-  links.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    });
-  });
-})();
-</script>
-
-<div class="wrap layout">
-  <nav class="toc">
+<main id="main" class="wrap">
+  <nav class="toc reveal">
     <p class="toc-title" data-i18n="toc_title">On this page</p>
     <a href="#commands" data-i18n="toc_commands">Commands</a>
     <a href="#adapters" data-i18n="toc_adapters">Adapters</a>
@@ -311,14 +202,14 @@
     <a href="llms.txt" data-i18n="toc_llms">llms.txt</a>
   </nav>
 
-  <main id="main">
-    <p class="eyebrow" style="font-family:var(--mono);font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin:0 0 0.75rem" data-i18n="eyebrow">Documentation</p>
-    <h1 data-i18n="title">Everything poly does</h1>
-    <p class="lede" data-i18n="lede">The full reference. For the pitch, see the <a href="/">homepage</a>.</p>
+  <div>
+    <p class="eyebrow reveal" data-i18n="eyebrow">Documentation</p>
+    <h1 class="reveal" data-i18n="title">Everything poly does</h1>
+    <p class="lede reveal" data-i18n="lede">The full reference. For the pitch, see the <a href="/">homepage</a>.</p>
 
     <section class="doc-section" id="commands">
-      <h2 data-i18n="commands_h">Commands</h2>
-      <div class="table-wrap">
+      <h2 class="reveal" data-i18n="commands_h">Commands</h2>
+      <div class="table-wrap reveal">
         <table>
           <thead><tr><th data-i18n="th_command">Command</th><th data-i18n="th_does">Does</th></tr></thead>
           <tbody>
@@ -342,8 +233,8 @@
     </section>
 
     <section class="doc-section" id="adapters">
-      <h2 data-i18n="adapters_h">Adapters</h2>
-      <div class="table-wrap">
+      <h2 class="reveal" data-i18n="adapters_h">Adapters</h2>
+      <div class="table-wrap reveal">
         <table>
           <thead><tr><th data-i18n="th_adapter">Adapter</th><th data-i18n="th_installs_via">Installs via</th><th data-i18n="th_search_via">Search via</th></tr></thead>
           <tbody>
@@ -353,30 +244,21 @@
             <tr><td><code>npm</code></td><td data-i18n="ad_npm_install"><code>npm install -g name@latest</code> (or <code>@version</code> when pinned)</td><td><code>registry.npmjs.org/&lt;name&gt;/latest</code></td></tr>
             <tr><td><code>cargo</code></td><td data-i18n="ad_cargo_install"><code>cargo install --force</code></td><td><code>crates.io/api/v1/crates/&lt;name&gt;</code></td></tr>
             <tr><td><code>go</code></td><td data-i18n="ad_go_install"><code>go install &lt;module&gt;@version</code>; requires a full module path, not a short name</td><td data-i18n="ad_go_search">Go module proxy, walking the path upward to find the enclosing module</td></tr>
-            <tr><td><code>gem</code></td><td data-i18n="ad_gem_install"><code>gem install</code> (or <code>--version</code> when pinned)</td><td><code>rubygems.org/api/v1/gems/&lt;name&gt;.json</code></td></tr>
-            <tr><td><code>apt</code></td><td data-i18n="ad_apt_install"><code>apt-get install</code> (or <code>name=version</code> when pinned), explicit <code>apt:</code> prefix only</td><td data-i18n="ad_apt_search">Local <code>apt-cache show</code>, no separate API</td></tr>
-            <tr><td><code>dnf</code></td><td data-i18n="ad_dnf_install"><code>dnf install</code> (or <code>name-version</code> when pinned), explicit <code>dnf:</code> prefix only</td><td data-i18n="ad_dnf_search">Local <code>dnf info</code>, no separate API</td></tr>
-            <tr><td><code>pacman</code></td><td data-i18n="ad_pacman_install"><code>pacman -S</code>, explicit <code>pacman:</code> prefix only; no version pinning</td><td data-i18n="ad_pacman_search">Local <code>pacman -Si</code>, no separate API</td></tr>
-            <tr><td><code>winget</code></td><td data-i18n="ad_winget_install"><code>winget install --exact</code> (or <code>--version</code> when pinned), explicit <code>winget:</code> prefix only</td><td data-i18n="ad_winget_search">Local <code>winget show --exact</code>, no separate API</td></tr>
-            <tr><td><code>choco</code></td><td data-i18n="ad_choco_install"><code>choco install</code> (or <code>--version=</code> when pinned), explicit <code>choco:</code> prefix only</td><td data-i18n="ad_choco_search">Local <code>choco search --exact</code>, no separate API</td></tr>
-            <tr><td><code>gh</code></td><td data-i18n="ad_gh_install">Latest GitHub release asset for your OS/arch, SHA-256 verified when the release ships one, explicit <code>gh:owner/repo</code> only</td><td data-i18n="ad_gh_search"><code>api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/releases/latest</code></td></tr>
-            <tr><td><code>community</code></td><td data-i18n="ad_community_install">Poly's own registry, explicit <code>community:</code> prefix only</td><td data-i18n="ad_community_search">Poly's Supabase-backed package table</td></tr>
           </tbody>
         </table>
       </div>
-      <p data-i18n="adapters_p">Every adapter that shells out to a real package manager (pip/npm/brew/cargo/gem/apt/dnf/pacman/winget/choco) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.</p>
-      <p data-i18n="adapters_p2"><code>apt</code>, <code>dnf</code>, <code>pacman</code>, <code>winget</code>, <code>choco</code>, and <code>gem</code> are reachable only via their explicit prefix (e.g. <code>poly install apt:ripgrep</code>) -- they're never tried by a bare <code>poly install name</code>, so a system package or a single-language gem never silently shadows the tap/brew/pip/npm/cargo/go chain below.</p>
+      <p data-i18n="adapters_p">Every adapter that shells out to a real package manager (pip/npm/brew/cargo) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.</p>
     </section>
 
     <section class="doc-section" id="resolution">
-      <h2 data-i18n="resolution_h">Resolution order &amp; prefixes</h2>
+      <h2 class="reveal" data-i18n="resolution_h">Resolution order &amp; prefixes</h2>
       <p data-i18n="resolution_p">Without a prefix, <code>poly install name</code> tries each adapter's <code>Search</code> in this order and installs through the first hit:</p>
       <div class="code-block">tap → brew → pip → npm → cargo → go</div>
       <p data-i18n="resolution_p2">Force a specific one with <code>adapter:name</code>, and pin a version with <code>name@version</code> (or combine: <code>pip:requests@2.31.0</code>).</p>
     </section>
 
     <section class="doc-section" id="lockfile">
-      <h2 data-i18n="lockfile_h">Reproducible installs: poly.json</h2>
+      <h2 class="reveal" data-i18n="lockfile_h">Reproducible installs: poly.json</h2>
       <p data-i18n="lockfile_p"><code>poly init</code> writes <code>poly.json</code> in the current directory, listing every package poly has installed, pinned to its exact version:</p>
       <div class="code-block">{
   "packages": [
@@ -389,7 +271,7 @@
     </section>
 
     <section class="doc-section" id="taps">
-      <h2 data-i18n="taps_h">Writing a tap formula</h2>
+      <h2 class="reveal" data-i18n="taps_h">Writing a tap formula</h2>
       <p data-i18n="taps_p">Drop a YAML file into <code>~/.poly/taps/&lt;name&gt;.yaml</code>, which overrides any built-in formula of the same name:</p>
       <div class="code-block">name: ripgrep
 description: "Line-oriented search tool that recursively searches directories for a regex pattern"
@@ -409,7 +291,7 @@ artifacts:
     </section>
 
     <section class="doc-section" id="autoupdate">
-      <h2 data-i18n="autoupdate_h">Automatic updates</h2>
+      <h2 class="reveal" data-i18n="autoupdate_h">Automatic updates</h2>
       <ul class="plain">
         <li data-i18n="au_li1"><strong>poly self-update</strong>: free, for everyone. On every command, throttled to about once a day, poly checks GitHub releases in the background (a detached process, so it never blocks whatever you're doing) and updates itself if there's a newer version.</li>
         <li data-i18n="au_li2"><strong>poly upgrade</strong>: additionally automatic for Pro accounts, same throttling and background behavior. On the free tier it only runs when you type <code>poly upgrade</code> yourself.</li>
@@ -418,7 +300,7 @@ artifacts:
     </section>
 
     <section class="doc-section" id="registry">
-      <h2 data-i18n="registry_h">Publishing your own package</h2>
+      <h2 class="reveal" data-i18n="registry_h">Publishing your own package</h2>
       <p data-i18n="registry_p"><code>poly send name version path</code> uploads a file or directory (auto-archived) to Poly's community registry under your account. <code>path</code> must contain (or be) a file named exactly <code>name</code>: that's what gets installed.</p>
       <div class="code-block">poly login
 poly send hello-world 1.0.0 ./dist/hello-world --description "a demo tool"
@@ -429,7 +311,7 @@ poly install community:hello-world</div>
     </section>
 
     <section class="doc-section" id="mcp">
-      <h2 data-i18n="mcp_h">AI assistants (MCP)</h2>
+      <h2 class="reveal" data-i18n="mcp_h">AI assistants (MCP)</h2>
       <p data-i18n="mcp_p">Poly runs a remote <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP</a> server (Streamable HTTP, hosted as a Supabase Edge Function, no separate infrastructure) so Claude, ChatGPT, or any MCP-compatible assistant can search, browse, and publish to the community registry as you. It authenticates with a personal access token, never your email or password, and the token is scoped and revocable at any time.</p>
 
       <h3 data-i18n="mcp_h_ui">Claude.ai / ChatGPT (Add custom connector)</h3>
@@ -503,7 +385,7 @@ poly install community:hello-world</div>
     </section>
 
     <section class="doc-section" id="pro">
-      <h2 data-i18n="pro_h">Poly Pro</h2>
+      <h2 class="reveal" data-i18n="pro_h">Poly Pro</h2>
       <p data-i18n="pro_p">Poly is and stays 100% free and open source. The built-in tap catalog is entirely free too. Pro (a one-time €0.99, via Stripe Checkout from <a href="account">your account page</a>) unlocks:</p>
       <ul class="plain">
         <li data-i18n="pro_li1">Concurrent installs when you name more than one package at once.</li>
@@ -513,9 +395,9 @@ poly install community:hello-world</div>
     </section>
 
     <section class="doc-section" id="faq">
-      <h2 data-i18n="faq_h">FAQ</h2>
+      <h2 class="reveal" data-i18n="faq_h">FAQ</h2>
       <p data-i18n="faq_lede">Free for everyone, Pro or not. If your question isn't here, email <a href="mailto:open.corp.2030@gmail.com">open.corp.2030@gmail.com</a>.</p>
-      <div class="faq-list">
+      <div class="faq-list reveal-stagger">
         <div class="accordion-item">
           <button type="button" class="accordion-head"><span data-i18n="faq_q1">Is poly really free?</span><span class="accordion-chevron">▸</span></button>
           <div class="accordion-body"><p data-i18n="faq_a1">Yes, entirely, including the built-in tap catalog. Pro is a small optional pack (see above), not a paywall on anything that already works.</p></div>
@@ -538,7 +420,8 @@ poly install community:hello-world</div>
         </div>
       </div>
     </section>
-  </main>
+  </div>
+</main>
 
 <footer class="site-footer">
   <div class="wrap">
@@ -550,13 +433,12 @@ poly install community:hello-world</div>
     </nav>
   </div>
 </footer>
-</div>
 
 <script>
 (function () {
   var I18N = {
     en: {
-      nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_account: "account", nav_github: "github",
+      nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_apps: "apps", nav_account: "account", nav_github: "github",
       nav_integrations: "integrations",
       nav_search: "search",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
@@ -590,23 +472,7 @@ poly install community:hello-world</div>
       ad_cargo_install: '<code>cargo install --force</code>',
       ad_go_install: '<code>go install &lt;module&gt;@version</code>; requires a full module path, not a short name',
       ad_go_search: "Go module proxy, walking the path upward to find the enclosing module",
-      ad_gem_install: '<code>gem install</code> (or <code>--version</code> when pinned)',
-      ad_apt_install: '<code>apt-get install</code> (or <code>name=version</code> when pinned), explicit <code>apt:</code> prefix only',
-      ad_apt_search: "Local <code>apt-cache show</code>, no separate API",
-      ad_dnf_install: '<code>dnf install</code> (or <code>name-version</code> when pinned), explicit <code>dnf:</code> prefix only',
-      ad_dnf_search: "Local <code>dnf info</code>, no separate API",
-      ad_pacman_install: '<code>pacman -S</code>, explicit <code>pacman:</code> prefix only; no version pinning',
-      ad_pacman_search: "Local <code>pacman -Si</code>, no separate API",
-      ad_winget_install: '<code>winget install --exact</code> (or <code>--version</code> when pinned), explicit <code>winget:</code> prefix only',
-      ad_winget_search: "Local <code>winget show --exact</code>, no separate API",
-      ad_choco_install: '<code>choco install</code> (or <code>--version=</code> when pinned), explicit <code>choco:</code> prefix only',
-      ad_choco_search: "Local <code>choco search --exact</code>, no separate API",
-      ad_gh_install: 'Latest GitHub release asset for your OS/arch, SHA-256 verified when the release ships one, explicit <code>gh:owner/repo</code> only',
-      ad_gh_search: '<code>api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/releases/latest</code>',
-      ad_community_install: "Poly's own registry, explicit <code>community:</code> prefix only",
-      ad_community_search: "Poly's Supabase-backed package table",
-      adapters_p: "Every adapter that shells out to a real package manager (pip/npm/brew/cargo/gem/apt/dnf/pacman/winget/choco) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.",
-      adapters_p2: "<code>apt</code>, <code>dnf</code>, <code>pacman</code>, <code>winget</code>, <code>choco</code>, and <code>gem</code> are reachable only via their explicit prefix (e.g. <code>poly install apt:ripgrep</code>) -- they're never tried by a bare <code>poly install name</code>, so a system package or a single-language gem never silently shadows the tap/brew/pip/npm/cargo/go chain below.",
+      adapters_p: "Every adapter that shells out to a real package manager (pip/npm/brew/cargo) streams that tool's own output live, so you see its native progress. The <code>tap</code> adapter renders its own byte-progress bar since it's talking straight to an HTTP download.",
       resolution_h: "Resolution order &amp; prefixes",
       resolution_p: 'Without a prefix, <code>poly install name</code> tries each adapter\'s <code>Search</code> in this order and installs through the first hit:',
       resolution_p2: 'Force a specific one with <code>adapter:name</code>, and pin a version with <code>name@version</code> (or combine: <code>pip:requests@2.31.0</code>).',
@@ -687,7 +553,7 @@ poly install community:hello-world</div>
       faq_q1: "Is poly really free?",
       faq_a1: "Yes, entirely, including the built-in tap catalog. Pro is a small optional pack (see above), not a paywall on anything that already works.",
       faq_q2: "Which package managers does poly wrap?",
-      faq_a2: "pip, npm, Homebrew, cargo, go, gem, apt, dnf, pacman, winget, and Chocolatey, plus poly's own built-in tap catalog and community registry for things none of those carry. See the adapters table above.",
+      faq_a2: "pip, npm, Homebrew, plus poly's own built-in tap catalog and community registry for things none of those carry. See the adapters table above.",
       faq_q3: "Are community packages safe to install?",
       faq_a3: 'There\'s no automated malware scanning. A package marked with the "safe" badge has been manually reviewed by the Poly team; anything else, install only from publishers you trust. The SHA-256 check at install time only guards against corruption/tampering in transit, not a malicious upload.',
       faq_q4: "Do I need an account to use poly?",
@@ -696,7 +562,7 @@ poly install community:hello-world</div>
       faq_a5: 'Check this FAQ and the reference above first, they\'re free for every plan. Still stuck? Email <a href="mailto:open.corp.2030@gmail.com">open.corp.2030@gmail.com</a>. Pro accounts get answered first.'
     },
     fr: {
-      nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_apps: "apps", nav_account: "compte", nav_github: "github",
       nav_integrations: "intégrations",
       nav_search: "recherche",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
@@ -730,23 +596,7 @@ poly install community:hello-world</div>
       ad_cargo_install: '<code>cargo install --force</code>',
       ad_go_install: '<code>go install &lt;module&gt;@version</code> ; demande un chemin de module complet, pas un nom court',
       ad_go_search: "Proxy des modules Go, en remontant le chemin jusqu'à trouver le module englobant",
-      ad_gem_install: '<code>gem install</code> (ou <code>--version</code> si figé)',
-      ad_apt_install: '<code>apt-get install</code> (ou <code>name=version</code> si figé), uniquement via le préfixe explicite <code>apt:</code>',
-      ad_apt_search: "<code>apt-cache show</code> local, pas d'API séparée",
-      ad_dnf_install: '<code>dnf install</code> (ou <code>name-version</code> si figé), uniquement via le préfixe explicite <code>dnf:</code>',
-      ad_dnf_search: "<code>dnf info</code> local, pas d'API séparée",
-      ad_pacman_install: '<code>pacman -S</code>, uniquement via le préfixe explicite <code>pacman:</code> ; pas de version figée',
-      ad_pacman_search: "<code>pacman -Si</code> local, pas d'API séparée",
-      ad_winget_install: '<code>winget install --exact</code> (ou <code>--version</code> si figé), uniquement via le préfixe explicite <code>winget:</code>',
-      ad_winget_search: "<code>winget show --exact</code> local, pas d'API séparée",
-      ad_choco_install: '<code>choco install</code> (ou <code>--version=</code> si figé), uniquement via le préfixe explicite <code>choco:</code>',
-      ad_choco_search: "<code>choco search --exact</code> local, pas d'API séparée",
-      ad_gh_install: 'Dernier asset de release GitHub pour ton OS/architecture, vérifié SHA-256 quand la release en fournit un, uniquement via <code>gh:owner/repo</code>',
-      ad_gh_search: '<code>api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/releases/latest</code>',
-      ad_community_install: "Le registre de Poly, uniquement via le préfixe explicite <code>community:</code>",
-      ad_community_search: "Table de paquets Poly (Supabase)",
-      adapters_p: "Chaque adapter qui appelle un vrai gestionnaire de paquets (pip/npm/brew/cargo/gem/apt/dnf/pacman/winget/choco) streame la sortie native de cet outil en direct, donc tu vois sa vraie progression. L'adapter <code>tap</code> affiche sa propre barre de progression puisqu'il parle directement à un téléchargement HTTP.",
-      adapters_p2: "<code>apt</code>, <code>dnf</code>, <code>pacman</code>, <code>winget</code>, <code>choco</code> et <code>gem</code> ne sont accessibles que via leur préfixe explicite (ex. <code>poly install apt:ripgrep</code>) -- jamais essayés par un <code>poly install name</code> sans préfixe, pour qu'un paquet système ou une gem ne masque jamais silencieusement la chaîne tap/brew/pip/npm/cargo/go ci-dessous.",
+      adapters_p: "Chaque adapter qui appelle un vrai gestionnaire de paquets (pip/npm/brew/cargo) streame la sortie native de cet outil en direct, donc tu vois sa vraie progression. L'adapter <code>tap</code> affiche sa propre barre de progression puisqu'il parle directement à un téléchargement HTTP.",
       resolution_h: "Ordre de résolution &amp; préfixes",
       resolution_p: 'Sans préfixe, <code>poly install name</code> essaie la recherche de chaque adapter dans cet ordre et installe via le premier qui répond :',
       resolution_p2: 'Force un adapter précis avec <code>adapter:name</code>, et fige une version avec <code>name@version</code> (ou combine : <code>pip:requests@2.31.0</code>).',
@@ -827,7 +677,7 @@ poly install community:hello-world</div>
       faq_q1: "Est-ce que poly est vraiment gratuit ?",
       faq_a1: "Oui, entièrement, y compris le catalogue tap intégré. Pro est un petit pack optionnel (voir plus haut), pas un péage sur quelque chose qui marche déjà.",
       faq_q2: "Quels gestionnaires de paquets poly encapsule-t-il ?",
-      faq_a2: "pip, npm, Homebrew, cargo, go, gem, apt, dnf, pacman, winget et Chocolatey, plus le catalogue tap intégré de poly et le registre communautaire pour ce qu'aucun des autres ne propose. Voir le tableau des adapters plus haut.",
+      faq_a2: "pip, npm, Homebrew, plus le catalogue tap intégré de poly et le registre communautaire pour ce qu'aucun des trois ne propose. Voir le tableau des adapters plus haut.",
       faq_q3: "Les paquets communautaires sont-ils sûrs à installer ?",
       faq_a3: 'Il n\'y a pas de scan anti-malware automatique. Un paquet marqué du badge "safe" a été vérifié manuellement par l\'équipe Poly ; pour le reste, n\'installe que depuis des publieurs en qui tu as confiance. La vérification SHA-256 à l\'installation protège seulement contre la corruption ou l\'altération en transit, pas contre un upload malveillant.',
       faq_q4: "Faut-il un compte pour utiliser poly ?",
@@ -854,127 +704,7 @@ poly install community:hello-world</div>
 })();
 </script>
 
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-  const supabase = createClient('https://iuymslcbbrbahxbfuzrr.supabase.co', 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD');
-
-  async function renderUserMenu(session) {
-    const menu = document.getElementById('user-menu');
-    if (!session) { menu.style.display = 'none'; return; }
-
-    const { data } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', session.user.id).single();
-    const avatarSlot = document.getElementById('user-menu-avatar');
-    if (data && data.avatar_url) {
-      const img = document.createElement('img');
-      img.id = 'user-menu-avatar';
-      img.src = data.avatar_url;
-      img.alt = '';
-      avatarSlot.replaceWith(img);
-    } else {
-      avatarSlot.textContent = ((data && data.username) || session.user.email || '?').charAt(0).toUpperCase();
-    }
-    document.getElementById('user-menu-name').textContent = data && data.username ? '@' + data.username : session.user.email;
-    menu.style.display = 'block';
-  }
-
-  document.getElementById('user-menu-btn').addEventListener('click', () => {
-    document.getElementById('user-menu-dropdown').classList.toggle('open');
-  });
-  document.addEventListener('click', (e) => {
-    const menu = document.getElementById('user-menu');
-    if (!menu.contains(e.target)) document.getElementById('user-menu-dropdown').classList.remove('open');
-  });
-  document.getElementById('user-menu-signout').addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  });
-
-  async function checkBan(session) {
-    if (!session) return;
-    const { data } = await supabase.rpc('check_banned');
-    if (data && data[0] && data[0].banned) window.location.href = 'banned';
-  }
-
-  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
-  function escapeHtml(s) {
-    const div = document.createElement('div');
-    div.textContent = s == null ? '' : String(s);
-    return div.innerHTML;
-  }
-  function timeAgo(iso) {
-    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (diff < 60) return 'now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-    return Math.floor(diff / 86400) + 'd';
-  }
-  let notifCache = [];
-  let notifPollInterval = null;
-  async function loadNotifications() {
-    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
-    notifCache = data || [];
-    const list = document.getElementById('notif-list');
-    const countEl = document.getElementById('notif-count');
-    if (!notifCache.length) {
-      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
-      countEl.style.display = 'none';
-      return;
-    }
-    const unread = notifCache.filter((n) => !n.read_at).length;
-    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
-    list.innerHTML = notifCache.map((n) => `
-      <a class="notif-item ${n.read_at ? '' : 'unread'}" data-id="${n.id}">
-        <div class="n-title">${escapeHtml(n.title)}</div>
-        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
-        <div class="n-time">${timeAgo(n.created_at)}</div>
-      </a>
-    `).join('');
-    list.querySelectorAll('.notif-item').forEach((el) => {
-      el.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const id = el.getAttribute('data-id');
-        const n = notifCache.find((x) => x.id === id);
-        await supabase.rpc('mark_notification_read', { p_id: id });
-        window.location.href = 'notifications?id=' + encodeURIComponent(id);
-      });
-    });
-  }
-  document.getElementById('notif-bell-btn').addEventListener('click', () => {
-    const dd = document.getElementById('notif-dropdown');
-    const open = dd.classList.toggle('open');
-    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) loadNotifications();
-  });
-  document.addEventListener('click', (e) => {
-    const bell = document.getElementById('notif-bell');
-    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
-  });
-  document.getElementById('notif-mark-all').addEventListener('click', async () => {
-    await supabase.rpc('mark_all_notifications_read');
-    loadNotifications();
-  });
-  document.getElementById('notif-staff-send').addEventListener('click', async () => {
-    const input = document.getElementById('notif-staff-input');
-    const title = input.value.trim();
-    if (!title) return;
-    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
-    if (!error) { input.value = ''; loadNotifications(); }
-  });
-  async function initNotifBell(session) {
-    const bell = document.getElementById('notif-bell');
-    clearInterval(notifPollInterval);
-    if (!session) { bell.style.display = 'none'; return; }
-    bell.style.display = 'block';
-    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
-    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
-    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
-    loadNotifications();
-    notifPollInterval = setInterval(loadNotifications, 60000);
-  }
-
-  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); });
-  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); });
-
+<script>
   document.querySelectorAll('.faq-list .accordion-head').forEach((head) => {
     head.addEventListener('click', () => head.closest('.accordion-item').classList.toggle('open'));
   });
@@ -1005,6 +735,9 @@ poly install community:hello-world</div>
   });
 })();
 </script>
+
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
 
 </body>
 </html>

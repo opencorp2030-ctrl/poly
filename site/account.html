@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Account · Poly</title>
 <link rel="icon" href="logo.png" />
@@ -19,125 +20,31 @@
 <meta name="twitter:title" content="Account · Poly" />
 <meta name="twitter:description" content="Sign in to manage your Poly account and Pro status." />
 <meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
 <style>
-  :root {
-    --ink: #14171d;
-    --ink-raised: #1b1f27;
-    --border: rgba(255, 255, 255, 0.10);
-    --text: #e9e4d8;
-    --text-dim: #9c9686;
-    --accent: #f0a93e;
-    --accent-ink: #14171d;
-    --danger: #e0664a;
-    --ok: #6fbf8b;
-
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
-    --container: 920px;
-    color-scheme: dark;
-  }
-
-  :root[data-theme="light"] {
-    --ink: #eff1f4;
-    --ink-raised: #ffffff;
-    --border: rgba(20, 23, 29, 0.10);
-    --text: #1b1e24;
-    --text-dim: #5b6270;
-    --accent: #a8660a;
-    --accent-ink: #ffffff;
-    color-scheme: light;
-  }
-
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ink: #eff1f4;
-      --ink-raised: #ffffff;
-      --border: rgba(20, 23, 29, 0.10);
-      --text: #1b1e24;
-      --text-dim: #5b6270;
-      --accent: #a8660a;
-      --accent-ink: #ffffff;
-      color-scheme: light;
-    }
-  }
-
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: var(--ink);
-    color: var(--text);
-    font-family: var(--sans);
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
-  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  a:focus-visible, button:focus-visible, input:focus-visible {
-  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
-  .skip-link:focus { left: 0; }
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  .wrap {
-    max-width: var(--container);
-    margin: 0 auto;
-    padding-left: clamp(1.25rem, 4vw, 2rem);
-    padding-right: clamp(1.25rem, 4vw, 2rem);
-  }
-
-  header.top { border-bottom: 1px solid var(--border); }
-  header.top .wrap {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; flex-wrap: nowrap; min-height: 64px;
-  }
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
-  nav.top-links a:hover { color: var(--accent); }
-
-  .nav-toggle {
-    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
-    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
-  }
-  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+  .nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0; color: var(--text); }
+  .nav-toggle svg { width: 18px; height: 18px; }
   @media (max-width: 960px) {
     .nav-toggle { display: flex; }
     header.top .wrap { position: relative; }
-    nav.top-links {
-      display: none; position: absolute; top: 100%; left: 0; right: 0;
-      flex-direction: column; align-items: stretch; gap: 0;
-      background: var(--ink-raised); border-bottom: 1px solid var(--border);
-      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
-    }
+    nav.top-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--ink-raised); border-bottom: 1px solid var(--border); padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40; }
     nav.top-links.open { display: flex; }
     nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
     nav.top-links a:last-child { border-bottom: none; }
   }
-  nav.top-links a.current { color: var(--accent); }
-
   .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; color: var(--text); }
+  .icon-btn svg { width: 17px; height: 17px; }
   .notif-bell { position: relative; display: none; }
-  .notif-bell-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .notif-bell-btn svg { width: 17px; height: 17px; }
-  .notif-count {
-    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
-    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
-    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
-  }
-  .notif-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .notif-dropdown.open { display: flex; }
+  .notif-count { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px; background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1; }
+  .notif-dropdown { width: 320px; max-width: calc(100vw - 2rem); }
   .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
   .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
   .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
@@ -147,7 +54,7 @@
   .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
   .notif-item:last-child { border-bottom: none; }
   .notif-item:hover { background: var(--ink); text-decoration: none; }
-  .notif-item.unread { background: rgba(240,169,62,0.06); }
+  .notif-item.unread { background: color-mix(in srgb, var(--accent) 8%, transparent); }
   .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
   .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
   .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
@@ -155,42 +62,17 @@
   .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
   .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
   .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
-
   .user-menu { position: relative; }
-  .user-menu-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .user-menu-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
-  .user-menu-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; min-width: 190px;
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.4rem; display: none; flex-direction: column; gap: 0.1rem; z-index: 50;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .user-menu-dropdown.open { display: flex; }
+  .user-menu-dropdown { min-width: 190px; padding: 0.4rem; gap: 0.1rem; }
   .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
-  .user-menu-item {
-    display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer;
-    font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px;
-    text-decoration: none; box-sizing: border-box;
-  }
+  .user-menu-item { display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px; text-decoration: none; box-sizing: border-box; }
   .user-menu-item:hover { background: var(--ink); }
   .user-menu-item.danger { color: var(--danger); }
 
   footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
-
-  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
-  .cookie-banner.show { display: block; }
-  .cookie-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding: 1rem clamp(1.25rem, 4vw, 2rem); }
-  .cookie-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dim); max-width: 60ch; }
-  .cookie-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
-  .cookie-actions a { font-size: 0.82rem; color: var(--text-dim); }
-  .cookie-actions a:hover { color: var(--accent); }
-  .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
-  .cookie-actions button:hover { opacity: 0.9; }
   footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
   footer.site-footer .footer-brand a:hover { color: var(--accent); }
@@ -446,7 +328,7 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 
-<header class="top">
+<header class="top glass" id="top-nav">
   <div class="wrap">
     <a href="/" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links" id="top-links">
@@ -455,47 +337,51 @@
       <a href="docs" data-i18n="nav_docs">docs</a>
       <a href="/#pro" data-i18n="nav_pro">pro</a>
       <a href="community" data-i18n="nav_community">community</a>
-<a href="integrations" data-i18n="nav_integrations">integrations</a>
-<a href="search" data-i18n="nav_search">search</a>
+      <a href="apps" data-i18n="nav_apps">apps</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
       <a href="account" class="current" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
     <div class="header-actions">
-    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="notif-bell" id="notif-bell">
-      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="notif-count" id="notif-count">0</span>
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
       </button>
-      <div class="notif-dropdown" id="notif-dropdown">
-        <div class="notif-dropdown-head">
-          <span class="title">Notifications</span>
-          <div class="head-actions">
-            <a class="notif-see-all" href="notifications">See all</a>
-            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
           </div>
         </div>
-        <div class="notif-list" id="notif-list"></div>
-        <div class="notif-staff-compose" id="notif-staff-compose">
-          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
-          <button type="button" id="notif-staff-send">Send</button>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
         </div>
       </div>
-    </div>
-    <div class="user-menu" id="user-menu" style="display:none">
-      <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
-        <span class="initial" id="user-menu-avatar">?</span>
-      </button>
-      <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">…</div>
-        <a href="account" class="user-menu-item">Account</a>
-        <a href="community" class="user-menu-item">Community</a>
-        <a href="docs" class="user-menu-item">Docs</a>
-        <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
-      </div>
-    </div>
     </div>
   </div>
 </header>
@@ -508,21 +394,6 @@ window.addEventListener('error', function (e) {
 window.addEventListener('unhandledrejection', function (e) {
   window.__polyErrors.push(new Date().toISOString() + ' Unhandled promise rejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
 });
-(function () {
-  var toggle = document.getElementById('nav-toggle');
-  var links = document.getElementById('top-links');
-  if (!toggle || !links) return;
-  toggle.addEventListener('click', function () {
-    var open = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-  links.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    });
-  });
-})();
 </script>
 
 <main id="main">
@@ -588,6 +459,22 @@ window.addEventListener('unhandledrejection', function (e) {
         </div>
         <button class="btn primary" type="submit" data-i18n="recovery_submit">Update password</button>
       </form>
+    </div>
+
+    <div class="card auth-card" data-view="mfa-challenge">
+      <p class="eyebrow" data-i18n="acct_eyebrow">Account</p>
+      <h1 data-i18n="mfa_challenge_title">Two-factor authentication</h1>
+      <p class="status" id="mfa-challenge-status"></p>
+      <form id="mfa-challenge-form">
+        <div class="field">
+          <label for="mfa-challenge-code" data-i18n="mfa_challenge_field">Enter the 6-digit code from your authenticator app</label>
+          <input id="mfa-challenge-code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" required />
+        </div>
+        <button class="btn primary" type="submit" data-i18n="mfa_challenge_submit">Verify</button>
+      </form>
+      <p class="switch-mode">
+        <a href="#" id="mfa-challenge-signout-link" data-i18n="mfa_challenge_signout">Sign out</a>
+      </p>
     </div>
 
     <div class="account-grid" data-view="profile">
@@ -787,6 +674,13 @@ window.addEventListener('unhandledrejection', function (e) {
           <p class="community-link-note" id="packages-empty" data-i18n="packages_empty" style="display:none">Nothing published yet.</p>
         </div>
 
+        <div class="card apps-dash-card" id="apps-dash-card" style="display:none">
+          <p class="eyebrow" data-i18n="apps_eyebrow">Your apps</p>
+          <div id="my-apps-list"></div>
+          <p class="community-link-note" id="my-apps-empty" data-i18n="apps_empty" style="display:none">Nothing published yet.</p>
+          <a class="btn small full" href="publish-app" style="margin-top:0.75rem" data-i18n="apps_publish_cta">Publish an app</a>
+        </div>
+
         <div class="card cli-card">
           <p class="eyebrow" data-i18n="cli_eyebrow">From the terminal</p>
           <div class="cli-tip">
@@ -822,15 +716,14 @@ window.addEventListener('unhandledrejection', function (e) {
 
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 <script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  import { supabase } from './js/supabase-client.js';
 
   const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const I18N = {
     en: {
-      nav_install: "install", nav_pro: "pro", nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account", nav_github: "github",
+      nav_install: "install", nav_pro: "pro", nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_apps: "apps", nav_account: "account", nav_github: "github",
       nav_integrations: "integrations",
       nav_search: "search",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
@@ -871,6 +764,11 @@ window.addEventListener('unhandledrejection', function (e) {
       btn_delete_package: "Delete",
       confirm_delete_package: "Delete {name}? This can't be undone, it stops being installable immediately.",
       package_deleted_ok: "Package deleted.",
+      apps_eyebrow: "Your apps",
+      apps_empty: "Nothing published yet.",
+      apps_publish_cta: "Publish an app",
+      apps_free_label: "free",
+      btn_edit_app: "Edit",
       err_generic: "Something went wrong. Try again.",
       ok_check_email: "Check your email to confirm your account, then sign in.",
       consent_html: 'I agree to the <a href="terms" target="_blank">Terms</a> and <a href="privacy" target="_blank">Privacy Policy</a>.',
@@ -889,6 +787,8 @@ window.addEventListener('unhandledrejection', function (e) {
       mfa_h: "Two-factor authentication", mfa_loading: "Checking...", mfa_on: "Enabled ✓", mfa_off: "Not enabled",
       mfa_enable_btn: "Enable 2FA", mfa_disable_btn: "Disable 2FA", mfa_verify_btn: "Verify & enable",
       mfa_enabled_ok: "2FA enabled.", mfa_disabled_ok: "2FA disabled.",
+      mfa_challenge_title: "Two-factor authentication", mfa_challenge_field: "Enter the 6-digit code from your authenticator app",
+      mfa_challenge_submit: "Verify", mfa_challenge_signout: "Sign out", mfa_challenge_err_no_factor: "No authenticator found for this account. Signing out.",
       sessions_h: "Active sessions", revoke_sessions_btn: "Sign out everywhere",
       revoke_sessions_confirm: "Sign out of every device, including this one?",
       export_h: "Your data", export_note: "Download everything Poly has about your account as a JSON file.", export_btn: "Download my data",
@@ -940,7 +840,7 @@ window.addEventListener('unhandledrejection', function (e) {
       dev_copy_ok: "Copied ✓"
     },
     fr: {
-      nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte", nav_github: "github",
+      nav_install: "installer", nav_pro: "pro", nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_apps: "apps", nav_account: "compte", nav_github: "github",
       nav_integrations: "intégrations",
       nav_search: "recherche",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
@@ -981,6 +881,11 @@ window.addEventListener('unhandledrejection', function (e) {
       btn_delete_package: "Supprimer",
       confirm_delete_package: "Supprimer {name} ? Impossible à annuler, il cesse d'être installable immédiatement.",
       package_deleted_ok: "Paquet supprimé.",
+      apps_eyebrow: "Tes apps",
+      apps_empty: "Rien publié pour l'instant.",
+      apps_publish_cta: "Publier une app",
+      apps_free_label: "gratuit",
+      btn_edit_app: "Modifier",
       err_generic: "Un problème est survenu. Réessaie.",
       ok_check_email: "Vérifie ton e-mail pour confirmer ton compte, puis connecte-toi.",
       consent_html: 'J\'accepte les <a href="terms" target="_blank">Conditions</a> et la <a href="privacy" target="_blank">Politique de confidentialité</a>.',
@@ -999,6 +904,8 @@ window.addEventListener('unhandledrejection', function (e) {
       mfa_h: "Authentification à deux facteurs", mfa_loading: "Vérification...", mfa_on: "Activée ✓", mfa_off: "Non activée",
       mfa_enable_btn: "Activer la 2FA", mfa_disable_btn: "Désactiver la 2FA", mfa_verify_btn: "Vérifier et activer",
       mfa_enabled_ok: "2FA activée.", mfa_disabled_ok: "2FA désactivée.",
+      mfa_challenge_title: "Authentification à deux facteurs", mfa_challenge_field: "Entre le code à 6 chiffres de ton application d'authentification",
+      mfa_challenge_submit: "Vérifier", mfa_challenge_signout: "Se déconnecter", mfa_challenge_err_no_factor: "Aucun authentificateur trouvé pour ce compte. Déconnexion.",
       sessions_h: "Sessions actives", revoke_sessions_btn: "Se déconnecter partout",
       revoke_sessions_confirm: "Se déconnecter de tous les appareils, y compris celui-ci ?",
       export_h: "Tes données", export_note: "Télécharge tout ce que Poly sait sur ton compte, au format JSON.", export_btn: "Télécharger mes données",
@@ -1336,7 +1243,7 @@ window.addEventListener('unhandledrejection', function (e) {
     statusEl.textContent = t('recovery_ok');
     statusEl.className = 'status show ok';
     const { data } = await supabase.auth.getSession();
-    if (data.session) { renderProfile(data.session); checkBan(data.session); initNotifBell(data.session); }
+    if (data.session) { handleAuthedSession(data.session); }
   });
 
   document.getElementById('signout-btn').addEventListener('click', async () => {
@@ -1351,6 +1258,60 @@ window.addEventListener('unhandledrejection', function (e) {
     const { error } = await supabase.auth.updateUser({ email: newEmail });
     statusEl.textContent = error ? (error.message || t('err_generic')) : t('email_change_sent');
     statusEl.className = 'status show ' + (error ? 'error' : 'ok');
+  });
+
+  // --- Session gating (require 2FA challenge at login when enrolled) ---
+  let pendingChallengeFactorId = null;
+
+  async function handleAuthedSession(session) {
+    if (!session) { showView('auth'); document.getElementById('user-menu').style.display = 'none'; return; }
+    const { data: aal, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (!aalError && aal.nextLevel === 'aal2' && aal.currentLevel !== aal.nextLevel) {
+      await showMfaChallenge();
+      return;
+    }
+    renderProfile(session);
+  }
+
+  async function showMfaChallenge() {
+    const statusEl = document.getElementById('mfa-challenge-status');
+    statusEl.textContent = '';
+    statusEl.className = 'status';
+    document.getElementById('mfa-challenge-code').value = '';
+    const { data, error } = await supabase.auth.mfa.listFactors();
+    const factor = !error && data.totp && data.totp.find((f) => f.status === 'verified');
+    if (!factor) {
+      statusEl.textContent = t('mfa_challenge_err_no_factor');
+      statusEl.className = 'status show error';
+      pendingChallengeFactorId = null;
+      await supabase.auth.signOut();
+      return;
+    }
+    pendingChallengeFactorId = factor.id;
+    document.getElementById('user-menu').style.display = 'none';
+    showView('mfa-challenge');
+  }
+
+  document.getElementById('mfa-challenge-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const statusEl = document.getElementById('mfa-challenge-status');
+    const code = document.getElementById('mfa-challenge-code').value.trim();
+    if (!code || !pendingChallengeFactorId) return;
+    statusEl.textContent = '';
+    statusEl.className = 'status';
+    const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: pendingChallengeFactorId });
+    if (challengeError) { statusEl.textContent = challengeError.message || t('err_generic'); statusEl.className = 'status show error'; return; }
+    const { error: verifyError } = await supabase.auth.mfa.verify({ factorId: pendingChallengeFactorId, challengeId: challenge.id, code });
+    if (verifyError) { statusEl.textContent = verifyError.message || t('err_generic'); statusEl.className = 'status show error'; return; }
+    pendingChallengeFactorId = null;
+    const { data: refreshed } = await supabase.auth.getSession();
+    handleAuthedSession(refreshed.session);
+  });
+
+  document.getElementById('mfa-challenge-signout-link').addEventListener('click', async (e) => {
+    e.preventDefault();
+    pendingChallengeFactorId = null;
+    await supabase.auth.signOut();
   });
 
   // --- Two-factor authentication ---
@@ -1553,6 +1514,58 @@ window.addEventListener('unhandledrejection', function (e) {
     }
     setProfileStatus(t('package_deleted_ok'), 'ok');
     loadPublishedPackages(userId);
+  }
+
+  function appStatusPillHtml(app) {
+    if (app.blocked) return `<span class="pill danger">blocked</span>`;
+    if (app.status === 'draft') return `<span class="pill">draft</span>`;
+    return '';
+  }
+
+  async function loadMyApps(userId) {
+    const card = document.getElementById('apps-dash-card');
+    const list = document.getElementById('my-apps-list');
+    const empty = document.getElementById('my-apps-empty');
+
+    const { data, error } = await supabase
+      .from('apps')
+      .select('id, slug, name, version, status, blocked, is_paid, price_cents, currency, download_count')
+      .eq('publisher_id', userId)
+      .order('created_at', { ascending: false });
+
+    card.style.display = 'block';
+
+    if (error || !data || data.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    list.innerHTML = data.map((a) => `
+      <div class="pkg-row">
+        <div class="pname">${escapeHtml(a.name)} ${appStatusPillHtml(a)}</div>
+        <div class="pmeta">v${escapeHtml(a.version)} · ${a.download_count} ${escapeHtml(t('downloads_label'))} · ${a.is_paid ? (a.currency === 'eur' ? '€' : a.currency === 'gbp' ? '£' : '$') + (a.price_cents/100).toFixed(2) : t('apps_free_label')}</div>
+        <a class="btn small" href="publish-app?id=${encodeURIComponent(a.id)}" data-i18n="btn_edit_app">Edit</a>
+        <button class="btn small delete-app-btn" data-id="${a.id}" type="button">${escapeHtml(t('btn_delete_package'))}</button>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.delete-app-btn').forEach((btn) => {
+      btn.addEventListener('click', () => deleteApp(btn.getAttribute('data-id'), userId));
+    });
+  }
+
+  async function deleteApp(appIdToDelete, userId) {
+    if (!confirm(t('confirm_delete_package').replace('{name}', 'this app'))) return;
+    const { data, error } = await supabase.rpc('delete_app', { p_app_id: appIdToDelete });
+    if (error) { setProfileStatus(error.message || t('err_generic'), 'error'); return; }
+    const row = data && data[0];
+    const paths = [];
+    if (row && row.storage_path) paths.push(row.storage_path);
+    if (paths.length) await supabase.storage.from('app-builds').remove(paths);
+    setProfileStatus(t('package_deleted_ok'), 'ok');
+    loadMyApps(userId);
   }
 
   function setTokenStatus(message, kind) {
@@ -1811,6 +1824,7 @@ window.addEventListener('unhandledrejection', function (e) {
 
     showView('profile');
     loadPublishedPackages(session.user.id);
+    loadMyApps(session.user.id);
     loadTokens(session.user.id);
     refreshMfaState();
     loadSessions();
@@ -1944,99 +1958,13 @@ window.addEventListener('unhandledrejection', function (e) {
     setProfileStatus(t('saved_ok'), 'ok');
   });
 
-  async function checkBan(session) {
-    if (!session) return;
-    const { data } = await supabase.rpc('check_banned');
-    if (data && data[0] && data[0].banned) window.location.href = 'banned';
-  }
-
-  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
-  function timeAgo(iso) {
-    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (diff < 60) return 'now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-    return Math.floor(diff / 86400) + 'd';
-  }
-  let notifCache = [];
-  let notifPollInterval = null;
-  async function loadNotifications() {
-    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
-    notifCache = data || [];
-    const list = document.getElementById('notif-list');
-    const countEl = document.getElementById('notif-count');
-    if (!notifCache.length) {
-      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
-      countEl.style.display = 'none';
-      return;
-    }
-    const unread = notifCache.filter((n) => !n.read_at).length;
-    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
-    list.innerHTML = notifCache.map((n) => `
-      <a class="notif-item ${n.read_at ? '' : 'unread'}" data-id="${n.id}">
-        <div class="n-title">${escapeHtml(n.title)}</div>
-        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
-        <div class="n-time">${timeAgo(n.created_at)}</div>
-      </a>
-    `).join('');
-    list.querySelectorAll('.notif-item').forEach((el) => {
-      el.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const id = el.getAttribute('data-id');
-        const n = notifCache.find((x) => x.id === id);
-        await supabase.rpc('mark_notification_read', { p_id: id });
-        window.location.href = 'notifications?id=' + encodeURIComponent(id);
-      });
-    });
-  }
-  document.getElementById('notif-bell-btn').addEventListener('click', () => {
-    const dd = document.getElementById('notif-dropdown');
-    const open = dd.classList.toggle('open');
-    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) loadNotifications();
-  });
-  document.addEventListener('click', (e) => {
-    const bell = document.getElementById('notif-bell');
-    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
-  });
-  document.getElementById('notif-mark-all').addEventListener('click', async () => {
-    await supabase.rpc('mark_all_notifications_read');
-    loadNotifications();
-  });
-  document.getElementById('notif-staff-send').addEventListener('click', async () => {
-    const input = document.getElementById('notif-staff-input');
-    const title = input.value.trim();
-    if (!title) return;
-    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
-    if (!error) { input.value = ''; loadNotifications(); }
-  });
-  async function initNotifBell(session) {
-    const bell = document.getElementById('notif-bell');
-    clearInterval(notifPollInterval);
-    if (!session) { bell.style.display = 'none'; return; }
-    bell.style.display = 'block';
-    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
-    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
-    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
-    loadNotifications();
-    notifPollInterval = setInterval(loadNotifications, 60000);
-  }
-
   supabase.auth.onAuthStateChange((_event, session) => {
     if (_event === 'PASSWORD_RECOVERY') { showView('recovery'); return; }
-    if (session) {
-      renderProfile(session);
-      checkBan(session);
-      initNotifBell(session);
-    } else {
-      showView('auth');
-      document.getElementById('user-menu').style.display = 'none';
-      initNotifBell(null);
-    }
+    handleAuthedSession(session);
   });
 
   supabase.auth.getSession().then(({ data }) => {
-    if (data.session) { renderProfile(data.session); checkBan(data.session); initNotifBell(data.session); }
+    if (data.session) { handleAuthedSession(data.session); }
   });
 
   let saved = null;
@@ -2070,6 +1998,9 @@ window.addEventListener('unhandledrejection', function (e) {
   });
 })();
 </script>
+
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
 
 </body>
 </html>

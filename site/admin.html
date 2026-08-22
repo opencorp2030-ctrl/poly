@@ -2,39 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Poly</title>
 <link rel="icon" href="logo.png" />
 <meta name="robots" content="noindex, nofollow" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
 <style>
-  :root {
-    --ink: #14171d;
-    --ink-raised: #1b1f27;
-    --border: rgba(255, 255, 255, 0.10);
-    --text: #e9e4d8;
-    --text-dim: #9c9686;
-    --accent: #f0a93e;
-    --accent-ink: #14171d;
-    --danger: #e0664a;
-    --ok: #4caf7d;
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color-scheme: dark;
-  }
-  :root[data-theme="light"] {
-    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-      color-scheme: light;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); overflow-x: hidden; }
   body { min-height: 100vh; }
   .wrap { max-width: 880px; margin: 0 auto; padding: 2rem clamp(1.25rem, 4vw, 2rem) 5rem; }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
@@ -43,29 +17,24 @@
   .missing { text-align: center; padding: 6rem 1rem; color: var(--text-dim); }
 
   .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-  .tab-btn {
-    background: none; border: none; padding: 0.7rem 1rem; font-family: var(--sans); font-size: 0.88rem;
-    color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
-  }
+  .tab-btn { background: none; border: none; padding: 0.7rem 1rem; font-family: var(--sans); font-size: 0.88rem; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
   .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
   [data-tab] { display: none; }
   [data-tab].active { display: block; }
 
-  .card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.25rem; }
-  .card h2 { font-size: 0.95rem; margin: 0 0 1rem; }
-  label { display: block; font-size: 0.8rem; color: var(--text-dim); margin: 0 0 0.35rem; }
-  input[type=text], textarea, select {
+  .admin-card label { display: block; font-size: 0.8rem; color: var(--text-dim); margin: 0 0 0.35rem; }
+  .admin-card input[type=text], .admin-card textarea, .admin-card select {
     width: 100%; padding: 0.6rem 0.75rem; margin-bottom: 1rem; background: var(--ink); border: 1px solid var(--border);
-    border-radius: 6px; color: var(--text); font-family: var(--sans); font-size: 0.88rem;
+    border-radius: var(--radius-sm); color: var(--text); font-family: var(--sans); font-size: 0.88rem;
   }
-  input[type=text]:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+  .admin-card input[type=text]:focus, .admin-card textarea:focus, .admin-card select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
   .radio-row { display: flex; gap: 1.25rem; margin-bottom: 1rem; font-size: 0.85rem; }
   .radio-row label { display: flex; align-items: center; gap: 0.4rem; margin: 0; color: var(--text); }
 
   .editor-toolbar { display: flex; gap: 0.3rem; margin-bottom: 0.5rem; }
   .editor-toolbar button {
     width: 32px; height: 32px; border: 1px solid var(--border); background: var(--ink); color: var(--text);
-    border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+    border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem;
   }
   .editor-toolbar button:hover { border-color: var(--accent); }
   .editor-toolbar button.b { font-weight: 800; }
@@ -73,16 +42,11 @@
   .editor-toolbar button.u { text-decoration: underline; }
   #notif-body {
     min-height: 120px; padding: 0.7rem 0.9rem; background: var(--ink); border: 1px solid var(--border);
-    border-radius: 6px; font-size: 0.88rem; line-height: 1.55; margin-bottom: 1rem;
+    border-radius: var(--radius-sm); font-size: 0.88rem; line-height: 1.55; margin-bottom: 1rem;
   }
   #notif-body:focus { outline: none; border-color: var(--accent); }
   #notif-body a { color: var(--accent); }
 
-  .btn { padding: 0.65rem 1.1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-weight: 700; font-family: var(--sans); font-size: 0.85rem; cursor: pointer; }
-  .btn:hover { opacity: 0.92; }
-  .btn.small { padding: 0.4rem 0.75rem; font-size: 0.78rem; }
-  .btn.danger { background: var(--danger); color: #fff; }
-  .btn.ok { background: var(--ok); color: #fff; }
   .status { font-size: 0.82rem; margin-top: 0.75rem; display: none; }
   .status.show { display: block; }
   .status.ok { color: var(--ok); }
@@ -93,9 +57,6 @@
   .row-info { min-width: 0; }
   .row-name { font-weight: 600; font-size: 0.88rem; }
   .row-meta { font-size: 0.76rem; color: var(--text-dim); font-family: var(--mono); margin-top: 0.15rem; }
-  .badge-pill { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 999px; }
-  .badge-pill.banned { background: rgba(224,102,74,0.18); color: var(--danger); }
-  .badge-pill.blocked { background: rgba(224,102,74,0.18); color: var(--danger); }
   .empty-note { font-size: 0.85rem; color: var(--text-dim); padding: 1rem 0; }
 </style>
 </head>
@@ -118,10 +79,11 @@
       <button type="button" class="tab-btn active" data-tab-btn="notify">Notify</button>
       <button type="button" class="tab-btn" data-tab-btn="users">Users</button>
       <button type="button" class="tab-btn" data-tab-btn="packages">Packages</button>
+      <button type="button" class="tab-btn" data-tab-btn="apps">Apps</button>
     </div>
 
     <div data-tab="notify" class="active">
-      <div class="card">
+      <div class="card admin-card">
         <h2>Send a notification</h2>
         <label for="notif-title">Title</label>
         <input type="text" id="notif-title" placeholder="What's new in Poly" maxlength="140">
@@ -142,13 +104,13 @@
         </div>
         <input type="text" id="notif-usernames" placeholder="username1, username2, ..." style="display:none">
 
-        <button type="button" class="btn" id="notif-send-btn">Send</button>
+        <button type="button" class="btn primary" id="notif-send-btn">Send</button>
         <p class="status" id="notif-status"></p>
       </div>
     </div>
 
     <div data-tab="users">
-      <div class="card">
+      <div class="card admin-card">
         <h2>Users</h2>
         <input type="text" id="users-search" placeholder="Search by username or email...">
         <div id="users-list"></div>
@@ -157,22 +119,27 @@
     </div>
 
     <div data-tab="packages">
-      <div class="card">
+      <div class="card admin-card">
         <h2>Packages</h2>
         <input type="text" id="packages-search" placeholder="Search by package name...">
         <div id="packages-list"></div>
         <p class="empty-note" id="packages-empty" style="display:none">No matches.</p>
       </div>
     </div>
+
+    <div data-tab="apps">
+      <div class="card admin-card">
+        <h2>Apps</h2>
+        <input type="text" id="apps-search" placeholder="Search by app name...">
+        <div id="apps-admin-list"></div>
+        <p class="empty-note" id="apps-admin-empty" style="display:none">No matches.</p>
+      </div>
+    </div>
   </div>
 </div>
 
 <script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  import { supabase } from './js/supabase-client.js';
   const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
 
   function showView(name) {
@@ -259,7 +226,7 @@
     list.innerHTML = data.map((u) => `
       <div class="row" data-username="${escapeHtml(u.username)}">
         <div class="row-info">
-          <div class="row-name">@${escapeHtml(u.username)} ${u.badge_staff ? '<span class="badge-pill" style="background:rgba(240,169,62,0.18);color:var(--accent)">staff</span>' : ''} ${u.banned ? '<span class="badge-pill banned">banned</span>' : ''}</div>
+          <div class="row-name">@${escapeHtml(u.username)} ${u.badge_staff ? '<span class="pill accent">staff</span>' : ''} ${u.banned ? '<span class="pill danger">banned</span>' : ''}</div>
           <div class="row-meta">${escapeHtml(u.email)} · ${escapeHtml(u.plan)}</div>
         </div>
         <button type="button" class="btn small ${u.banned ? 'ok' : 'danger'} user-ban-btn" data-banned="${u.banned}">${u.banned ? 'Unban' : 'Ban'}</button>
@@ -304,7 +271,7 @@
     list.innerHTML = data.map((p) => `
       <div class="row" data-name="${escapeHtml(p.name)}">
         <div class="row-info">
-          <div class="row-name">${escapeHtml(p.name)}@${escapeHtml(p.version)} ${p.blocked ? '<span class="badge-pill blocked">blocked</span>' : ''}</div>
+          <div class="row-name">${escapeHtml(p.name)}@${escapeHtml(p.version)} ${p.blocked ? '<span class="pill danger">blocked</span>' : ''}</div>
           <div class="row-meta">by @${escapeHtml(p.uploader_username)} · ${p.download_count} downloads</div>
         </div>
         <button type="button" class="btn small ${p.blocked ? 'ok' : 'danger'} pkg-block-btn" data-blocked="${p.blocked}">${p.blocked ? 'Unblock' : 'Block'}</button>
@@ -332,6 +299,67 @@
     packagesDebounce = setTimeout(() => loadPackages(e.target.value.trim()), 300);
   });
 
+  // --- apps tab ---
+  function priceLabel(a) {
+    if (!a.is_paid) return 'free';
+    const symbol = a.currency === 'eur' ? '€' : a.currency === 'gbp' ? '£' : '$';
+    return symbol + (a.price_cents / 100).toFixed(2);
+  }
+
+  async function loadApps(q) {
+    const { data, error } = await supabase.rpc('admin_search_apps', { p_query: q || '' });
+    const list = document.getElementById('apps-admin-list');
+    const empty = document.getElementById('apps-admin-empty');
+    if (error || !data || !data.length) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      if (error) console.error(error);
+      return;
+    }
+    empty.style.display = 'none';
+    list.innerHTML = data.map((a) => `
+      <div class="row" data-id="${escapeHtml(a.id)}">
+        <div class="row-info">
+          <div class="row-name">${escapeHtml(a.name)}@${escapeHtml(a.version)} ${a.blocked ? '<span class="pill danger">blocked</span>' : ''} ${a.is_featured ? '<span class="pill accent">featured</span>' : ''} ${a.status === 'draft' ? '<span class="pill">draft</span>' : ''}</div>
+          <div class="row-meta">by @${escapeHtml(a.publisher_username)} · ${a.download_count} installs · ${priceLabel(a)}</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-shrink:0">
+          <button type="button" class="btn small ${a.is_featured ? '' : 'ok'} app-feature-btn" data-featured="${a.is_featured}">${a.is_featured ? 'Unfeature' : 'Feature'}</button>
+          <button type="button" class="btn small ${a.blocked ? 'ok' : 'danger'} app-block-btn" data-blocked="${a.blocked}">${a.blocked ? 'Unblock' : 'Block'}</button>
+        </div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.app-block-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const row = btn.closest('.row');
+        const id = row.getAttribute('data-id');
+        const currentlyBlocked = btn.getAttribute('data-blocked') === 'true';
+        if (currentlyBlocked) {
+          await supabase.rpc('admin_set_app_blocked', { p_app_id: id, p_blocked: false });
+        } else {
+          const reason = prompt('Reason for blocking this app:') || null;
+          await supabase.rpc('admin_set_app_blocked', { p_app_id: id, p_blocked: true, p_reason: reason });
+        }
+        loadApps(document.getElementById('apps-search').value.trim());
+      });
+    });
+    list.querySelectorAll('.app-feature-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const row = btn.closest('.row');
+        const id = row.getAttribute('data-id');
+        const currentlyFeatured = btn.getAttribute('data-featured') === 'true';
+        await supabase.rpc('admin_set_app_featured', { p_app_id: id, p_featured: !currentlyFeatured });
+        loadApps(document.getElementById('apps-search').value.trim());
+      });
+    });
+  }
+
+  let appsDebounce = null;
+  document.getElementById('apps-search').addEventListener('input', (e) => {
+    clearTimeout(appsDebounce);
+    appsDebounce = setTimeout(() => loadApps(e.target.value.trim()), 300);
+  });
+
   // --- gate + boot ---
   async function boot() {
     const { data } = await supabase.auth.getSession();
@@ -342,9 +370,11 @@
     showView('admin');
     loadUsers('');
     loadPackages('');
+    loadApps('');
   }
   boot();
 </script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
 
 </body>
 </html>

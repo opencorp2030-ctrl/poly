@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Privacy Policy · Poly</title>
 <link rel="icon" href="logo.png" />
@@ -19,91 +20,69 @@
 <meta name="twitter:title" content="Privacy Policy · Poly" />
 <meta name="twitter:description" content="What Poly collects, why, who processes it, and how to access, export, or delete your data." />
 <meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
 <style>
-  :root {
-    --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
-    --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
-    --danger: #e0664a; --ok: #6fbf8b;
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --container: 720px;
-    color-scheme: dark;
-  }
-  :root[data-theme="light"] {
-    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-      color-scheme: light;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
-  .skip-link:focus { left: 0; }
-
-  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
-
-  header.top { border-bottom: 1px solid var(--border); }
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
   header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
   nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
   nav.top-links a { color: var(--text-dim); }
-  nav.top-links a:hover { color: var(--accent); }
-
-  .nav-toggle {
-    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
-    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
-  }
-  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+  .nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0; color: var(--text); }
+  .nav-toggle svg { width: 18px; height: 18px; }
   @media (max-width: 960px) {
     .nav-toggle { display: flex; }
     header.top .wrap { position: relative; }
-    nav.top-links {
-      display: none; position: absolute; top: 100%; left: 0; right: 0;
-      flex-direction: column; align-items: stretch; gap: 0;
-      background: var(--ink-raised); border-bottom: 1px solid var(--border);
-      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
-    }
+    nav.top-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--ink-raised); border-bottom: 1px solid var(--border); padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40; }
     nav.top-links.open { display: flex; }
     nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
     nav.top-links a:last-child { border-bottom: none; }
   }
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; color: var(--text); }
+  .icon-btn svg { width: 17px; height: 17px; }
+  .notif-bell { position: relative; display: none; }
+  .notif-count { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px; background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1; }
+  .notif-dropdown { width: 320px; max-width: calc(100vw - 2rem); }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+  .user-menu { position: relative; }
+  .user-menu-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
+  .user-menu-dropdown { min-width: 190px; padding: 0.4rem; gap: 0.1rem; }
+  .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
+  .user-menu-item { display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px; text-decoration: none; box-sizing: border-box; }
+  .user-menu-item:hover { background: var(--ink); text-decoration: none; }
+  .user-menu-item.danger { color: var(--danger); }
 
-  main { padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+  main { --container: 720px; padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
   .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; display: inline-block; }
-  .legal-title { font-family: var(--mono); font-weight: 700; font-size: 1.8rem; margin: 0 0 0.4rem; }
+  .legal-title { font-family: var(--mono); font-weight: 700; font-size: 1.8rem; margin: 0 0 0.4rem; letter-spacing: -0.02em; }
   .legal-updated { color: var(--text-dim); font-size: 0.85rem; margin: 0 0 2.5rem; }
   .legal-body h2 { font-size: 1.05rem; margin: 2.2rem 0 0.7rem; }
   .legal-body p, .legal-body li { color: var(--text-dim); font-size: 0.96rem; }
   .legal-body ul { padding-left: 1.3rem; }
   .legal-body li { margin: 0.4rem 0; }
   .legal-body a { color: var(--accent); }
-  .legal-body table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1.5rem; font-size: 0.88rem; }
-  .legal-body th, .legal-body td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); color: var(--text-dim); vertical-align: top; }
-  .legal-body th { color: var(--text); font-weight: 600; }
 
   footer.site-footer { padding: 2.5rem 0 3.5rem; margin-top: 2rem; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 0.85rem; }
-
-  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
-  .cookie-banner.show { display: block; }
-  .cookie-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding: 1rem clamp(1.25rem, 4vw, 2rem); }
-  .cookie-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dim); max-width: 60ch; }
-  .cookie-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
-  .cookie-actions a { font-size: 0.82rem; color: var(--text-dim); }
-  .cookie-actions a:hover { color: var(--accent); }
-  .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
-  .cookie-actions button:hover { opacity: 0.9; }
   footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
   footer.site-footer .footer-brand a { color: var(--text-dim); margin-left: 0.3rem; }
   footer.site-footer .footer-brand a:hover { color: var(--accent); }
@@ -115,57 +94,85 @@
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 
-<header class="top">
+<header class="top glass" id="top-nav">
   <div class="wrap">
     <a href="/" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links" id="top-links">
       <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs" data-i18n="nav_docs">docs</a>
       <a href="community" data-i18n="nav_community">community</a>
-<a href="integrations" data-i18n="nav_integrations">integrations</a>
-<a href="search" data-i18n="nav_search">search</a>
+      <a href="apps" data-i18n="nav_apps">apps</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
       <a href="account" data-i18n="nav_account">account</a>
     </nav>
-    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="header-actions">
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
+      </button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
+          </div>
+        </div>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
-
-<script>
-(function () {
-  var toggle = document.getElementById('nav-toggle');
-  var links = document.getElementById('top-links');
-  if (!toggle || !links) return;
-  toggle.addEventListener('click', function () {
-    var open = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-})();
-</script>
 
 <main id="main">
   <div class="wrap">
     <a href="/" class="back-link" data-i18n="back">← Back to Poly</a>
-    <h1 class="legal-title" data-i18n="title">Privacy Policy</h1>
-    <p class="legal-updated" data-i18n="updated">Last updated: 12 July 2026</p>
+    <h1 class="legal-title reveal" data-i18n="title">Privacy Policy</h1>
+    <p class="legal-updated reveal" data-i18n="updated">Last updated: 12 July 2026</p>
 
-    <div class="legal-body">
+    <div class="legal-body reveal">
       <p data-i18n="intro">Poly is a small, independently-run project. This page explains what data it collects, why, and how you can access, export, or delete it — in plain language, not legalese.</p>
 
       <h2 data-i18n="h_what">What's collected</h2>
-      <table>
-        <thead><tr><th data-i18n="th_data">Data</th><th data-i18n="th_why">Why</th></tr></thead>
-        <tbody>
-          <tr><td data-i18n="d_account">Email, hashed password, username</td><td data-i18n="w_account">Account creation and sign-in</td></tr>
-          <tr><td data-i18n="d_profile">Bio, avatar, bio photos, badges</td><td data-i18n="w_profile">Your public profile</td></tr>
-          <tr><td data-i18n="d_packages">Published packages, download counts</td><td data-i18n="w_packages">The community registry</td></tr>
-          <tr><td data-i18n="d_social">Follows, friends, notifications</td><td data-i18n="w_social">Social features, opt-out per type in account settings</td></tr>
-          <tr><td data-i18n="d_tokens">Hashed personal access tokens</td><td data-i18n="w_tokens">CLI and AI assistant (MCP) sign-in, revocable any time</td></tr>
-          <tr><td data-i18n="d_push">Browser push subscription endpoint</td><td data-i18n="w_push">Real OS notifications, only if you opt in; revocable any time</td></tr>
-          <tr><td data-i18n="d_payment">Payment confirmation (not full card details)</td><td data-i18n="w_payment">Poly Pro one-time purchase, handled entirely by Stripe</td></tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="th_data">Data</th><th data-i18n="th_why">Why</th></tr></thead>
+          <tbody>
+            <tr><td data-i18n="d_account">Email, hashed password, username</td><td data-i18n="w_account">Account creation and sign-in</td></tr>
+            <tr><td data-i18n="d_profile">Bio, avatar, bio photos, badges</td><td data-i18n="w_profile">Your public profile</td></tr>
+            <tr><td data-i18n="d_packages">Published packages, download counts</td><td data-i18n="w_packages">The community registry</td></tr>
+            <tr><td data-i18n="d_social">Follows, friends, notifications</td><td data-i18n="w_social">Social features, opt-out per type in account settings</td></tr>
+            <tr><td data-i18n="d_tokens">Hashed personal access tokens</td><td data-i18n="w_tokens">CLI and AI assistant (MCP) sign-in, revocable any time</td></tr>
+            <tr><td data-i18n="d_push">Browser push subscription endpoint</td><td data-i18n="w_push">Real OS notifications, only if you opt in; revocable any time</td></tr>
+            <tr><td data-i18n="d_payment">Payment confirmation (not full card details)</td><td data-i18n="w_payment">Poly Pro one-time purchase, handled entirely by Stripe</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2 data-i18n="h_processors">Who processes it</h2>
       <p data-i18n="p_processors">Poly doesn't run its own servers. It relies on a small number of infrastructure providers:</p>
@@ -208,10 +215,20 @@
   </div>
 </footer>
 
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const I18N = {
     en: {
-      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_account: "account",
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_apps: "apps", nav_account: "account",
       nav_integrations: "integrations",
       nav_search: "search",
       back: "← Back to Poly",
@@ -249,7 +266,7 @@
       cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
     },
     fr: {
-      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_account: "compte",
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_apps: "apps", nav_account: "compte",
       nav_integrations: "intégrations",
       nav_search: "recherche",
       back: "← Retour à Poly",
@@ -304,16 +321,6 @@
   applyLanguage(saved || browserLang);
 </script>
 
-<div class="cookie-banner" id="cookie-banner">
-  <div class="wrap cookie-banner-inner">
-    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
-    <div class="cookie-actions">
-      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
-      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
-    </div>
-  </div>
-</div>
-
 <script>
 (function () {
   var KEY = 'poly-cookie-notice-dismissed';
@@ -329,6 +336,9 @@
   });
 })();
 </script>
+
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
 
 </body>
 </html>

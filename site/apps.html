@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Apps · Poly</title>
+<link rel="icon" href="logo.png" />
+<link rel="apple-touch-icon" href="logo.png" />
+<link rel="manifest" href="site.webmanifest" />
+<meta name="description" content="Browse apps published by the Poly community: free and paid, rated and reviewed, install in one click." />
+<link rel="canonical" href="https://poly.candygate.eu/apps" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Apps · Poly" />
+<meta property="og:description" content="Browse apps published by the Poly community: free and paid, rated and reviewed, install in one click." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/apps" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Apps · Poly" />
+<meta name="twitter:description" content="Browse apps published by the Poly community: free and paid, rated and reviewed, install in one click." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
+<style>
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.82rem; flex-wrap: nowrap; }
+  nav.top-links a { color: var(--text-dim); white-space: nowrap; }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+  .nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0; color: var(--text); }
+  .nav-toggle svg { width: 18px; height: 18px; }
+  @media (max-width: 1240px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--ink-raised); border-bottom: 1px solid var(--border); padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40; }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; color: var(--text); }
+  .icon-btn svg { width: 17px; height: 17px; }
+  .notif-bell { position: relative; display: none; }
+  .notif-count { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px; background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1; }
+  .notif-dropdown { width: 320px; max-width: calc(100vw - 2rem); }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+  .user-menu { position: relative; }
+  .user-menu-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
+  .user-menu-dropdown { min-width: 190px; padding: 0.4rem; gap: 0.1rem; }
+  .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
+  .user-menu-item { display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px; text-decoration: none; box-sizing: border-box; }
+  .user-menu-item:hover { background: var(--ink); text-decoration: none; }
+  .user-menu-item.danger { color: var(--danger); }
+
+  main { padding: 0 0 5rem; position: relative; }
+  .apps-hero-band { position: relative; overflow: hidden; padding: clamp(3rem, 7vw, 5rem) 0 clamp(2rem, 5vw, 3rem); isolation: isolate; }
+  .apps-hero-band::before {
+    content: ''; position: absolute; inset: -20% -10% auto -10%; height: 420px; z-index: -1;
+    background: radial-gradient(60% 60% at 22% 20%, color-mix(in srgb, var(--accent) 22%, transparent) 0%, transparent 70%),
+                radial-gradient(45% 55% at 78% 10%, color-mix(in srgb, var(--accent-2, var(--accent)) 16%, transparent) 0%, transparent 70%);
+    filter: blur(10px);
+  }
+  .apps-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+  .apps-hero h1 { font-family: var(--mono); font-weight: 700; letter-spacing: -0.02em; font-size: clamp(2rem, 4.5vw, 2.9rem); margin: 0 0 0.7rem; line-height: 1.1; }
+  .apps-hero p { color: var(--text-dim); max-width: 56ch; margin: 0; font-size: 1.02rem; }
+  .apps-toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin: 2rem 0 1.25rem; }
+  .apps-toolbar input[type="text"] { flex: 1; min-width: 200px; padding: 0.75rem 1.1rem; background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); font-family: var(--sans); font-size: 0.9rem; box-shadow: 0 1px 0 0 rgba(255,255,255,0.03) inset; }
+  .apps-toolbar input[type="text"]:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .apps-toolbar select { padding: 0.72rem 0.95rem; background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); font-family: var(--sans); font-size: 0.85rem; }
+  .section-h { font-size: 1.1rem; font-weight: 700; margin: 3rem 0 1.1rem; letter-spacing: -0.01em; }
+  .featured-strip { display: flex; gap: 1.1rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+  .featured-strip .app-card { min-width: 220px; }
+  .empty-note { color: var(--text-dim); font-size: 0.9rem; padding: 2.5rem 0; text-align: center; }
+  .load-more-row { text-align: center; margin-top: 2rem; }
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="top glass" id="top-nav">
+  <div class="wrap">
+    <a href="/" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links" id="top-links">
+      <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs" data-i18n="nav_docs">docs</a>
+      <a href="community" data-i18n="nav_community">community</a>
+      <a href="apps" class="current" data-i18n="nav_apps">apps</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
+      <a href="account" data-i18n="nav_account">account</a>
+    </nav>
+    <div class="header-actions">
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
+      </button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
+          </div>
+        </div>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="apps-hero-band">
+    <div class="wrap-wide">
+      <div class="apps-hero">
+        <div>
+          <p class="eyebrow reveal" data-i18n="eyebrow">Apps</p>
+          <h1 class="reveal" data-i18n="title">Apps built by the community</h1>
+          <p class="reveal" data-i18n="lede">Free and paid apps published by Poly members. Rate them, review them, install in one click.</p>
+        </div>
+        <a class="btn primary reveal" href="publish-app" data-i18n="publish_cta">Publish an app →</a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap-wide">
+    <div class="apps-toolbar reveal">
+      <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Search apps..." />
+      <select id="price-filter">
+        <option value="" data-i18n="filter_all_prices">All prices</option>
+        <option value="free" data-i18n="filter_free">Free</option>
+        <option value="paid" data-i18n="filter_paid">Paid</option>
+      </select>
+      <select id="sort-select">
+        <option value="rating" data-i18n="sort_rating">Top rated</option>
+        <option value="downloads" data-i18n="sort_downloads">Most installed</option>
+        <option value="newest" data-i18n="sort_newest">Newest</option>
+      </select>
+    </div>
+
+    <div class="chip-row reveal" id="category-chips"></div>
+
+    <div id="featured-section" style="display:none">
+      <h2 class="section-h" data-i18n="featured_h">Featured</h2>
+      <div class="featured-strip" id="featured-strip"></div>
+    </div>
+
+    <h2 class="section-h" data-i18n="browse_h">Browse</h2>
+    <div class="apps-grid" id="apps-grid"></div>
+    <p class="empty-note" id="empty-note" style="display:none" data-i18n="empty_note">No apps match your filters yet.</p>
+    <div class="load-more-row" id="load-more-row" style="display:none">
+      <button class="btn" id="load-more-btn" type="button" data-i18n="load_more">Load more</button>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms" data-i18n="footer_terms">Terms</a>
+      <a href="privacy" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
+
+<script type="module">
+  import { supabase } from './js/supabase-client.js';
+
+  const CATEGORIES = [
+    ['productivity','Productivity','Productivité'],
+    ['developer-tools','Developer tools','Outils développeur'],
+    ['games','Games','Jeux'],
+    ['social','Social','Social'],
+    ['utilities','Utilities','Utilitaires'],
+    ['education','Education','Éducation'],
+    ['entertainment','Entertainment','Divertissement'],
+    ['photo-video','Photo & video','Photo et vidéo'],
+    ['music-audio','Music & audio','Musique et audio'],
+    ['health-fitness','Health & fitness','Santé et fitness'],
+    ['business','Business','Business'],
+    ['finance','Finance','Finance'],
+    ['lifestyle','Lifestyle','Style de vie'],
+    ['news','News','Actualités'],
+    ['travel-local','Travel & local','Voyage et local'],
+    ['other','Other','Autre'],
+  ];
+
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_apps: "apps", nav_account: "account",
+      nav_integrations: "integrations", nav_search: "search",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+      cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
+      eyebrow: "Apps", title: "Apps built by the community",
+      lede: "Free and paid apps published by Poly members. Rate them, review them, install in one click.",
+      publish_cta: "Publish an app →",
+      search_placeholder: "Search apps...",
+      filter_all_prices: "All prices", filter_free: "Free", filter_paid: "Paid",
+      sort_rating: "Top rated", sort_downloads: "Most installed", sort_newest: "Newest",
+      cat_all: "All categories",
+      featured_h: "Featured", browse_h: "Browse",
+      empty_note: "No apps match your filters yet.",
+      load_more: "Load more",
+      no_ratings: "No ratings yet",
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_apps: "apps", nav_account: "compte",
+      nav_integrations: "intégrations", nav_search: "recherche",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+      cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
+      eyebrow: "Apps", title: "Des apps construites par la communauté",
+      lede: "Des apps gratuites et payantes publiées par les membres de Poly. Note-les, laisse un avis, installe en un clic.",
+      publish_cta: "Publier une app →",
+      search_placeholder: "Rechercher une app...",
+      filter_all_prices: "Tous les prix", filter_free: "Gratuit", filter_paid: "Payant",
+      sort_rating: "Mieux notées", sort_downloads: "Plus installées", sort_newest: "Plus récentes",
+      cat_all: "Toutes les catégories",
+      featured_h: "En vedette", browse_h: "Parcourir",
+      empty_note: "Aucune app ne correspond à tes filtres.",
+      load_more: "Charger plus",
+      no_ratings: "Pas encore de note",
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+  function catLabel(slug) {
+    const row = CATEGORIES.find((c) => c[0] === slug);
+    if (!row) return slug;
+    return lang() === 'fr' ? row[2] : row[1];
+  }
+
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+      const key = node.getAttribute('data-i18n-placeholder');
+      if (I18N[l][key] !== undefined) node.placeholder = I18N[l][key];
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+    renderCategoryChips();
+    loadApps(true);
+  }
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+  function iconHTML(iconUrl, name) {
+    if (iconUrl) return `<img src="${escapeHtml(iconUrl)}" alt="" loading="lazy">`;
+    return escapeHtml((name || '?').charAt(0).toUpperCase());
+  }
+  function priceHTML(app) {
+    if (!app.is_paid) return `<span class="price-tag free">${escapeHtml(t('filter_free'))}</span>`;
+    const amount = (app.price_cents / 100).toFixed(2);
+    const symbol = app.currency === 'eur' ? '€' : app.currency === 'gbp' ? '£' : '$';
+    return `<span class="price-tag paid">${symbol}${amount}</span>`;
+  }
+  function starsHTML(avgRating) {
+    const rounded = Math.round(Number(avgRating) || 0);
+    let out = '';
+    for (let i = 1; i <= 5; i++) out += `<span class="${i <= rounded ? '' : 'dim'}">★</span>`;
+    return out;
+  }
+
+  function appCardHTML(app) {
+    return `
+      <a class="app-card" href="app?slug=${encodeURIComponent(app.slug)}">
+        <div class="app-card-top">
+          <div class="app-icon">${iconHTML(app.icon_url, app.name)}</div>
+          <div>
+            <div class="app-card-name">${escapeHtml(app.name)}</div>
+            <div class="app-card-dev">@${escapeHtml(app.publisher_username)}</div>
+          </div>
+        </div>
+        <p class="app-tagline">${escapeHtml(app.tagline || '')}</p>
+        <div class="app-card-meta">
+          <span class="stars-static">${starsHTML(app.avg_rating)} ${app.rating_count > 0 ? `<span class="rating-summary">${Number(app.avg_rating).toFixed(1)}</span>` : ''}</span>
+          ${priceHTML(app)}
+        </div>
+      </a>
+    `;
+  }
+
+  function renderCategoryChips() {
+    const wrap = document.getElementById('category-chips');
+    const chips = [['', t('cat_all')], ...CATEGORIES.map((c) => [c[0], catLabel(c[0])])];
+    wrap.innerHTML = chips.map(([slug, label]) => `<button type="button" class="category-chip${slug === activeCategory ? ' active' : ''}" data-cat="${slug}">${escapeHtml(label)}</button>`).join('');
+    wrap.querySelectorAll('.category-chip').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.getAttribute('data-cat');
+        renderCategoryChips();
+        loadApps(true);
+      });
+    });
+  }
+
+  let activeCategory = '';
+  const PAGE_SIZE = 24;
+  let currentOffset = 0;
+  let searchDebounce = null;
+
+  async function loadFeatured() {
+    const { data } = await supabase.from('apps_public').select('*').eq('is_featured', true).order('avg_rating', { ascending: false }).limit(10);
+    const section = document.getElementById('featured-section');
+    if (!data || data.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    document.getElementById('featured-strip').innerHTML = data.map(appCardHTML).join('');
+  }
+
+  async function loadApps(reset) {
+    if (reset) currentOffset = 0;
+    const grid = document.getElementById('apps-grid');
+    const q = document.getElementById('search-input').value.trim();
+    const priceFilter = document.getElementById('price-filter').value;
+    const sort = document.getElementById('sort-select').value;
+
+    let query = supabase.from('apps_public').select('*');
+    if (q) query = query.or(`name.ilike.%${q}%,tagline.ilike.%${q}%`);
+    if (activeCategory) query = query.eq('category', activeCategory);
+    if (priceFilter === 'free') query = query.eq('is_paid', false);
+    if (priceFilter === 'paid') query = query.eq('is_paid', true);
+    if (sort === 'rating') query = query.order('avg_rating', { ascending: false }).order('rating_count', { ascending: false });
+    else if (sort === 'downloads') query = query.order('download_count', { ascending: false });
+    else query = query.order('created_at', { ascending: false });
+
+    query = query.range(currentOffset, currentOffset + PAGE_SIZE - 1);
+
+    const { data, error } = await query;
+    if (reset) grid.innerHTML = '';
+    if (error || !data) { document.getElementById('empty-note').style.display = reset ? 'block' : 'none'; document.getElementById('load-more-row').style.display = 'none'; return; }
+
+    grid.insertAdjacentHTML('beforeend', data.map(appCardHTML).join(''));
+    document.getElementById('empty-note').style.display = (reset && data.length === 0) ? 'block' : 'none';
+    document.getElementById('load-more-row').style.display = data.length === PAGE_SIZE ? 'block' : 'none';
+    currentOffset += data.length;
+  }
+
+  document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => loadApps(true), 300);
+  });
+  document.getElementById('price-filter').addEventListener('change', () => loadApps(true));
+  document.getElementById('sort-select').addEventListener('change', () => loadApps(true));
+  document.getElementById('load-more-btn').addEventListener('click', () => loadApps(false));
+
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+  loadFeatured();
+</script>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'poly-cookie-notice-dismissed';
+  var banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  var dismissed = false;
+  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (!dismissed) banner.classList.add('show');
+  var btn = document.getElementById('cookie-dismiss');
+  if (btn) btn.addEventListener('click', function () {
+    banner.classList.remove('show');
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
+})();
+</script>
+
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
+
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Publish an app · Poly</title>
+<link rel="icon" href="logo.png" />
+<link rel="apple-touch-icon" href="logo.png" />
+<link rel="manifest" href="site.webmanifest" />
+<meta name="description" content="Publish your app to the Poly community store: listing, screenshots, pricing, and release in one form." />
+<link rel="canonical" href="https://poly.candygate.eu/publish-app" />
+<meta name="robots" content="noindex" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="Publish an app · Poly" />
+<meta property="og:description" content="Publish your app to the Poly community store." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/publish-app" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
+<style>
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.82rem; flex-wrap: nowrap; }
+  nav.top-links a { color: var(--text-dim); white-space: nowrap; }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+  .nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0; color: var(--text); }
+  .nav-toggle svg { width: 18px; height: 18px; }
+  @media (max-width: 1240px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--ink-raised); border-bottom: 1px solid var(--border); padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40; }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; color: var(--text); }
+  .icon-btn svg { width: 17px; height: 17px; }
+  .notif-bell { position: relative; display: none; }
+  .notif-count { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px; background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1; }
+  .notif-dropdown { width: 320px; max-width: calc(100vw - 2rem); }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+  .user-menu { position: relative; }
+  .user-menu-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
+  .user-menu-dropdown { min-width: 190px; padding: 0.4rem; gap: 0.1rem; }
+  .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
+  .user-menu-item { display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px; text-decoration: none; box-sizing: border-box; }
+  .user-menu-item:hover { background: var(--ink); text-decoration: none; }
+  .user-menu-item.danger { color: var(--danger); }
+
+  main { --container: 760px; padding: clamp(2.5rem, 6vw, 4rem) 0 6rem; }
+  .publish-hero h1 { font-family: var(--mono); font-weight: 700; letter-spacing: -0.02em; font-size: clamp(1.7rem, 4vw, 2.3rem); margin: 0 0 0.6rem; }
+  .publish-hero p { color: var(--text-dim); margin: 0 0 2rem; font-size: 1rem; max-width: 60ch; }
+  .radio-row { display: flex; gap: 1.25rem; margin-bottom: 1rem; }
+  .radio-row label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; cursor: pointer; }
+  .price-fields { display: flex; gap: 0.75rem; align-items: flex-end; }
+  .price-fields .field { flex: 1; margin-bottom: 0; }
+  .status { font-size: 0.82rem; margin-top: 1rem; display: none; }
+  .status.show { display: block; }
+  .status.ok { color: var(--ok); }
+  .status.error { color: var(--danger); }
+  .gated-note { color: var(--text-dim); font-size: 0.95rem; padding: 3rem 0; text-align: center; }
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="top glass" id="top-nav">
+  <div class="wrap">
+    <a href="/" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links" id="top-links">
+      <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs" data-i18n="nav_docs">docs</a>
+      <a href="community" data-i18n="nav_community">community</a>
+      <a href="apps" data-i18n="nav_apps">apps</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
+      <a href="account" data-i18n="nav_account">account</a>
+    </nav>
+    <div class="header-actions">
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
+      </button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
+          </div>
+        </div>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+
+    <div data-view="gate">
+      <p class="gated-note" data-i18n="sign_in_note">Sign in to publish an app.</p>
+      <p style="text-align:center"><a class="btn primary" href="account" data-i18n="sign_in_cta">Go to account →</a></p>
+    </div>
+
+    <div data-view="wizard">
+      <div class="publish-hero">
+        <h1 data-i18n="title">Publish an app</h1>
+        <p data-i18n="lede">Fill in the same kind of details you'd choose on Play Console. You can save a draft any time and come back later.</p>
+      </div>
+
+      <div class="wizard-steps">
+        <span class="wizard-step-pill active" data-step-pill="1" data-i18n="step1_pill">1. App info</span>
+        <span class="wizard-step-pill" data-step-pill="2" data-i18n="step2_pill">2. Store listing</span>
+        <span class="wizard-step-pill" data-step-pill="3" data-i18n="step3_pill">3. Pricing &amp; safety</span>
+        <span class="wizard-step-pill" data-step-pill="4" data-i18n="step4_pill">4. Release</span>
+      </div>
+
+      <form id="publish-form">
+        <div class="card" data-step="1">
+          <div class="field">
+            <label data-i18n="f_name">App name</label>
+            <input type="text" id="f-name" maxlength="80" required>
+          </div>
+          <div class="field">
+            <label data-i18n="f_tagline">Short tagline (max 80 characters)</label>
+            <input type="text" id="f-tagline" maxlength="80">
+          </div>
+          <div class="field">
+            <label data-i18n="f_category">Category</label>
+            <select id="f-category" required></select>
+          </div>
+          <div class="field">
+            <label data-i18n="f_content_rating">Content rating</label>
+            <select id="f-content-rating"></select>
+          </div>
+          <div class="field">
+            <label data-i18n="f_platforms">Platforms</label>
+            <div class="checkbox-grid" id="f-platforms"></div>
+          </div>
+          <div class="field">
+            <label data-i18n="f_website">Website (optional)</label>
+            <input type="url" id="f-website" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label data-i18n="f_privacy">Privacy policy URL (optional)</label>
+            <input type="url" id="f-privacy" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label data-i18n="f_support">Support email (optional)</label>
+            <input type="email" id="f-support">
+          </div>
+        </div>
+
+        <div class="card" data-step="2">
+          <div class="field">
+            <label data-i18n="f_icon">App icon (square, recommended 512×512)</label>
+            <div class="upload-row">
+              <div class="upload-tile" id="icon-tile" data-i18n="upload_icon">Icon</div>
+              <input type="file" id="icon-input" accept="image/png,image/jpeg,image/webp" style="display:none">
+            </div>
+          </div>
+          <div class="field">
+            <label data-i18n="f_cover">Feature graphic (optional)</label>
+            <div class="upload-row">
+              <div class="upload-tile" id="cover-tile" data-i18n="upload_cover">Cover</div>
+              <input type="file" id="cover-input" accept="image/png,image/jpeg,image/webp" style="display:none">
+            </div>
+          </div>
+          <div class="field">
+            <label data-i18n="f_screenshots">Screenshots (up to 8)</label>
+            <div class="upload-row" id="screenshots-row">
+              <div class="upload-tile" id="screenshot-add-tile" data-i18n="upload_add">+ Add</div>
+            </div>
+            <input type="file" id="screenshot-input" accept="image/png,image/jpeg,image/webp" style="display:none">
+          </div>
+          <div class="field">
+            <label data-i18n="f_description">Full description</label>
+            <textarea id="f-description" rows="8"></textarea>
+          </div>
+        </div>
+
+        <div class="card" data-step="3">
+          <div class="field">
+            <label data-i18n="f_pricing">Pricing</label>
+            <div class="radio-row">
+              <label><input type="radio" name="pricing" value="free" checked> <span data-i18n="pricing_free">Free</span></label>
+              <label><input type="radio" name="pricing" value="paid"> <span data-i18n="pricing_paid">Paid</span></label>
+            </div>
+            <div class="price-fields" id="price-fields" style="display:none">
+              <div class="field">
+                <label data-i18n="f_price">Price</label>
+                <input type="number" id="f-price" min="0.01" step="0.01" placeholder="4.99">
+              </div>
+              <div class="field">
+                <label data-i18n="f_currency">Currency</label>
+                <select id="f-currency">
+                  <option value="usd">USD $</option>
+                  <option value="eur">EUR €</option>
+                  <option value="gbp">GBP £</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <label class="toggle-row"><input type="checkbox" id="f-ads"> <span data-i18n="f_contains_ads">Contains ads</span></label>
+          <label class="toggle-row"><input type="checkbox" id="f-iap"> <span data-i18n="f_has_iap">Has in-app purchases</span></label>
+          <div class="field">
+            <label data-i18n="f_permissions">Permissions this app requests</label>
+            <div class="checkbox-grid" id="f-permissions"></div>
+          </div>
+        </div>
+
+        <div class="card" data-step="4">
+          <div class="field">
+            <label data-i18n="f_version">Version</label>
+            <input type="text" id="f-version" placeholder="1.0.0" required>
+          </div>
+          <div class="field">
+            <label data-i18n="f_release_notes">What's new (release notes)</label>
+            <textarea id="f-release-notes" rows="4"></textarea>
+          </div>
+          <div class="field">
+            <label data-i18n="f_download_method">How should people get this app?</label>
+            <div class="radio-row">
+              <label><input type="radio" name="download-method" value="url" checked> <span data-i18n="method_url">External link</span></label>
+              <label><input type="radio" name="download-method" value="upload"> <span data-i18n="method_upload">Upload a build</span></label>
+            </div>
+            <input type="url" id="f-download-url" placeholder="https://...">
+            <div class="upload-row" id="build-upload-row" style="display:none;margin-top:0.6rem">
+              <div class="upload-tile" id="build-tile" data-i18n="upload_build">Build file</div>
+              <input type="file" id="build-input" style="display:none">
+            </div>
+            <p class="field-hint" data-i18n="download_hint">Uploaded builds are capped at 200 MB. Paid apps gate the download until purchase.</p>
+          </div>
+        </div>
+
+        <div class="wizard-actions">
+          <button type="button" class="btn" id="prev-btn" style="visibility:hidden" data-i18n="btn_back">← Back</button>
+          <div style="display:flex;gap:0.6rem">
+            <button type="button" class="btn" id="save-draft-btn" data-i18n="btn_save_draft">Save draft</button>
+            <button type="button" class="btn primary" id="next-btn" data-i18n="btn_next">Next →</button>
+          </div>
+        </div>
+      </form>
+      <p class="status" id="publish-status"></p>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms" data-i18n="footer_terms">Terms</a>
+      <a href="privacy" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
+
+<script type="module">
+  import { supabase } from './js/supabase-client.js';
+
+  const CATEGORIES = [
+    ['productivity','Productivity','Productivité'], ['developer-tools','Developer tools','Outils développeur'],
+    ['games','Games','Jeux'], ['social','Social','Social'], ['utilities','Utilities','Utilitaires'],
+    ['education','Education','Éducation'], ['entertainment','Entertainment','Divertissement'],
+    ['photo-video','Photo & video','Photo et vidéo'], ['music-audio','Music & audio','Musique et audio'],
+    ['health-fitness','Health & fitness','Santé et fitness'], ['business','Business','Business'],
+    ['finance','Finance','Finance'], ['lifestyle','Lifestyle','Style de vie'], ['news','News','Actualités'],
+    ['travel-local','Travel & local','Voyage et local'], ['other','Other','Autre'],
+  ];
+  const CONTENT_RATINGS = [
+    ['everyone','Everyone','Tout public'], ['teen','Teen','Ado'], ['mature','Mature 17+','Mature 17+'], ['adults','Adults only','Adultes uniquement'],
+  ];
+  const PLATFORMS = [
+    ['windows','Windows'], ['macos','macOS'], ['linux','Linux'], ['web','Web'], ['android','Android'], ['ios','iOS'],
+  ];
+  const PERMISSIONS = [
+    ['camera', {en:'Camera',fr:'Caméra'}], ['microphone', {en:'Microphone',fr:'Microphone'}], ['location', {en:'Location',fr:'Position'}],
+    ['contacts', {en:'Contacts',fr:'Contacts'}], ['storage', {en:'Storage',fr:'Stockage'}], ['network', {en:'Network',fr:'Réseau'}],
+    ['notifications', {en:'Notifications',fr:'Notifications'}], ['calendar', {en:'Calendar',fr:'Calendrier'}], ['sms', {en:'SMS',fr:'SMS'}], ['bluetooth', {en:'Bluetooth',fr:'Bluetooth'}],
+  ];
+
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_apps: "apps", nav_account: "account",
+      nav_integrations: "integrations", nav_search: "search",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+      sign_in_note: "Sign in to publish an app.", sign_in_cta: "Go to account →",
+      title: "Publish an app", lede: "Fill in the same kind of details you'd choose on Play Console. You can save a draft any time and come back later.",
+      step1_pill: "1. App info", step2_pill: "2. Store listing", step3_pill: "3. Pricing & safety", step4_pill: "4. Release",
+      f_name: "App name", f_tagline: "Short tagline (max 80 characters)", f_category: "Category", f_content_rating: "Content rating",
+      f_platforms: "Platforms", f_website: "Website (optional)", f_privacy: "Privacy policy URL (optional)", f_support: "Support email (optional)",
+      f_icon: "App icon (square, recommended 512×512)", f_cover: "Feature graphic (optional)", f_screenshots: "Screenshots (up to 8)",
+      f_description: "Full description",
+      upload_icon: "Icon", upload_cover: "Cover", upload_add: "+ Add", upload_build: "Build file",
+      f_pricing: "Pricing", pricing_free: "Free", pricing_paid: "Paid", f_price: "Price", f_currency: "Currency",
+      f_contains_ads: "Contains ads", f_has_iap: "Has in-app purchases", f_permissions: "Permissions this app requests",
+      f_version: "Version", f_release_notes: "What's new (release notes)", f_download_method: "How should people get this app?",
+      method_url: "External link", method_upload: "Upload a build",
+      download_hint: "Uploaded builds are capped at 200 MB. Paid apps gate the download until purchase.",
+      btn_back: "← Back", btn_next: "Next →", btn_save_draft: "Save draft", btn_publish: "Publish", btn_update: "Save changes",
+      err_generic: "Something went wrong. Try again.", err_name_required: "Give your app a name first.",
+      draft_saved: "Draft saved.", published_ok: "Published! Redirecting...",
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_apps: "apps", nav_account: "compte",
+      nav_integrations: "intégrations", nav_search: "recherche",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+      sign_in_note: "Connecte-toi pour publier une app.", sign_in_cta: "Aller au compte →",
+      title: "Publier une app", lede: "Remplis les mêmes infos que sur Play Console. Tu peux sauvegarder un brouillon à tout moment.",
+      step1_pill: "1. Infos", step2_pill: "2. Fiche store", step3_pill: "3. Prix et sécurité", step4_pill: "4. Publication",
+      f_name: "Nom de l'app", f_tagline: "Accroche courte (80 caractères max)", f_category: "Catégorie", f_content_rating: "Classification du contenu",
+      f_platforms: "Plateformes", f_website: "Site web (optionnel)", f_privacy: "URL de politique de confidentialité (optionnel)", f_support: "Email de support (optionnel)",
+      f_icon: "Icône de l'app (carrée, 512×512 recommandé)", f_cover: "Image de couverture (optionnel)", f_screenshots: "Captures d'écran (8 max)",
+      f_description: "Description complète",
+      upload_icon: "Icône", upload_cover: "Cover", upload_add: "+ Ajouter", upload_build: "Fichier",
+      f_pricing: "Tarification", pricing_free: "Gratuit", pricing_paid: "Payant", f_price: "Prix", f_currency: "Devise",
+      f_contains_ads: "Contient des publicités", f_has_iap: "Contient des achats intégrés", f_permissions: "Permissions demandées par l'app",
+      f_version: "Version", f_release_notes: "Nouveautés (notes de version)", f_download_method: "Comment récupère-t-on l'app ?",
+      method_url: "Lien externe", method_upload: "Uploader un fichier",
+      download_hint: "Les fichiers uploadés sont limités à 200 Mo. Les apps payantes bloquent le téléchargement avant achat.",
+      btn_back: "← Retour", btn_next: "Suivant →", btn_save_draft: "Sauver le brouillon", btn_publish: "Publier", btn_update: "Enregistrer",
+      err_generic: "Un problème est survenu. Réessaie.", err_name_required: "Donne d'abord un nom à ton app.",
+      draft_saved: "Brouillon sauvegardé.", published_ok: "Publiée ! Redirection...",
+    }
+  };
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+    populateOptions();
+    updateStepButtons();
+  }
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+  function showView(name) {
+    document.querySelectorAll('[data-view]').forEach((el) => el.classList.toggle('active', el.getAttribute('data-view') === name));
+  }
+  function setStatus(msg, kind) {
+    const el = document.getElementById('publish-status');
+    el.textContent = msg || '';
+    el.className = 'status' + (kind ? ' show ' + kind : '');
+  }
+
+  function populateOptions() {
+    document.getElementById('f-category').innerHTML = CATEGORIES.map((c) => `<option value="${c[0]}">${escapeHtml(lang()==='fr'?c[2]:c[1])}</option>`).join('');
+    document.getElementById('f-content-rating').innerHTML = CONTENT_RATINGS.map((c) => `<option value="${c[0]}">${escapeHtml(lang()==='fr'?c[2]:c[1])}</option>`).join('');
+    document.getElementById('f-platforms').innerHTML = PLATFORMS.map((p) => `<label class="toggle-row"><input type="checkbox" value="${p[0]}" class="platform-check"> <span>${escapeHtml(p[1])}</span></label>`).join('');
+    document.getElementById('f-permissions').innerHTML = PERMISSIONS.map((p) => `<label class="toggle-row"><input type="checkbox" value="${p[0]}" class="perm-check"> <span>${escapeHtml(p[1][lang()] || p[1].en)}</span></label>`).join('');
+    // restore checked state after re-render (language switch)
+    (formState.platforms || []).forEach((v) => { const el = document.querySelector(`.platform-check[value="${v}"]`); if (el) el.checked = true; });
+    (formState.permissions || []).forEach((v) => { const el = document.querySelector(`.perm-check[value="${v}"]`); if (el) el.checked = true; });
+    document.getElementById('f-category').value = formState.category || 'productivity';
+    document.getElementById('f-content-rating').value = formState.content_rating || 'everyone';
+  }
+
+  let currentUserId = null;
+  const appId = new URLSearchParams(window.location.search).get('id') || crypto.randomUUID();
+  const isEdit = !!new URLSearchParams(window.location.search).get('id');
+  let currentStep = 1;
+  const TOTAL_STEPS = 4;
+  let formState = { icon_url: null, cover_url: null, screenshots: [], storage_path: null, size_bytes: null };
+
+  function updateStepButtons() {
+    document.querySelectorAll('[data-step]').forEach((el) => el.classList.toggle('active', Number(el.getAttribute('data-step')) === currentStep));
+    document.querySelectorAll('[data-step-pill]').forEach((el) => {
+      const n = Number(el.getAttribute('data-step-pill'));
+      el.classList.toggle('active', n === currentStep);
+      el.classList.toggle('done', n < currentStep);
+    });
+    document.getElementById('prev-btn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+    document.getElementById('next-btn').textContent = currentStep === TOTAL_STEPS ? t(isEdit ? 'btn_update' : 'btn_publish') : t('btn_next');
+  }
+
+  document.getElementById('prev-btn').addEventListener('click', () => { if (currentStep > 1) { currentStep--; updateStepButtons(); } });
+  document.getElementById('next-btn').addEventListener('click', async () => {
+    if (currentStep === 1 && !document.getElementById('f-name').value.trim()) { setStatus(t('err_name_required'), 'error'); return; }
+    if (currentStep < TOTAL_STEPS) { currentStep++; updateStepButtons(); setStatus('', null); return; }
+    await submitApp('published');
+  });
+  document.getElementById('save-draft-btn').addEventListener('click', () => submitApp('draft'));
+
+  document.querySelectorAll('input[name="pricing"]').forEach((r) => {
+    r.addEventListener('change', () => {
+      document.getElementById('price-fields').style.display = document.querySelector('input[name="pricing"]:checked').value === 'paid' ? 'flex' : 'none';
+    });
+  });
+  document.querySelectorAll('input[name="download-method"]').forEach((r) => {
+    r.addEventListener('change', () => {
+      const isUpload = document.querySelector('input[name="download-method"]:checked').value === 'upload';
+      document.getElementById('f-download-url').style.display = isUpload ? 'none' : 'block';
+      document.getElementById('build-upload-row').style.display = isUpload ? 'flex' : 'none';
+    });
+  });
+
+  async function uploadImage(file, kind) {
+    if (!currentUserId) return null;
+    const ext = (file.name.split('.').pop() || 'png').toLowerCase();
+    const path = `${currentUserId}/${appId}/${kind}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('app-media').upload(path, file, { upsert: true, contentType: file.type });
+    if (error) { setStatus(error.message || t('err_generic'), 'error'); return null; }
+    const { data } = supabase.storage.from('app-media').getPublicUrl(path);
+    return data.publicUrl;
+  }
+
+  document.getElementById('icon-tile').addEventListener('click', () => document.getElementById('icon-input').click());
+  document.getElementById('icon-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const url = await uploadImage(file, 'icon');
+    if (url) { formState.icon_url = url; document.getElementById('icon-tile').innerHTML = `<img src="${escapeHtml(url)}" alt="">`; }
+  });
+  document.getElementById('cover-tile').addEventListener('click', () => document.getElementById('cover-input').click());
+  document.getElementById('cover-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const url = await uploadImage(file, 'cover');
+    if (url) { formState.cover_url = url; document.getElementById('cover-tile').innerHTML = `<img src="${escapeHtml(url)}" alt="">`; }
+  });
+  document.getElementById('screenshot-add-tile').addEventListener('click', () => {
+    if (formState.screenshots.length >= 8) return;
+    document.getElementById('screenshot-input').click();
+  });
+  document.getElementById('screenshot-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const url = await uploadImage(file, 'screenshot');
+    if (url) { formState.screenshots.push(url); renderScreenshots(); }
+    e.target.value = '';
+  });
+  function renderScreenshots() {
+    const row = document.getElementById('screenshots-row');
+    const addTile = document.getElementById('screenshot-add-tile');
+    row.querySelectorAll('.shot-tile').forEach((n) => n.remove());
+    formState.screenshots.forEach((url, i) => {
+      const tile = document.createElement('div');
+      tile.className = 'upload-tile shot-tile';
+      tile.innerHTML = `<img src="${escapeHtml(url)}" alt="">`;
+      tile.title = 'Click to remove';
+      tile.addEventListener('click', () => { formState.screenshots.splice(i, 1); renderScreenshots(); });
+      row.insertBefore(tile, addTile);
+    });
+    addTile.style.display = formState.screenshots.length >= 8 ? 'none' : 'flex';
+  }
+
+  document.getElementById('build-tile').addEventListener('click', () => document.getElementById('build-input').click());
+  document.getElementById('build-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0]; if (!file || !currentUserId) return;
+    if (file.size > 209715200) { setStatus('Max 200MB', 'error'); return; }
+    document.getElementById('build-tile').textContent = '…';
+    const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
+    const path = `${currentUserId}/${appId}/build-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('app-builds').upload(path, file, { upsert: true, contentType: file.type });
+    if (error) { setStatus(error.message || t('err_generic'), 'error'); document.getElementById('build-tile').textContent = t('upload_build'); return; }
+    formState.storage_path = path;
+    formState.size_bytes = file.size;
+    document.getElementById('build-tile').textContent = file.name;
+  });
+
+  async function submitApp(status) {
+    if (!currentUserId) { window.location.href = 'account'; return; }
+    const name = document.getElementById('f-name').value.trim();
+    if (!name) { setStatus(t('err_name_required'), 'error'); return; }
+
+    const platforms = Array.from(document.querySelectorAll('.platform-check:checked')).map((el) => el.value);
+    const permissions = Array.from(document.querySelectorAll('.perm-check:checked')).map((el) => el.value);
+    const isPaid = document.querySelector('input[name="pricing"]:checked').value === 'paid';
+    const priceValue = parseFloat(document.getElementById('f-price').value) || 0;
+
+    setStatus('', null);
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.disabled = true;
+
+    const { data: appRow, error } = await supabase.rpc('upsert_app', {
+      p_id: appId,
+      p_name: name,
+      p_tagline: document.getElementById('f-tagline').value.trim() || null,
+      p_description_md: document.getElementById('f-description').value.trim() || null,
+      p_category: document.getElementById('f-category').value,
+      p_content_rating: document.getElementById('f-content-rating').value,
+      p_icon_url: formState.icon_url,
+      p_cover_url: formState.cover_url,
+      p_screenshots: formState.screenshots,
+      p_platforms: platforms,
+      p_permissions: permissions,
+      p_website_url: document.getElementById('f-website').value.trim() || null,
+      p_privacy_policy_url: document.getElementById('f-privacy').value.trim() || null,
+      p_support_email: document.getElementById('f-support').value.trim() || null,
+      p_contains_ads: document.getElementById('f-ads').checked,
+      p_has_iap: document.getElementById('f-iap').checked,
+      p_is_paid: isPaid,
+      p_price_cents: isPaid ? Math.round(priceValue * 100) : 0,
+      p_currency: document.getElementById('f-currency').value,
+      p_status: status,
+    });
+
+    if (error) { setStatus(error.message || t('err_generic'), 'error'); nextBtn.disabled = false; return; }
+
+    const version = document.getElementById('f-version').value.trim();
+    const isUploadMethod = document.querySelector('input[name="download-method"]:checked').value === 'upload';
+    const downloadUrl = isUploadMethod ? null : (document.getElementById('f-download-url').value.trim() || null);
+
+    if (status === 'published' && version && (downloadUrl || formState.storage_path)) {
+      await supabase.rpc('publish_app_release', {
+        p_app_id: appId,
+        p_version: version,
+        p_release_notes: document.getElementById('f-release-notes').value.trim() || null,
+        p_download_url: downloadUrl,
+        p_storage_path: isUploadMethod ? formState.storage_path : null,
+        p_size_bytes: isUploadMethod ? formState.size_bytes : null,
+      });
+    }
+
+    nextBtn.disabled = false;
+    if (status === 'draft') { setStatus(t('draft_saved'), 'ok'); return; }
+    setStatus(t('published_ok'), 'ok');
+    setTimeout(() => { window.location.href = 'app?slug=' + encodeURIComponent(appRow.slug); }, 900);
+  }
+
+  async function loadExisting() {
+    if (!isEdit || !currentUserId) return;
+    const { data } = await supabase.from('apps').select('*').eq('id', appId).eq('publisher_id', currentUserId).maybeSingle();
+    if (!data) return;
+    document.getElementById('f-name').value = data.name || '';
+    document.getElementById('f-tagline').value = data.tagline || '';
+    document.getElementById('f-description').value = data.description_md || '';
+    document.getElementById('f-website').value = data.website_url || '';
+    document.getElementById('f-privacy').value = data.privacy_policy_url || '';
+    document.getElementById('f-support').value = data.support_email || '';
+    document.getElementById('f-ads').checked = !!data.contains_ads;
+    document.getElementById('f-iap').checked = !!data.has_iap;
+    document.getElementById('f-version').value = data.version || '';
+    document.getElementById('f-release-notes').value = data.release_notes || '';
+    document.getElementById('f-download-url').value = data.download_url || '';
+    formState.category = data.category; formState.content_rating = data.content_rating;
+    formState.icon_url = data.icon_url; formState.cover_url = data.cover_url;
+    formState.screenshots = data.screenshots || []; formState.storage_path = data.storage_path; formState.size_bytes = data.size_bytes;
+    formState.platforms = data.platforms || []; formState.permissions = data.permissions || [];
+    if (data.icon_url) document.getElementById('icon-tile').innerHTML = `<img src="${escapeHtml(data.icon_url)}" alt="">`;
+    if (data.cover_url) document.getElementById('cover-tile').innerHTML = `<img src="${escapeHtml(data.cover_url)}" alt="">`;
+    renderScreenshots();
+    if (data.is_paid) {
+      document.querySelector('input[name="pricing"][value="paid"]').checked = true;
+      document.getElementById('price-fields').style.display = 'flex';
+      document.getElementById('f-price').value = (data.price_cents / 100).toFixed(2);
+      document.getElementById('f-currency').value = data.currency;
+    }
+    populateOptions();
+  }
+
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+
+  supabase.auth.getSession().then(({ data }) => {
+    currentUserId = data.session ? data.session.user.id : null;
+    showView(currentUserId ? 'wizard' : 'gate');
+    if (currentUserId) loadExisting();
+  });
+  supabase.auth.onAuthStateChange((_event, session) => {
+    currentUserId = session ? session.user.id : null;
+    showView(currentUserId ? 'wizard' : 'gate');
+  });
+</script>
+
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
+
+</body>
+</html>

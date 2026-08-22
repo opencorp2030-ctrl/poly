@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Poly: one command, every package manager</title>
 <link rel="icon" href="logo.png" />
@@ -45,150 +46,33 @@
   ]
 }
 </script>
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
 <style>
-  :root {
-    --ink: #14171d;
-    --ink-rgb: 20, 23, 29;
-    --ink-raised: #1b1f27;
-    --border: rgba(255, 255, 255, 0.10);
-    --text: #e9e4d8;
-    --text-dim: #9c9686;
-    --accent: #f0a93e;
-    --accent-ink: #14171d;
-    --danger: #e0664a;
-    --ok: #6fbf8b;
-    --ok-glow: rgba(111, 191, 139, 0.45);
-
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
-    --container: 920px;
-    color-scheme: dark;
-  }
-
-  :root[data-theme="light"] {
-    --ink: #eff1f4;
-    --ink-rgb: 239, 241, 244;
-    --ink-raised: #ffffff;
-    --border: rgba(20, 23, 29, 0.10);
-    --text: #1b1e24;
-    --text-dim: #5b6270;
-    --accent: #a8660a;
-    --accent-ink: #ffffff;
-    color-scheme: light;
-  }
-
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ink: #eff1f4;
-      --ink-rgb: 239, 241, 244;
-      --ink-raised: #ffffff;
-      --border: rgba(20, 23, 29, 0.10);
-      --text: #1b1e24;
-      --text-dim: #5b6270;
-      --accent: #a8660a;
-      --accent-ink: #ffffff;
-      color-scheme: light;
-    }
-  }
-
-  * { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--ink);
-    color: var(--text);
-    font-family: var(--sans);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  body {
-    font-size: 16px;
-    line-height: 1.65;
-    overflow-x: hidden;
-  }
-
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
-  .skip-link:focus { left: 0; }
-
-  .wrap {
-    max-width: var(--container);
-    margin: 0 auto;
-    padding-left: clamp(1.25rem, 4vw, 2rem);
-    padding-right: clamp(1.25rem, 4vw, 2rem);
-  }
-
-  header.top {
-    border-bottom: 1px solid var(--border);
-  }
-  header.top .wrap {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: nowrap;
-    min-height: 64px;
-  }
-  .wordmark {
-    font-family: var(--mono);
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; padding-left: clamp(1.75rem, 6vw, 3.25rem); }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
   .wordmark span { color: var(--accent); }
-  nav.top-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    font-family: var(--mono);
-    font-size: 0.85rem;
-  }
-  nav.top-links a { color: var(--text-dim); }
-  nav.top-links a:hover { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.82rem; flex-wrap: nowrap; }
+  nav.top-links a { color: var(--text-dim); white-space: nowrap; }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
 
-  .nav-toggle {
-    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
-    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
-  }
-  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
-  @media (max-width: 960px) {
+  .nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0; color: var(--text); }
+  .nav-toggle svg { width: 18px; height: 18px; }
+  @media (max-width: 1240px) {
     .nav-toggle { display: flex; }
     header.top .wrap { position: relative; }
-    nav.top-links {
-      display: none; position: absolute; top: 100%; left: 0; right: 0;
-      flex-direction: column; align-items: stretch; gap: 0;
-      background: var(--ink-raised); border-bottom: 1px solid var(--border);
-      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
-    }
+    nav.top-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--ink-raised); border-bottom: 1px solid var(--border); padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40; }
     nav.top-links.open { display: flex; }
     nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
     nav.top-links a:last-child { border-bottom: none; }
   }
 
   .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; color: var(--text); }
+  .icon-btn svg { width: 17px; height: 17px; }
   .notif-bell { position: relative; display: none; }
-  .notif-bell-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .notif-bell-btn svg { width: 17px; height: 17px; }
-  .notif-count {
-    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
-    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
-    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
-  }
-  .notif-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .notif-dropdown.open { display: flex; }
+  .notif-count { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px; background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1; }
+  .notif-dropdown { width: 320px; max-width: calc(100vw - 2rem); }
   .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
   .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
   .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
@@ -198,7 +82,7 @@
   .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
   .notif-item:last-child { border-bottom: none; }
   .notif-item:hover { background: var(--ink); text-decoration: none; }
-  .notif-item.unread { background: rgba(240,169,62,0.06); }
+  .notif-item.unread { background: color-mix(in srgb, var(--accent) 8%, transparent); }
   .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
   .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
   .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
@@ -208,351 +92,80 @@
   .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
 
   .user-menu { position: relative; }
-  .user-menu-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .user-menu-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
   .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
-  .user-menu-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; min-width: 190px;
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.4rem; display: none; flex-direction: column; gap: 0.1rem; z-index: 50;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .user-menu-dropdown.open { display: flex; }
+  .user-menu-dropdown { min-width: 190px; padding: 0.4rem; gap: 0.1rem; }
   .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
-  .user-menu-item {
-    display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer;
-    font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px;
-    text-decoration: none; box-sizing: border-box;
-  }
-  .user-menu-item:hover { background: var(--ink); }
+  .user-menu-item { display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px; text-decoration: none; box-sizing: border-box; }
+  .user-menu-item:hover { background: var(--ink); text-decoration: none; }
   .user-menu-item.danger { color: var(--danger); }
 
-  section { padding-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: clamp(3rem, 7vw, 5.5rem); }
-  section + section { border-top: 1px solid var(--border); }
+  /* full-screen intro splash */
+  .intro-splash { position: fixed; inset: 0; z-index: 200; background: var(--ink); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.7s ease; }
+  .intro-splash.dismissed { opacity: 0; pointer-events: none; }
+  .intro-splash .wordmark-giant-wrap { margin: 0; padding: 0 1rem; }
+  .intro-splash .wordmark-giant { font-size: clamp(4.5rem, 19vw, 12rem); }
+  @media (prefers-reduced-motion: reduce) { .intro-splash { transition: none; } }
 
-  .eyebrow {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin: 0 0 0.9rem;
-  }
+  .hero { position: relative; overflow: hidden; isolation: isolate; }
+  .hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .hero-bg-poster, .hero-bg-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 32%; }
+  .hero-bg-video { opacity: 0; transition: opacity 0.9s var(--ease-out); }
+  .hero-bg-video.is-visible { opacity: 1; }
+  .hero-bg-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 62%, transparent) 0%, color-mix(in srgb, var(--ink) 78%, transparent) 55%, var(--ink) 100%); }
+  @media (prefers-reduced-motion: reduce) { .hero-bg-video { transition: none; } }
 
-  /* full-screen intro splash: just the wordmark, for ~3s, then it fades
-     to reveal the page sitting underneath it */
-  .intro-splash {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: opacity 0.7s ease;
-  }
-  .intro-splash.dismissed {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .intro-splash .wordmark-giant-wrap {
-    margin: 0;
-    padding: 0 1rem;
-  }
-  .intro-splash .wordmark-giant {
-    font-size: clamp(4.5rem, 19vw, 12rem);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .intro-splash { transition: none; }
-  }
+  h1.hero-title { font-family: var(--mono); font-weight: 700; font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 1.1rem; text-wrap: balance; max-width: 22ch; }
+  .hero-title .word-wrapper { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+  .hero-title .word-inner { display: inline-block; opacity: 0; transform: translateY(105%); filter: blur(16px); animation: word-reveal 1s cubic-bezier(0.05, 0.9, 0.1, 1) forwards; }
+  @keyframes word-reveal { 0% { opacity: 0; transform: translateY(105%); filter: blur(16px); } 30% { opacity: 1; } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
 
-  .hero { position: relative; overflow: hidden; }
-  .hero.has-custom-cursor, .hero.has-custom-cursor * { cursor: none; }
-
-  h1.hero-title {
-    font-family: var(--mono);
-    font-weight: 700;
-    font-size: clamp(2.1rem, 5vw, 3.4rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin: 0 0 1.1rem;
-    text-wrap: balance;
-    max-width: 22ch;
-  }
-  .hero-title .word-wrapper {
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-    padding-bottom: 0.14em;
-    margin-bottom: -0.14em;
-  }
-  .hero-title .word-inner {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(105%);
-    filter: blur(16px);
-    animation: word-reveal 1s cubic-bezier(0.05, 0.9, 0.1, 1) forwards;
-  }
-  @keyframes word-reveal {
-    0% { opacity: 0; transform: translateY(105%); filter: blur(16px); }
-    30% { opacity: 1; }
-    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
-  }
-
-  .lede {
-    font-size: 1.15rem;
-    color: var(--text-dim);
-    max-width: 52ch;
-    margin: 0 0 2rem;
-  }
-
+  .lede { font-size: 1.15rem; color: var(--text-dim); max-width: 52ch; margin: 0 0 2rem; }
   .cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 3rem; }
-  .btn {
-    font-family: var(--mono);
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0.65rem 1.1rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-  }
-  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  .btn:hover { border-color: var(--accent); }
-  .btn.primary:hover { opacity: 0.92; }
 
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--ok);
-    position: relative;
-    display: inline-block;
-    animation: dot-pulse 2s infinite ease-in-out;
-  }
-  .status-dot::after {
-    content: '';
-    position: absolute;
-    top: -4px; left: -4px; right: -4px; bottom: -4px;
-    background: var(--ok-glow);
-    border-radius: 50%;
-    animation: dot-wave 2s infinite ease-in-out;
-  }
-  @keyframes dot-pulse {
-    0%, 100% { opacity: 0.6; transform: scale(0.85); }
-    50% { opacity: 1; transform: scale(1.05); }
-  }
-  @keyframes dot-wave {
-    0% { transform: scale(0.6); opacity: 0.85; }
-    100% { transform: scale(2.2); opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .status-dot, .status-dot::after { animation: none; }
-  }
-
-  .term {
-    background: var(--ink-raised);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .term-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.6rem 0.8rem;
-    border-bottom: 1px solid var(--border);
-  }
+  .term { background: color-mix(in srgb, var(--ink-raised) 92%, transparent); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 24px 60px -24px rgba(var(--shadow-color), 0.55); }
+  .term-bar { display: flex; align-items: center; gap: 0.4rem; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
   .term-bar .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
-  .term-bar .label {
-    margin-left: 0.5rem;
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--text-dim);
-  }
-  .term pre {
-    margin: 0;
-    padding: 1.25rem 1.4rem 1.5rem;
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    line-height: 1.7;
-    overflow-x: auto;
-    color: var(--text-dim);
-  }
+  .term-bar .label { margin-left: 0.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text-dim); }
+  .term pre { margin: 0; padding: 1.25rem 1.4rem 1.5rem; font-family: var(--mono); font-size: 0.85rem; line-height: 1.7; overflow-x: auto; color: var(--text-dim); }
   .term .prompt { color: var(--accent); }
   .term .cmd { color: var(--text); }
   .term .ok { color: var(--ok); }
   .term .note { color: var(--text-dim); font-style: italic; }
-  .term .cursor {
-    display: inline-block;
-    width: 0.55em;
-    height: 1em;
-    background: var(--accent);
-    vertical-align: text-bottom;
-    animation: blink 1.1s steps(1) infinite;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .term .cursor { animation: none; }
-  }
+  .term .cursor { display: inline-block; width: 0.55em; height: 1em; background: var(--accent); vertical-align: text-bottom; animation: blink 1.1s steps(1) infinite; }
+  @media (prefers-reduced-motion: reduce) { .term .cursor { animation: none; } }
   @keyframes blink { 50% { opacity: 0; } }
 
-  .wordmark-giant-wrap {
-    margin-top: clamp(2.75rem, 7vw, 4.5rem);
-    overflow: hidden;
-  }
-  .wordmark-giant {
-    font-family: var(--mono);
-    font-weight: 700;
-    font-size: clamp(4rem, 16vw, 9.5rem);
-    line-height: 0.85;
-    letter-spacing: -0.03em;
-    color: var(--text);
-    opacity: 0.92;
-    margin: 0;
-    white-space: nowrap;
-    pointer-events: none;
-  }
-  .wordmark-giant .letter-wrapper {
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-  }
-  .wordmark-giant .letter-inner {
-    display: inline-block;
-    opacity: 0;
-    transform: translateX(-105%);
-    filter: blur(20px);
-    animation: letter-reveal 1.1s cubic-bezier(0.05, 0.9, 0.1, 1) forwards;
-  }
-  @keyframes letter-reveal {
-    0% { opacity: 0; transform: translateX(-105%); filter: blur(20px); }
-    25% { opacity: 1; }
-    100% { opacity: 0.92; transform: translateX(0); filter: blur(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero-title .word-inner, .wordmark-giant .letter-inner {
-      animation: none; opacity: 1; transform: none; filter: none;
-    }
-  }
+  .wordmark-giant-wrap { margin-top: clamp(2.75rem, 7vw, 4.5rem); overflow: hidden; }
+  .wordmark-giant { font-family: var(--mono); font-weight: 700; font-size: clamp(4rem, 16vw, 9.5rem); line-height: 0.85; letter-spacing: -0.03em; color: var(--text); opacity: 0.92; margin: 0; white-space: nowrap; pointer-events: none; }
+  .wordmark-giant .letter-wrapper { display: inline-block; overflow: hidden; vertical-align: bottom; }
+  .wordmark-giant .letter-inner { display: inline-block; opacity: 0; transform: translateX(-105%); filter: blur(20px); animation: letter-reveal 1.1s cubic-bezier(0.05, 0.9, 0.1, 1) forwards; }
+  @keyframes letter-reveal { 0% { opacity: 0; transform: translateX(-105%); filter: blur(20px); } 25% { opacity: 1; } 100% { opacity: 0.92; transform: translateX(0); filter: blur(0); } }
+  @media (prefers-reduced-motion: reduce) { .hero-title .word-inner, .wordmark-giant .letter-inner { animation: none; opacity: 1; transform: none; filter: none; } }
 
-  h2 {
-    font-family: var(--mono);
-    font-size: 1.5rem;
-    letter-spacing: -0.01em;
-    margin: 0 0 0.5rem;
-    text-wrap: balance;
-  }
-  .section-lede {
-    color: var(--text-dim);
-    max-width: 62ch;
-    margin: 0 0 2.5rem;
-  }
-
-  .grid-3 {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 1.75rem;
-  }
-  .feature .tag {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--accent);
-    margin: 0 0 0.6rem;
-  }
-  .feature h3 {
-    font-family: var(--sans);
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin: 0 0 0.5rem;
-  }
+  .section-lede { color: var(--text-dim); max-width: 62ch; margin: 0 0 2.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.75rem; }
+  .feature { background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.5rem; transition: border-color 0.2s var(--ease-out), transform 0.2s var(--ease-out); }
+  .feature:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+  .feature .tag { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); margin: 0 0 0.6rem; }
+  .feature h3 { font-family: var(--sans); font-size: 1.05rem; font-weight: 600; margin: 0 0 0.5rem; }
   .feature p { color: var(--text-dim); margin: 0; font-size: 0.95rem; }
 
-  .flow {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    font-family: var(--mono);
-    font-size: 0.95rem;
-    margin: 0 0 2rem;
-  }
-  .flow .step {
-    border: 1px solid var(--border);
-    background: var(--ink-raised);
-    border-radius: 4px;
-    padding: 0.5rem 0.85rem;
-  }
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; font-family: var(--mono); font-size: 0.95rem; margin: 0 0 2rem; }
+  .flow .step { border: 1px solid var(--border); background: var(--ink-raised); border-radius: 4px; padding: 0.5rem 0.85rem; }
   .flow .arrow { color: var(--text-dim); }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
-  th, td {
-    text-align: left;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  th {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    background: var(--ink-raised);
-  }
-  td code, .prefix-table td code {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    background: var(--ink-raised);
-    padding: 0.15rem 0.4rem;
-    border-radius: 3px;
-  }
-  tr:last-child td { border-bottom: none; }
-
-  .code-block {
-    background: var(--ink-raised);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 1rem 1.2rem;
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    overflow-x: auto;
-    white-space: pre;
-    margin: 0 0 1rem;
-  }
+  .code-block { background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; font-family: var(--mono); font-size: 0.85rem; overflow-x: auto; white-space: pre; margin: 0 0 1rem; }
   .code-block .comment { color: var(--text-dim); }
+  .note-box { border-left: 3px solid var(--accent); padding: 0.4rem 0 0.4rem 1rem; color: var(--text-dim); font-size: 0.9rem; margin: 1.5rem 0 0; }
 
-  .note-box {
-    border-left: 3px solid var(--accent);
-    padding: 0.4rem 0 0.4rem 1rem;
-    color: var(--text-dim);
-    font-size: 0.9rem;
-    margin: 1.5rem 0 0;
-  }
-
-  footer {
-    padding: 2.5rem 0 3.5rem;
-    color: var(--text-dim);
-    font-size: 0.85rem;
-  }
-  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-  footer code { font-family: var(--mono); }
-  footer .footer-links { display: flex; gap: 1.25rem; }
-  footer .footer-links a { color: var(--text-dim); }
-  footer .footer-links a:hover { color: var(--accent); }
+  footer.site-footer { padding: 2.5rem 0 3.5rem; color: var(--text-dim); font-size: 0.85rem; }
+  footer.site-footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer.site-footer code { font-family: var(--mono); }
+  footer.site-footer .footer-links { display: flex; gap: 1.25rem; }
+  footer.site-footer .footer-links a { color: var(--text-dim); }
+  footer.site-footer .footer-links a:hover { color: var(--accent); }
 
   .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
   .cookie-banner.show { display: block; }
@@ -563,57 +176,6 @@
   .cookie-actions a:hover { color: var(--accent); }
   .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
   .cookie-actions button:hover { opacity: 0.9; }
-
-  /* custom cursor, active only over the hero section */
-  .cursor-ring-outline {
-    position: fixed;
-    top: 0; left: 0;
-    width: 42px; height: 42px;
-    border: 1.5px solid var(--accent);
-    border-radius: 50%;
-    z-index: 500;
-    pointer-events: none;
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    will-change: transform, opacity;
-    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
-  }
-  .cursor-ring-outline.active { opacity: 1; }
-  .cursor-ring-outline.expanded { border-color: var(--text); }
-
-  .glass-cursor-card {
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 501;
-    pointer-events: none;
-    padding: 0.6rem 1.1rem;
-    background: rgba(127, 127, 127, 0.10);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    will-change: transform, opacity;
-    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .glass-cursor-card.active { opacity: 1; }
-  .cursor-card-text {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--accent);
-    white-space: nowrap;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cursor-ring-outline, .glass-cursor-card { display: none; }
-  }
-  @media (hover: none) {
-    .cursor-ring-outline, .glass-cursor-card { display: none; }
-  }
 </style>
 </head>
 <body>
@@ -625,7 +187,7 @@
   </div>
 </div>
 
-<header class="top" id="top-nav">
+<header class="top glass" id="top-nav">
   <div class="wrap">
     <div class="wordmark">poly<span>&gt;</span></div>
     <nav class="top-links" id="top-links">
@@ -636,70 +198,61 @@
       <a href="docs" data-i18n="nav_docs">docs</a>
       <a href="#pro" data-i18n="nav_pro">pro</a>
       <a href="community" data-i18n="nav_community">community</a>
-<a href="integrations" data-i18n="nav_integrations">integrations</a>
-<a href="search" data-i18n="nav_search">search</a>
+      <a href="apps" data-i18n="nav_apps">apps</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
       <a href="account" data-i18n="nav_account">account</a>
       <a href="https://github.com/opencorp2030-ctrl/poly" data-i18n="nav_github">github</a>
     </nav>
     <div class="header-actions">
-    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="notif-bell" id="notif-bell">
-      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="notif-count" id="notif-count">0</span>
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
       </button>
-      <div class="notif-dropdown" id="notif-dropdown">
-        <div class="notif-dropdown-head">
-          <span class="title">Notifications</span>
-          <div class="head-actions">
-            <a class="notif-see-all" href="notifications">See all</a>
-            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
           </div>
         </div>
-        <div class="notif-list" id="notif-list"></div>
-        <div class="notif-staff-compose" id="notif-staff-compose">
-          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
-          <button type="button" id="notif-staff-send">Send</button>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
         </div>
       </div>
-    </div>
-    <div class="user-menu" id="user-menu" style="display:none">
-      <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
-        <span class="initial" id="user-menu-avatar">?</span>
-      </button>
-      <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">…</div>
-        <a href="account" class="user-menu-item">Account</a>
-        <a href="community" class="user-menu-item">Community</a>
-        <a href="docs" class="user-menu-item">Docs</a>
-        <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
-      </div>
-    </div>
     </div>
   </div>
 </header>
 
-<script>
-(function () {
-  var toggle = document.getElementById('nav-toggle');
-  var links = document.getElementById('top-links');
-  if (!toggle || !links) return;
-  toggle.addEventListener('click', function () {
-    var open = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-  links.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () {
-      links.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    });
-  });
-})();
-</script>
-
 <section class="hero" id="main">
+  <div class="hero-bg" id="hero-bg" aria-hidden="true">
+    <img src="media/hero-bg-poster.jpg" alt="" class="hero-bg-poster" width="1920" height="1434" />
+    <video class="hero-bg-video" id="hero-bg-video" muted loop playsinline preload="none" poster="media/hero-bg-poster.jpg"></video>
+    <div class="hero-bg-scrim"></div>
+  </div>
   <div class="wrap">
     <p class="eyebrow" data-i18n="hero_eyebrow">Package manager · macOS · Linux · Windows</p>
     <h1 class="hero-title" data-i18n="hero_title">One command.<br>Every package manager.</h1>
@@ -709,10 +262,10 @@
         <span data-i18n="cta_primary_label">$ copy install steps</span>
         <span class="status-dot" aria-hidden="true"></span>
       </button>
-      <a class="btn" href="#how" data-i18n="cta_secondary">See how routing works →</a>
+      <a class="btn secondary" href="#how" data-i18n="cta_secondary">See how routing works →</a>
     </div>
 
-    <div class="term" role="img" aria-label="Terminal transcript of a poly session installing ripgrep, requests, cowsay, and jq">
+    <div class="term" id="hero-term" role="img" aria-label="Terminal transcript of a poly session installing ripgrep, requests, cowsay, and jq">
       <div class="term-bar">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         <span class="label">zsh · poly</span>
@@ -748,10 +301,10 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
 
 <section id="why">
   <div class="wrap">
-    <p class="eyebrow" data-i18n="why_eyebrow">Why poly</p>
-    <h2 data-i18n="why_title">Three ecosystems, one manifest</h2>
-    <p class="section-lede" data-i18n="why_lede">Poly works alongside pip and npm instead of replacing them. One command routes to whichever already has your package, and poly.json turns that into a manifest anyone can clone and reproduce with a single poly install.</p>
-    <div class="grid-3">
+    <p class="eyebrow reveal" data-i18n="why_eyebrow">Why poly</p>
+    <h2 class="reveal" data-i18n="why_title">Six ecosystems, one manifest</h2>
+    <p class="section-lede reveal" data-i18n="why_lede">Poly works alongside pip and npm instead of replacing them. One command routes to whichever already has your package, and poly.json turns that into a manifest anyone can clone and reproduce with a single poly install.</p>
+    <div class="grid-3 reveal-stagger">
       <div class="feature">
         <p class="tag" data-i18n="feat1_tag">01 · Auto-routed</p>
         <h3>poly install &lt;name&gt;</h3>
@@ -773,11 +326,11 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
 
 <section id="how">
   <div class="wrap">
-    <p class="eyebrow" data-i18n="how_eyebrow">Mechanics</p>
-    <h2 data-i18n="how_title">How a name resolves to an adapter</h2>
-    <p class="section-lede" data-i18n="how_lede">When you don't specify a backend, poly tries each adapter's <code>Search</code> in this order and installs through the first one that reports the package exists.</p>
+    <p class="eyebrow reveal" data-i18n="how_eyebrow">Mechanics</p>
+    <h2 class="reveal" data-i18n="how_title">How a name resolves to an adapter</h2>
+    <p class="section-lede reveal" data-i18n="how_lede">When you don't specify a backend, poly tries each adapter's <code>Search</code> in this order and installs through the first one that reports the package exists.</p>
 
-    <div class="flow">
+    <div class="flow reveal">
       <span class="step">tap</span>
       <span class="arrow">→</span>
       <span class="step">brew</span>
@@ -792,7 +345,7 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
     </div>
 
     <p class="section-lede" style="margin-bottom:1rem" data-i18n="how_prefix_lede">You can also force a specific backend with a prefix:</p>
-    <div class="table-wrap prefix-table">
+    <div class="table-wrap prefix-table reveal">
       <table>
         <thead><tr><th data-i18n="how_th_command">Command</th><th data-i18n="how_th_resolves">Resolves to</th></tr></thead>
         <tbody>
@@ -806,16 +359,16 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
         </tbody>
       </table>
     </div>
-    <p class="note-box" data-i18n="how_note">Tap formulas are plain YAML. A small set ship embedded in the poly binary, and you can drop more into <code>~/.poly/taps/&lt;name&gt;.yaml</code> to override or extend them.</p>
+    <p class="note-box reveal" data-i18n="how_note">Tap formulas are plain YAML. A small set ship embedded in the poly binary, and you can drop more into <code>~/.poly/taps/&lt;name&gt;.yaml</code> to override or extend them.</p>
   </div>
 </section>
 
 <section id="install">
   <div class="wrap">
-    <p class="eyebrow" data-i18n="install_eyebrow">Install</p>
-    <h2 data-i18n="install_title">Get poly</h2>
-    <p class="section-lede" data-i18n="install_lede_installers">Native installers for macOS and Windows. Both are unsigned (no developer certificates yet), so your OS will warn on first run. That's expected for a young open-source tool.</p>
-    <div class="grid-3" style="margin-bottom:2.5rem">
+    <p class="eyebrow reveal" data-i18n="install_eyebrow">Install</p>
+    <h2 class="reveal" data-i18n="install_title">Get poly</h2>
+    <p class="section-lede reveal" data-i18n="install_lede_installers">Native installers for macOS and Windows. Both are unsigned (no developer certificates yet), so your OS will warn on first run. That's expected for a young open-source tool.</p>
+    <div class="grid-3 reveal-stagger" style="margin-bottom:2.5rem">
       <div class="feature">
         <p class="tag">macOS</p>
         <h3 data-i18n="install_macos_h">Universal .pkg</h3>
@@ -832,27 +385,27 @@ ripgrep   15.1.0   tap      2026-07-11 15:52
         <p class="tag" data-i18n="install_other_tag">Linux / any OS</p>
         <h3 data-i18n="install_other_h">Prebuilt binaries</h3>
         <p data-i18n="install_other_p">Plain binaries for every platform, no installer, on the releases page.</p>
-        <p style="margin-top:0.75rem"><a class="btn" href="https://github.com/opencorp2030-ctrl/poly/releases/latest" data-i18n="install_releases">All releases →</a></p>
+        <p style="margin-top:0.75rem"><a class="btn secondary" href="https://github.com/opencorp2030-ctrl/poly/releases/latest" data-i18n="install_releases">All releases →</a></p>
       </div>
     </div>
 
-    <p class="section-lede" data-i18n="install_lede">Prefer to build it yourself? One Go toolchain and a few seconds:</p>
-    <div class="code-block"><span class="comment" data-i18n="install_comment1"># macOS / Linux / Windows (with Go installed)</span>
+    <p class="section-lede reveal" data-i18n="install_lede">Prefer to build it yourself? One Go toolchain and a few seconds:</p>
+    <div class="code-block reveal"><span class="comment" data-i18n="install_comment1"># macOS / Linux / Windows (with Go installed)</span>
 git clone https://github.com/opencorp2030-ctrl/poly.git
 cd poly
 go build -o poly .
 ./poly version</div>
-    <p class="section-lede" style="margin-bottom:0" data-i18n="install_lede2">Cross-compiling for another OS/architecture only needs <code>GOOS</code> and <code>GOARCH</code>:</p>
-    <div class="code-block"><span class="comment" data-i18n="install_comment2"># from any machine, targeting Windows on amd64</span>
+    <p class="section-lede reveal" style="margin-bottom:0" data-i18n="install_lede2">Cross-compiling for another OS/architecture only needs <code>GOOS</code> and <code>GOARCH</code>:</p>
+    <div class="code-block reveal"><span class="comment" data-i18n="install_comment2"># from any machine, targeting Windows on amd64</span>
 GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
   </div>
 </section>
 
 <section id="commands">
   <div class="wrap">
-    <p class="eyebrow" data-i18n="commands_eyebrow">Reference</p>
-    <h2 data-i18n="commands_title">Commands</h2>
-    <div class="table-wrap">
+    <p class="eyebrow reveal" data-i18n="commands_eyebrow">Reference</p>
+    <h2 class="reveal" data-i18n="commands_title">Commands</h2>
+    <div class="table-wrap reveal">
       <table>
         <thead><tr><th data-i18n="commands_th_command">Command</th><th data-i18n="commands_th_does">Does</th></tr></thead>
         <tbody>
@@ -871,16 +424,16 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
         </tbody>
       </table>
     </div>
-    <p class="note-box" data-i18n="docs_note">Full reference, including the poly.json format and how to write a tap formula, is on the <a href="docs">docs page</a>.</p>
+    <p class="note-box reveal" data-i18n="docs_note">Full reference, including the poly.json format and how to write a tap formula, is on the <a href="docs">docs page</a>.</p>
   </div>
 </section>
 
 <section id="pro">
   <div class="wrap">
-    <p class="eyebrow" data-i18n="pro_eyebrow">Poly Pro</p>
-    <h2 data-i18n="pro_title">Support poly, install faster</h2>
-    <p class="section-lede" data-i18n="pro_lede">Poly is and stays 100% free and open source. Pro is a small optional pack: real perks, not a paywall on features that already work.</p>
-    <div class="grid-3">
+    <p class="eyebrow reveal" data-i18n="pro_eyebrow">Poly Pro</p>
+    <h2 class="reveal" data-i18n="pro_title">Support poly, install faster</h2>
+    <p class="section-lede reveal" data-i18n="pro_lede">Poly is and stays 100% free and open source. Pro is a small optional pack: real perks, not a paywall on features that already work.</p>
+    <div class="grid-3 reveal-stagger">
       <div class="feature">
         <p class="tag" data-i18n="pro1_tag">Real speed</p>
         <h3 data-i18n="pro1_h">Parallel installs</h3>
@@ -902,13 +455,13 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
         <p data-i18n="pro4_p">Everyone gets the <a href="docs#faq">FAQ and docs</a> for free. Pro accounts who email <a href="mailto:open.corp.2030@gmail.com">open.corp.2030@gmail.com</a> get answered first.</p>
       </div>
     </div>
-    <div class="cta-row" style="margin-top:2rem">
+    <div class="cta-row reveal" style="margin-top:2rem">
       <a class="btn primary" href="account" data-i18n="pro_cta">Get Poly Pro (€0.99)</a>
     </div>
   </div>
 </section>
 
-<footer>
+<footer class="site-footer">
   <div class="wrap">
     <span data-i18n="footer_text">poly is open source on <a href="https://github.com/opencorp2030-ctrl/poly">GitHub</a>, under the MIT license. <code>~/.poly/manifest.json</code> tracks every install.</span>
     <nav class="footer-links">
@@ -919,9 +472,14 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
   </div>
 </footer>
 
-<div id="cursor-ring" class="cursor-ring-outline" aria-hidden="true"></div>
-<div id="glass-card" class="glass-cursor-card" aria-hidden="true">
-  <span class="cursor-card-text" data-i18n="cursor_pill">Try poly</span>
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -935,7 +493,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       nav_pro: "pro",
       nav_dependencies: "dependencies",
       nav_docs: "docs",
-      nav_community: "community",
+      nav_community: "community", nav_apps: "apps",
       nav_integrations: "integrations",
       nav_search: "search",
       nav_account: "account",
@@ -1033,7 +591,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       nav_pro: "pro",
       nav_dependencies: "dépendances",
       nav_docs: "doc",
-      nav_community: "communauté",
+      nav_community: "communauté", nav_apps: "apps",
       nav_integrations: "intégrations",
       nav_search: "recherche",
       nav_account: "compte",
@@ -1198,7 +756,6 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
     }
 
     var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var noHover = window.matchMedia && window.matchMedia('(hover: none)').matches;
 
     var splash = document.getElementById('splash');
     if (splash) {
@@ -1217,183 +774,9 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       window.addEventListener('touchstart', dismissSplash, { once: true, passive: true });
       setTimeout(dismissSplash, reduceMotion ? 400 : 3000);
     }
-
-    var hero = document.querySelector('.hero');
-    var ring = document.getElementById('cursor-ring');
-    var card = document.getElementById('glass-card');
-
-    if (hero && ring && card && !reduceMotion && !noHover) {
-      hero.classList.add('has-custom-cursor');
-
-      var mouseX = 0, mouseY = 0, cardX = 0, cardY = 0, scale = 0, targetScale = 0;
-      var primed = false, insideHero = false, hoveringBtn = false;
-
-      hero.addEventListener('mousemove', function (e) {
-        mouseX = e.clientX; mouseY = e.clientY;
-        if (!primed) { cardX = mouseX; cardY = mouseY; primed = true; }
-        if (insideHero && !hoveringBtn) targetScale = 1;
-      });
-      hero.addEventListener('mouseenter', function () { insideHero = true; if (!hoveringBtn) targetScale = 1; });
-      hero.addEventListener('mouseleave', function () { insideHero = false; targetScale = 0; });
-
-      if (copyBtn) {
-        copyBtn.addEventListener('mouseenter', function () {
-          hoveringBtn = true; targetScale = 0; ring.classList.add('expanded');
-        });
-        copyBtn.addEventListener('mouseleave', function () {
-          hoveringBtn = false; if (insideHero) targetScale = 1; ring.classList.remove('expanded');
-        });
-      }
-
-      (function tick() {
-        cardX += (mouseX - cardX) * 0.12;
-        cardY += (mouseY - cardY) * 0.12;
-        scale += (targetScale - scale) * 0.18;
-        var ringScale = ring.classList.contains('expanded') ? 1.5 * scale : scale;
-
-        card.style.transform = 'translate3d(' + cardX + 'px,' + cardY + 'px,0) translate(-50%,-50%) scale(' + scale + ')';
-        ring.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%) scale(' + ringScale + ')';
-        card.classList.toggle('active', scale > 0.02);
-        ring.classList.toggle('active', scale > 0.02 || insideHero);
-
-        requestAnimationFrame(tick);
-      })();
-    }
   });
 })();
 </script>
-
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-  const supabase = createClient('https://iuymslcbbrbahxbfuzrr.supabase.co', 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD');
-
-  async function renderUserMenu(session) {
-    const menu = document.getElementById('user-menu');
-    if (!session) { menu.style.display = 'none'; return; }
-
-    const { data } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', session.user.id).single();
-    const avatarSlot = document.getElementById('user-menu-avatar');
-    if (data && data.avatar_url) {
-      const img = document.createElement('img');
-      img.id = 'user-menu-avatar';
-      img.src = data.avatar_url;
-      img.alt = '';
-      avatarSlot.replaceWith(img);
-    } else {
-      avatarSlot.textContent = ((data && data.username) || session.user.email || '?').charAt(0).toUpperCase();
-    }
-    document.getElementById('user-menu-name').textContent = data && data.username ? '@' + data.username : session.user.email;
-    menu.style.display = 'block';
-  }
-
-  document.getElementById('user-menu-btn').addEventListener('click', () => {
-    document.getElementById('user-menu-dropdown').classList.toggle('open');
-  });
-  document.addEventListener('click', (e) => {
-    const menu = document.getElementById('user-menu');
-    if (!menu.contains(e.target)) document.getElementById('user-menu-dropdown').classList.remove('open');
-  });
-  document.getElementById('user-menu-signout').addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  });
-
-  async function checkBan(session) {
-    if (!session) return;
-    const { data } = await supabase.rpc('check_banned');
-    if (data && data[0] && data[0].banned) window.location.href = 'banned';
-  }
-
-  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
-  function escapeHtml(s) {
-    const div = document.createElement('div');
-    div.textContent = s == null ? '' : String(s);
-    return div.innerHTML;
-  }
-  function timeAgo(iso) {
-    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (diff < 60) return 'now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-    return Math.floor(diff / 86400) + 'd';
-  }
-  let notifCache = [];
-  let notifPollInterval = null;
-  async function loadNotifications() {
-    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
-    notifCache = data || [];
-    const list = document.getElementById('notif-list');
-    const countEl = document.getElementById('notif-count');
-    if (!notifCache.length) {
-      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
-      countEl.style.display = 'none';
-      return;
-    }
-    const unread = notifCache.filter((n) => !n.read_at).length;
-    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
-    list.innerHTML = notifCache.map((n) => `
-      <a class="notif-item ${n.read_at ? '' : 'unread'}" data-id="${n.id}">
-        <div class="n-title">${escapeHtml(n.title)}</div>
-        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
-        <div class="n-time">${timeAgo(n.created_at)}</div>
-      </a>
-    `).join('');
-    list.querySelectorAll('.notif-item').forEach((el) => {
-      el.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const id = el.getAttribute('data-id');
-        const n = notifCache.find((x) => x.id === id);
-        await supabase.rpc('mark_notification_read', { p_id: id });
-        window.location.href = 'notifications?id=' + encodeURIComponent(id);
-      });
-    });
-  }
-  document.getElementById('notif-bell-btn').addEventListener('click', () => {
-    const dd = document.getElementById('notif-dropdown');
-    const open = dd.classList.toggle('open');
-    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) loadNotifications();
-  });
-  document.addEventListener('click', (e) => {
-    const bell = document.getElementById('notif-bell');
-    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
-  });
-  document.getElementById('notif-mark-all').addEventListener('click', async () => {
-    await supabase.rpc('mark_all_notifications_read');
-    loadNotifications();
-  });
-  document.getElementById('notif-staff-send').addEventListener('click', async () => {
-    const input = document.getElementById('notif-staff-input');
-    const title = input.value.trim();
-    if (!title) return;
-    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
-    if (!error) { input.value = ''; loadNotifications(); }
-  });
-  async function initNotifBell(session) {
-    const bell = document.getElementById('notif-bell');
-    clearInterval(notifPollInterval);
-    if (!session) { bell.style.display = 'none'; return; }
-    bell.style.display = 'block';
-    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
-    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
-    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
-    loadNotifications();
-    notifPollInterval = setInterval(loadNotifications, 60000);
-  }
-
-  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session); });
-  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session); });
-</script>
-
-<div class="cookie-banner" id="cookie-banner">
-  <div class="wrap cookie-banner-inner">
-    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
-    <div class="cookie-actions">
-      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
-      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
-    </div>
-  </div>
-</div>
 
 <script>
 (function () {
@@ -1410,6 +793,10 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
   });
 })();
 </script>
+
+<script type="module" src="js/hero-effects.js?v=20260714c"></script>
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
 
 </body>
 </html>

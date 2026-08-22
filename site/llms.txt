@@ -65,7 +65,13 @@ app -- published packages are CLI scripts/binaries, not web pages; an optional `
 `get_profile`, `update_profile`, `update_avatar`, `delete_package`, `get_stats`
 (`update_profile`/`update_avatar`/`delete_package` act only on the token's own account/
 packages; `delete_package` removes both the DB entry and the stored file and cannot be
-undone). Also exposed: social (`follow_user`, `unfollow_user`, `list_followers`,
+undone). Apps store tools: `search_apps`, `get_app`, `list_own_apps`, `publish_app`
+(the web-app/desktop-app/mobile-app counterpart to `publish_package` -- category, content
+rating, platforms, base64 icon/screenshots, pricing (free or paid via Stripe Checkout),
+ads/IAP/permission disclosures, and a release in one call; publishing a name the token's
+account already owns updates that app in place and leaves omitted optional fields
+unchanged; a release needs `download_url` or a base64 `file_base64` capped at 20MB),
+`delete_app`. Also exposed: social (`follow_user`, `unfollow_user`, `list_followers`,
 `list_following`, `get_follow_status`, `send_friend_request`, `accept_friend_request`,
 `decline_friend_request`, `remove_friend`, `list_friend_requests`, `list_friends`),
 notifications (`list_notifications`, `mark_notification_read`,
@@ -105,6 +111,9 @@ already-connected assistant a well-formed task.
 - Full docs: https://poly.candygate.eu/docs
 - Account (sign up / manage plan): https://poly.candygate.eu/account
 - Community directory + live download/member stats: https://poly.candygate.eu/community
+- Apps store: browse free/paid apps published by the community, rate and review them: https://poly.candygate.eu/apps
+- Public app detail pages: https://poly.candygate.eu/app?slug=<app-slug>
+- Publish an app (Play Console-style listing form: icon, screenshots, category, content rating, pricing, data safety, release): https://poly.candygate.eu/publish-app
 - Integrations: describe one in plain language, your connected AI assistant builds and publishes it: https://poly.candygate.eu/integrations
 - Cross-ecosystem dependency search (pip/npm/crates.io/Homebrew/community, live): https://poly.candygate.eu/dependencies
 - Public user profiles: https://poly.candygate.eu/profile?u=<username>

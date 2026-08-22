@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>App · Poly</title>
+<link rel="icon" href="logo.png" />
+<link rel="apple-touch-icon" href="logo.png" />
+<link rel="manifest" href="site.webmanifest" />
+<meta name="description" content="Details for an app published to the Poly community store: screenshots, pricing, ratings, and how to get it." />
+<link rel="canonical" href="https://poly.candygate.eu/app" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Poly" />
+<meta property="og:title" content="App · Poly" />
+<meta property="og:description" content="Details for an app published to the Poly community store: screenshots, pricing, ratings, and how to get it." />
+<meta property="og:image" content="https://poly.candygate.eu/logo.png" />
+<meta property="og:url" content="https://poly.candygate.eu/app" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="App · Poly" />
+<meta name="twitter:description" content="Details for an app published to the Poly community store: screenshots, pricing, ratings, and how to get it." />
+<meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
+<style>
+  header.top { border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
+  .wordmark span { color: var(--accent); }
+  nav.top-links { display: flex; align-items: center; gap: 1rem; font-family: var(--mono); font-size: 0.82rem; flex-wrap: nowrap; }
+  nav.top-links a { color: var(--text-dim); white-space: nowrap; }
+  nav.top-links a:hover, nav.top-links a.current { color: var(--accent); }
+  .nav-toggle { display: none; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0; color: var(--text); }
+  .nav-toggle svg { width: 18px; height: 18px; }
+  @media (max-width: 1240px) {
+    .nav-toggle { display: flex; }
+    header.top .wrap { position: relative; }
+    nav.top-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--ink-raised); border-bottom: 1px solid var(--border); padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40; }
+    nav.top-links.open { display: flex; }
+    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
+    nav.top-links a:last-child { border-bottom: none; }
+  }
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative; color: var(--text); }
+  .icon-btn svg { width: 17px; height: 17px; }
+  .notif-bell { position: relative; display: none; }
+  .notif-count { position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px; background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1; }
+  .notif-dropdown { width: 320px; max-width: calc(100vw - 2rem); }
+  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
+  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
+  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
+  .notif-see-all { font-size: 0.72rem; }
+  .notif-mark-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); }
+  .notif-list { max-height: 340px; overflow-y: auto; }
+  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item:hover { background: var(--ink); text-decoration: none; }
+  .notif-item.unread { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
+  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
+  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
+  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
+  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
+  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+  .user-menu { position: relative; }
+  .user-menu-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
+  .user-menu-dropdown { min-width: 190px; padding: 0.4rem; gap: 0.1rem; }
+  .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
+  .user-menu-item { display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer; font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px; text-decoration: none; box-sizing: border-box; }
+  .user-menu-item:hover { background: var(--ink); text-decoration: none; }
+  .user-menu-item.danger { color: var(--danger); }
+
+  main { --container: 780px; padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
+  .back-link { font-family: var(--mono); font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.5rem; display: inline-block; }
+  .notfound-note { color: var(--text-dim); font-size: 0.9rem; padding: 1rem 0; }
+
+  .app-head { display: flex; gap: 1.35rem; margin-bottom: 1.25rem; }
+  .app-head .app-icon { width: 88px; height: 88px; border-radius: 22px; font-size: 2.1rem; box-shadow: 0 16px 32px -18px rgba(var(--shadow-color), 0.65); }
+  .app-name { font-family: var(--mono); font-weight: 700; font-size: 1.7rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; letter-spacing: -0.01em; }
+  .official-badge svg { width: 1.1rem; height: 1.1rem; display: block; }
+  .featured-badge { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 999px; background: var(--accent); color: var(--accent-ink); vertical-align: middle; }
+  .app-tagline-lg { color: var(--text-dim); margin: 0.3rem 0 0.5rem; font-size: 1rem; }
+  .app-dev-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+  .app-dev-row a { color: var(--text-dim); }
+  .app-dev-row a:hover { color: var(--accent); }
+  .chip-row-sm { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.5rem 0; }
+  .stat-tile { background: var(--ink-raised); padding: 1.1rem; }
+  .stat-value { font-family: var(--mono); font-weight: 700; font-size: 1.2rem; color: var(--accent); display: block; margin-bottom: 0.3rem; font-variant-numeric: tabular-nums; }
+  .stat-label { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-dim); }
+
+  .get-btn { font-size: 1rem; padding: 0.8rem 1.75rem; }
+  .app-actions { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0 1.75rem; flex-wrap: wrap; }
+  .action-btn { font-family: var(--mono); font-size: 0.82rem; padding: 0.5rem 0.9rem; border-radius: 6px; border: 1px solid var(--border); background: var(--ink-raised); color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .action-btn:hover { border-color: var(--accent); }
+  .checkout-note { font-size: 0.82rem; margin: 0.5rem 0 0; display: none; }
+  .checkout-note.show { display: block; }
+  .checkout-note.ok { color: var(--ok); }
+  .checkout-note.error { color: var(--danger); }
+
+  .section-h { font-size: 1rem; font-weight: 700; margin: 2.25rem 0 0.85rem; }
+  .desc-box { color: var(--text-dim); white-space: pre-wrap; font-size: 0.94rem; line-height: 1.6; }
+  .versions-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .version-row { background: var(--ink-raised); padding: 0.6rem 1rem; display: flex; justify-content: space-between; font-size: 0.85rem; font-family: var(--mono); }
+  .version-row .v-date { color: var(--text-dim); }
+
+  .safety-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; }
+  .safety-tile { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.85rem; }
+  .safety-tile .s-label { color: var(--text-dim); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; font-family: var(--mono); margin-bottom: 0.25rem; }
+  .links-row { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; margin-top: 0.75rem; }
+
+  .rate-box { margin-top: 0.5rem; }
+  .review-textarea { width: 100%; padding: 0.7rem 0.9rem; background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); font-family: var(--sans); font-size: 0.88rem; resize: vertical; min-height: 70px; margin-top: 0.6rem; }
+  .review-textarea:focus { border-color: var(--accent); outline: none; }
+  .note-box { border-left: 3px solid var(--accent); padding: 0.4rem 0 0.4rem 1rem; color: var(--text-dim); font-size: 0.88rem; margin: 2.5rem 0 0; max-width: 62ch; }
+
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header class="top glass" id="top-nav">
+  <div class="wrap">
+    <a href="/" class="wordmark">poly<span>&gt;</span></a>
+    <nav class="top-links" id="top-links">
+      <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
+      <a href="docs" data-i18n="nav_docs">docs</a>
+      <a href="community" data-i18n="nav_community">community</a>
+      <a href="apps" data-i18n="nav_apps">apps</a>
+      <a href="integrations" data-i18n="nav_integrations">integrations</a>
+      <a href="search" data-i18n="nav_search">search</a>
+      <a href="account" data-i18n="nav_account">account</a>
+    </nav>
+    <div class="header-actions">
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
+      </button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
+          </div>
+        </div>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+    <a href="apps" class="back-link" data-i18n="back">← Back to apps</a>
+
+    <div data-view="notfound">
+      <p class="notfound-note" data-i18n="not_found">No app with that name.</p>
+    </div>
+
+    <div data-view="app">
+      <img class="app-cover" id="app-cover" src="" alt="" style="display:none">
+      <div class="app-head">
+        <div class="app-icon" id="app-icon">…</div>
+        <div>
+          <div class="app-name"><span id="app-name-text">…</span><span class="official-badge" id="official-badge" style="display:none"></span><span class="featured-badge" id="featured-badge" style="display:none" data-i18n="featured_label">Featured</span></div>
+          <p class="app-tagline-lg" id="app-tagline"></p>
+          <div class="app-dev-row">
+            <span data-i18n="by_label">by</span> <a id="publisher-link" href="#">@…</a>
+            <span id="content-rating-pill" class="content-rating-pill"></span>
+          </div>
+          <div class="chip-row-sm" id="platform-chips"></div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-tile"><span class="stat-value" id="stat-rating">…</span><span class="stat-label" data-i18n="stat_rating">Rating</span></div>
+        <div class="stat-tile"><span class="stat-value" id="stat-downloads">…</span><span class="stat-label" data-i18n="stat_installs">Installs</span></div>
+        <div class="stat-tile"><span class="stat-value" id="stat-version">…</span><span class="stat-label" data-i18n="stat_version">Version</span></div>
+        <div class="stat-tile"><span class="stat-value" id="stat-updated">…</span><span class="stat-label" data-i18n="stat_updated">Updated</span></div>
+      </div>
+
+      <button type="button" class="btn primary get-btn" id="get-btn">…</button>
+      <p class="checkout-note" id="checkout-note"></p>
+
+      <div class="app-actions">
+        <button type="button" class="action-btn" id="report-btn" data-i18n="report_btn">Report</button>
+      </div>
+
+      <div id="screenshots-section" style="display:none">
+        <h2 class="section-h" data-i18n="screenshots_h">Screenshots</h2>
+        <div class="screenshot-strip" id="screenshot-strip"></div>
+      </div>
+
+      <div id="description-section" style="display:none">
+        <h2 class="section-h" data-i18n="about_h">About this app</h2>
+        <div class="desc-box" id="desc-box"></div>
+      </div>
+
+      <h2 class="section-h" data-i18n="safety_h">Data safety</h2>
+      <div class="safety-grid">
+        <div class="safety-tile"><div class="s-label" data-i18n="ads_label">Ads</div><span id="ads-value">…</span></div>
+        <div class="safety-tile"><div class="s-label" data-i18n="iap_label">In-app purchases</div><span id="iap-value">…</span></div>
+        <div class="safety-tile" id="permissions-tile" style="grid-column: 1 / -1; display:none"><div class="s-label" data-i18n="permissions_label">Permissions requested</div><div class="chip-row-sm" id="permissions-chips"></div></div>
+      </div>
+      <div class="links-row" id="links-row"></div>
+
+      <h2 class="section-h" data-i18n="ratings_h">Ratings &amp; reviews</h2>
+      <div class="rate-box">
+        <div class="rating-row">
+          <span id="stars-widget"></span>
+          <span class="rating-summary" id="rating-summary"></span>
+        </div>
+        <textarea class="review-textarea" id="review-input" data-i18n-placeholder="review_placeholder" placeholder="Write a review (optional)..." style="display:none"></textarea>
+        <button type="button" class="btn small" id="review-submit-btn" style="display:none;margin-top:0.6rem" data-i18n="review_submit">Post review</button>
+      </div>
+      <div id="reviews-list" style="margin-top:1rem"></div>
+      <p class="notfound-note" id="no-reviews-note" data-i18n="no_reviews">No written reviews yet.</p>
+
+      <div id="versions-section" style="display:none">
+        <h2 class="section-h" data-i18n="versions_h">Version history</h2>
+        <div class="versions-list" id="versions-list"></div>
+      </div>
+
+      <p class="note-box" data-i18n="safety_note">Community apps aren't scanned for malware. Only install or buy apps from publishers you trust.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
+    <nav class="footer-links">
+      <a href="terms" data-i18n="footer_terms">Terms</a>
+      <a href="privacy" data-i18n="footer_privacy">Privacy</a>
+      <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
+    </nav>
+  </div>
+</footer>
+
+<script type="module">
+  import { supabase } from './js/supabase-client.js';
+
+  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
+
+  const PLATFORM_LABELS = { windows: 'Windows', macos: 'macOS', linux: 'Linux', web: 'Web', android: 'Android', ios: 'iOS' };
+  const PERMISSION_LABELS = {
+    camera: { en: 'Camera', fr: 'Caméra' }, microphone: { en: 'Microphone', fr: 'Microphone' },
+    location: { en: 'Location', fr: 'Position' }, contacts: { en: 'Contacts', fr: 'Contacts' },
+    storage: { en: 'Storage', fr: 'Stockage' }, network: { en: 'Network', fr: 'Réseau' },
+    notifications: { en: 'Notifications', fr: 'Notifications' }, calendar: { en: 'Calendar', fr: 'Calendrier' },
+    sms: { en: 'SMS', fr: 'SMS' }, bluetooth: { en: 'Bluetooth', fr: 'Bluetooth' },
+  };
+  const CONTENT_RATING_LABELS = {
+    everyone: { en: 'Everyone', fr: 'Tout public' }, teen: { en: 'Teen', fr: 'Ado' },
+    mature: { en: 'Mature 17+', fr: 'Mature 17+' }, adults: { en: 'Adults only', fr: 'Adultes uniquement' },
+  };
+
+  const I18N = {
+    en: {
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_apps: "apps", nav_account: "account",
+      nav_integrations: "integrations", nav_search: "search",
+      footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
+      cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
+      back: "← Back to apps", not_found: "No app with that name.",
+      featured_label: "Featured", by_label: "by",
+      stat_rating: "Rating", stat_installs: "Installs", stat_version: "Version", stat_updated: "Updated",
+      screenshots_h: "Screenshots", about_h: "About this app", safety_h: "Data safety",
+      ads_label: "Ads", iap_label: "In-app purchases", permissions_label: "Permissions requested",
+      yes: "Yes", no: "No",
+      ratings_h: "Ratings & reviews", review_placeholder: "Write a review (optional)...", review_submit: "Post review",
+      no_reviews: "No written reviews yet.", no_ratings: "No ratings yet",
+      versions_h: "Version history",
+      report_btn: "Report", report_prompt: "What's wrong with this app?", report_ok: "Thanks, reported.",
+      err_generic: "Something went wrong. Try again.", sign_in_required: "Sign in to continue.",
+      get_free: "Get", get_owned: "Download", get_buy: "Buy",
+      checkout_loading: "Redirecting to checkout...", checkout_success: "Purchase complete — enjoy!", checkout_cancelled: "Checkout cancelled.",
+      own_app_note: "This is your app.",
+      safety_note: "Community apps aren't scanned for malware. Only install or buy apps from publishers you trust.",
+      official_app: "Official app",
+    },
+    fr: {
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_apps: "apps", nav_account: "compte",
+      nav_integrations: "intégrations", nav_search: "recherche",
+      footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
+      cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
+      back: "← Retour aux apps", not_found: "Aucune app avec ce nom.",
+      featured_label: "En vedette", by_label: "par",
+      stat_rating: "Note", stat_installs: "Installs", stat_version: "Version", stat_updated: "Mise à jour",
+      screenshots_h: "Captures d'écran", about_h: "À propos de cette app", safety_h: "Sécurité des données",
+      ads_label: "Publicités", iap_label: "Achats intégrés", permissions_label: "Permissions demandées",
+      yes: "Oui", no: "Non",
+      ratings_h: "Notes et avis", review_placeholder: "Écris un avis (optionnel)...", review_submit: "Publier l'avis",
+      no_reviews: "Pas encore d'avis écrit.", no_ratings: "Pas encore de note",
+      versions_h: "Historique des versions",
+      report_btn: "Signaler", report_prompt: "Quel est le problème avec cette app ?", report_ok: "Merci, signalé.",
+      err_generic: "Un problème est survenu. Réessaie.", sign_in_required: "Connecte-toi pour continuer.",
+      get_free: "Obtenir", get_owned: "Télécharger", get_buy: "Acheter",
+      checkout_loading: "Redirection vers le paiement...", checkout_success: "Achat terminé — profites-en !", checkout_cancelled: "Paiement annulé.",
+      own_app_note: "C'est ton app.",
+      safety_note: "Les apps communautaires ne sont pas scannées pour détecter les malwares. N'installe ou n'achète que des apps de publieurs en qui tu as confiance.",
+      official_app: "App officielle",
+    }
+  };
+
+  const OFFICIAL_BADGE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#3897f0" d="M23,12L20.56,9.22L20.9,5.54L17.29,4.72L15.4,1.54L12,3L8.6,1.54L6.71,4.72L3.1,5.54L3.44,9.22L1,12L3.44,14.78L3.1,18.46L6.71,19.28L8.6,22.46L12,21L15.4,22.46L17.29,19.28L20.9,18.46L20.56,14.78L23,12Z"/><path fill="#fff" d="M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/></svg>';
+
+  function lang() { return document.documentElement.lang || 'en'; }
+  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
+  function applyLanguage(l) {
+    if (!I18N[l]) l = 'en';
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-i18n]').forEach((node) => {
+      const key = node.getAttribute('data-i18n');
+      if (I18N[l][key] !== undefined) node.textContent = I18N[l][key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((node) => {
+      const key = node.getAttribute('data-i18n-placeholder');
+      if (I18N[l][key] !== undefined) node.placeholder = I18N[l][key];
+    });
+    try { localStorage.setItem('poly-lang', l); } catch (e) {}
+    if (currentApp) renderGetButton();
+  }
+
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+  function avatarInitial(username) { return escapeHtml((username || '?').charAt(0).toUpperCase()); }
+  function iconHTML(iconUrl, name) {
+    if (iconUrl) return `<img src="${escapeHtml(iconUrl)}" alt="" style="width:100%;height:100%;border-radius:20px;object-fit:cover;">`;
+    return escapeHtml((name || '?').charAt(0).toUpperCase());
+  }
+  function showView(name) {
+    document.querySelectorAll('[data-view]').forEach((el) => el.classList.toggle('active', el.getAttribute('data-view') === name));
+  }
+  function humanDate(d) { return new Date(d).toLocaleDateString(lang() === 'fr' ? 'fr-FR' : 'en-US'); }
+  function setCheckoutNote(msg, kind) {
+    const el = document.getElementById('checkout-note');
+    el.textContent = msg || '';
+    el.className = 'checkout-note' + (kind ? ' show ' + kind : '');
+  }
+
+  const slug = new URLSearchParams(window.location.search).get('slug') || '';
+  const checkoutParam = new URLSearchParams(window.location.search).get('checkout');
+  let currentUserId = null;
+  let currentApp = null;
+  let hasPurchased = false;
+
+  async function checkPurchase() {
+    hasPurchased = false;
+    if (!currentUserId || !currentApp) return;
+    const { data } = await supabase.from('app_purchases').select('status').eq('app_id', currentApp.id).eq('user_id', currentUserId).eq('status', 'completed').maybeSingle();
+    hasPurchased = !!data;
+  }
+
+  function renderGetButton() {
+    const btn = document.getElementById('get-btn');
+    const isOwner = currentUserId && currentApp.publisher_id === currentUserId;
+    if (!currentApp.is_paid || isOwner || hasPurchased) {
+      btn.textContent = isOwner ? t('own_app_note') : t('get_free');
+      btn.disabled = false;
+    } else {
+      const amount = (currentApp.price_cents / 100).toFixed(2);
+      const symbol = currentApp.currency === 'eur' ? '€' : currentApp.currency === 'gbp' ? '£' : '$';
+      btn.textContent = `${t('get_buy')} · ${symbol}${amount}`;
+      btn.disabled = false;
+    }
+  }
+
+  async function doDownload() {
+    if (currentApp.storage_path) {
+      const { data, error } = await supabase.storage.from('app-builds').createSignedUrl(currentApp.storage_path, 120);
+      if (error || !data) { setCheckoutNote(t('err_generic'), 'error'); return; }
+      window.location.href = data.signedUrl;
+    } else if (currentApp.download_url) {
+      window.location.href = currentApp.download_url;
+    }
+    if (currentUserId) await supabase.rpc('record_app_download', { p_app_id: currentApp.id });
+  }
+
+  document.getElementById('get-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('get-btn');
+    const isOwner = currentUserId && currentApp.publisher_id === currentUserId;
+    if (isOwner) return;
+
+    if (!currentApp.is_paid || hasPurchased) {
+      doDownload();
+      return;
+    }
+
+    if (!currentUserId) { window.location.href = 'account'; return; }
+
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = t('checkout_loading');
+    setCheckoutNote('', null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error(t('sign_in_required'));
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/create-app-checkout`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${session.access_token}`, 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ app_id: currentApp.id }),
+      });
+      const payload = await resp.json();
+      if (!resp.ok || !payload.url) throw new Error(payload.error || t('err_generic'));
+      window.location.href = payload.url;
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = original;
+      setCheckoutNote(err.message || t('err_generic'), 'error');
+    }
+  });
+
+  function renderStars(avgRating, myRating) {
+    const widget = document.getElementById('stars-widget');
+    widget.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'star-btn' + (i <= Math.round(myRating || avgRating) ? ' filled' : '');
+      btn.textContent = i <= Math.round(myRating || avgRating) ? '★' : '☆';
+      btn.dataset.value = i;
+      btn.addEventListener('click', async () => {
+        if (!currentUserId) { window.location.href = 'account'; return; }
+        pendingStars = i;
+        document.getElementById('review-input').style.display = 'block';
+        document.getElementById('review-submit-btn').style.display = 'inline-flex';
+        renderStars(avgRating, i);
+      });
+      widget.appendChild(btn);
+    }
+  }
+
+  let pendingStars = 0;
+
+  document.getElementById('review-submit-btn').addEventListener('click', async () => {
+    if (!currentUserId || !pendingStars) return;
+    const reviewText = document.getElementById('review-input').value.trim();
+    const { error } = await supabase.from('app_ratings').upsert({ app_id: currentApp.id, user_id: currentUserId, stars: pendingStars, review_text: reviewText || null });
+    if (error) { setCheckoutNote(error.message || t('err_generic'), 'error'); return; }
+    document.getElementById('review-input').value = '';
+    document.getElementById('review-input').style.display = 'none';
+    document.getElementById('review-submit-btn').style.display = 'none';
+    loadRatingSummary();
+    loadReviews();
+  });
+
+  async function loadRatingSummary() {
+    const { data } = await supabase.from('apps_public').select('avg_rating, rating_count').eq('id', currentApp.id).maybeSingle();
+    let myRating = 0;
+    if (currentUserId) {
+      const { data: mine } = await supabase.from('app_ratings').select('stars').eq('app_id', currentApp.id).eq('user_id', currentUserId).maybeSingle();
+      if (mine) myRating = mine.stars;
+    }
+    const avg = data ? data.avg_rating : 0;
+    const count = data ? data.rating_count : 0;
+    renderStars(avg, myRating);
+    document.getElementById('rating-summary').textContent = count > 0 ? `${Number(avg).toFixed(1)} (${count})` : t('no_ratings');
+    document.getElementById('stat-rating').textContent = count > 0 ? Number(avg).toFixed(1) : '–';
+  }
+
+  async function loadReviews() {
+    const { data } = await supabase.from('app_ratings_public').select('*').eq('app_id', currentApp.id).not('review_text', 'is', null).order('created_at', { ascending: false }).limit(30);
+    const list = document.getElementById('reviews-list');
+    const empty = document.getElementById('no-reviews-note');
+    if (!data || data.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    list.innerHTML = data.map((r) => `
+      <div class="review-row">
+        <div class="review-head">
+          <span class="review-author">@${escapeHtml(r.reviewer_username)}</span>
+          <span class="stars-static">${'★'.repeat(r.stars)}${'<span class="dim">' + '★'.repeat(5 - r.stars) + '</span>'}</span>
+          <span class="review-date">${humanDate(r.created_at)}</span>
+        </div>
+        <p class="review-text">${escapeHtml(r.review_text)}</p>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('report-btn').addEventListener('click', async () => {
+    if (!currentUserId) { window.location.href = 'account'; return; }
+    const reason = window.prompt(t('report_prompt'));
+    if (!reason) return;
+    const { error } = await supabase.rpc('submit_app_report', { p_app_id: currentApp.id, p_reason: reason });
+    window.alert(error ? (error.message || t('err_generic')) : t('report_ok'));
+  });
+
+  async function loadVersions() {
+    const { data } = await supabase.from('app_versions').select('version, release_notes, created_at').eq('app_id', currentApp.id).order('created_at', { ascending: false }).limit(20);
+    const section = document.getElementById('versions-section');
+    if (!data || data.length < 2) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    document.getElementById('versions-list').innerHTML = data.map((v) => `
+      <div class="version-row"><span>${escapeHtml(v.version)}</span><span class="v-date">${humanDate(v.created_at)}</span></div>
+    `).join('');
+  }
+
+  async function loadApp() {
+    let { data: rows } = await supabase.from('apps_public').select('*').eq('slug', slug).limit(1);
+    let app = rows && rows[0];
+
+    if (!app) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: ownRows } = await supabase.from('apps').select('*').eq('slug', slug).eq('publisher_id', session.user.id).limit(1);
+        app = ownRows && ownRows[0];
+        if (app) {
+          const { data: prof } = await supabase.from('profiles').select('username, avatar_url').eq('id', session.user.id).maybeSingle();
+          app.publisher_username = prof ? prof.username : '';
+          app.avg_rating = 0; app.rating_count = 0;
+        }
+      }
+    }
+
+    if (!app) { showView('notfound'); return; }
+    currentApp = app;
+
+    document.getElementById('app-icon').innerHTML = iconHTML(app.icon_url, app.name);
+    const coverEl = document.getElementById('app-cover');
+    if (app.cover_url) { coverEl.src = app.cover_url; coverEl.alt = app.name; coverEl.style.display = 'block'; }
+    else { coverEl.style.display = 'none'; }
+    document.getElementById('app-name-text').textContent = app.name;
+    const officialBadge = document.getElementById('official-badge');
+    officialBadge.innerHTML = OFFICIAL_BADGE_SVG;
+    officialBadge.title = t('official_app');
+    officialBadge.style.display = app.is_official ? 'inline-flex' : 'none';
+    document.getElementById('featured-badge').style.display = app.is_featured ? 'inline-block' : 'none';
+    document.getElementById('app-tagline').textContent = app.tagline || '';
+    const link = document.getElementById('publisher-link');
+    link.textContent = '@' + app.publisher_username;
+    link.href = 'profile?u=' + encodeURIComponent(app.publisher_username);
+
+    const cr = CONTENT_RATING_LABELS[app.content_rating] || CONTENT_RATING_LABELS.everyone;
+    document.getElementById('content-rating-pill').textContent = cr[lang()] || cr.en;
+
+    document.getElementById('platform-chips').innerHTML = (app.platforms || []).map((p) => `<span class="category-chip">${escapeHtml(PLATFORM_LABELS[p] || p)}</span>`).join('');
+
+    document.getElementById('stat-downloads').textContent = app.download_count;
+    document.getElementById('stat-version').textContent = app.version;
+    document.getElementById('stat-updated').textContent = humanDate(app.updated_at);
+
+    if (app.screenshots && app.screenshots.length) {
+      document.getElementById('screenshots-section').style.display = 'block';
+      document.getElementById('screenshot-strip').innerHTML = app.screenshots.map((s) => `<img src="${escapeHtml(s)}" alt="" loading="lazy">`).join('');
+    }
+    if (app.description_md) {
+      document.getElementById('description-section').style.display = 'block';
+      document.getElementById('desc-box').textContent = app.description_md;
+    }
+
+    document.getElementById('ads-value').textContent = app.contains_ads ? t('yes') : t('no');
+    document.getElementById('iap-value').textContent = app.has_iap ? t('yes') : t('no');
+    if (app.permissions && app.permissions.length) {
+      document.getElementById('permissions-tile').style.display = 'block';
+      document.getElementById('permissions-chips').innerHTML = app.permissions.map((p) => {
+        const lbl = PERMISSION_LABELS[p];
+        return `<span class="category-chip">${escapeHtml(lbl ? (lbl[lang()] || lbl.en) : p)}</span>`;
+      }).join('');
+    }
+    const links = [];
+    if (app.website_url) links.push(`<a href="${escapeHtml(app.website_url)}" target="_blank" rel="noopener">${escapeHtml(app.website_url)}</a>`);
+    if (app.privacy_policy_url) links.push(`<a href="${escapeHtml(app.privacy_policy_url)}" target="_blank" rel="noopener">Privacy policy</a>`);
+    if (app.support_email) links.push(`<a href="mailto:${escapeHtml(app.support_email)}">${escapeHtml(app.support_email)}</a>`);
+    document.getElementById('links-row').innerHTML = links.join('');
+
+    await checkPurchase();
+    renderGetButton();
+    loadRatingSummary();
+    loadReviews();
+    loadVersions();
+
+    if (checkoutParam === 'success') { setCheckoutNote(t('checkout_success'), 'ok'); }
+    else if (checkoutParam === 'cancelled') { setCheckoutNote(t('checkout_cancelled'), 'error'); }
+
+    showView('app');
+  }
+
+  let saved = null;
+  try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
+  const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  applyLanguage(saved || browserLang);
+  loadApp();
+
+  function updateCurrentUser(session) {
+    currentUserId = session ? session.user.id : null;
+    if (currentApp) { checkPurchase().then(renderGetButton); loadRatingSummary(); }
+  }
+  supabase.auth.onAuthStateChange((_event, session) => { updateCurrentUser(session); });
+  supabase.auth.getSession().then(({ data }) => { updateCurrentUser(data.session); });
+</script>
+
+<div class="cookie-banner" id="cookie-banner">
+  <div class="wrap cookie-banner-inner">
+    <p data-i18n="cookie_text">Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.</p>
+    <div class="cookie-actions">
+      <a href="privacy" data-i18n="cookie_learn">Learn more</a>
+      <button type="button" id="cookie-dismiss" data-i18n="cookie_ok">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'poly-cookie-notice-dismissed';
+  var banner = document.getElementById('cookie-banner');
+  if (!banner) return;
+  var dismissed = false;
+  try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  if (!dismissed) banner.classList.add('show');
+  var btn = document.getElementById('cookie-dismiss');
+  if (btn) btn.addEventListener('click', function () {
+    banner.classList.remove('show');
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  });
+})();
+</script>
+
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
+
+</body>
+</html>

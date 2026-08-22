@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Roadmap · Poly</title>
 <link rel="icon" href="logo.png" />
@@ -19,130 +20,11 @@
 <meta name="twitter:title" content="Roadmap · Poly" />
 <meta name="twitter:description" content="What's shipped recently, what's next, and what's further out for Poly." />
 <meta name="twitter:image" content="https://poly.candygate.eu/logo.png" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
 <style>
-  :root {
-    --ink: #14171d; --ink-raised: #1b1f27; --border: rgba(255, 255, 255, 0.10);
-    --text: #e9e4d8; --text-dim: #9c9686; --accent: #f0a93e; --accent-ink: #14171d;
-    --danger: #e0664a; --ok: #6fbf8b;
-    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --container: 720px;
-    color-scheme: dark;
-  }
-  :root[data-theme="light"] {
-    --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-    --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ink: #eff1f4; --ink-raised: #ffffff; --border: rgba(20, 23, 29, 0.10);
-      --text: #1b1e24; --text-dim: #5b6270; --accent: #a8660a; --accent-ink: #ffffff;
-      color-scheme: light;
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--ink); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  body { font-size: 16px; line-height: 1.6; min-height: 100vh; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .skip-link { position: absolute; left: -9999px; top: 0; background: var(--accent); color: var(--accent-ink); padding: 0.6rem 1rem; z-index: 1000; font-family: var(--mono); font-size: 0.85rem; border-radius: 0 0 8px 0; }
-  .skip-link:focus { left: 0; }
-
-  .wrap { max-width: var(--container); margin: 0 auto; padding-left: clamp(1.25rem, 4vw, 2rem); padding-right: clamp(1.25rem, 4vw, 2rem); }
-
-  header.top { border-bottom: 1px solid var(--border); }
-  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: nowrap; min-height: 64px; }
-  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; color: var(--text); }
-  .wordmark span { color: var(--accent); }
-  nav.top-links { display: flex; align-items: center; gap: 1.5rem; font-family: var(--mono); font-size: 0.85rem; }
-  nav.top-links a { color: var(--text-dim); }
-  nav.top-links a:hover { color: var(--accent); }
-  nav.top-links a.current { color: var(--accent); }
-
-  .nav-toggle {
-    display: none; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
-    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; flex-shrink: 0;
-  }
-  .nav-toggle span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 1px; }
-  @media (max-width: 960px) {
-    .nav-toggle { display: flex; }
-    header.top .wrap { position: relative; }
-    nav.top-links {
-      display: none; position: absolute; top: 100%; left: 0; right: 0;
-      flex-direction: column; align-items: stretch; gap: 0;
-      background: var(--ink-raised); border-bottom: 1px solid var(--border);
-      padding: 0.4rem clamp(1.25rem, 4vw, 2rem) 0.9rem; z-index: 40;
-    }
-    nav.top-links.open { display: flex; }
-    nav.top-links a { padding: 0.65rem 0; border-bottom: 1px solid var(--border); }
-    nav.top-links a:last-child { border-bottom: none; }
-  }
-  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
-  .notif-bell { position: relative; display: none; }
-  .notif-bell-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; position: relative;
-  }
-  .notif-bell-btn svg { width: 17px; height: 17px; }
-  .notif-count {
-    position: absolute; top: -2px; right: -2px; min-width: 16px; height: 16px; border-radius: 999px;
-    background: var(--danger); color: #fff; font-family: var(--mono); font-size: 0.6rem; font-weight: 700;
-    display: none; align-items: center; justify-content: center; padding: 0 3px; line-height: 1;
-  }
-  .notif-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; max-width: calc(100vw - 2rem);
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    display: none; flex-direction: column; z-index: 50; box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .notif-dropdown.open { display: flex; }
-  .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); gap: 0.6rem; }
-  .notif-dropdown-head .title { font-weight: 700; font-size: 0.85rem; }
-  .notif-dropdown-head .head-actions { display: flex; align-items: center; gap: 0.7rem; }
-  .notif-mark-all, .notif-see-all { background: none; border: none; color: var(--accent); font-size: 0.72rem; cursor: pointer; padding: 0; font-family: var(--sans); text-decoration: none; }
-  .notif-list { max-height: 340px; overflow-y: auto; }
-  .notif-item { display: block; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); cursor: pointer; }
-  .notif-item:last-child { border-bottom: none; }
-  .notif-item:hover { background: var(--ink); text-decoration: none; }
-  .notif-item.unread { background: rgba(240,169,62,0.06); }
-  .notif-item .n-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 0.15rem; }
-  .notif-item .n-body { font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.2rem; }
-  .notif-item .n-time { font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono); }
-  .notif-empty { padding: 1.5rem 0.9rem; text-align: center; font-size: 0.82rem; color: var(--text-dim); }
-  .notif-staff-compose { display: none; gap: 0.4rem; padding: 0.6rem 0.9rem; border-top: 1px solid var(--border); }
-  .notif-staff-compose input { flex: 1; padding: 0.4rem 0.6rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.78rem; min-width: 0; }
-  .notif-staff-compose button { padding: 0.4rem 0.7rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex-shrink: 0; }
-
-  .user-menu { position: relative; }
-  .user-menu-btn {
-    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-    background: var(--ink-raised); cursor: pointer; padding: 0; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .user-menu-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .user-menu-btn .initial { font-family: var(--mono); font-size: 0.85rem; color: var(--text-dim); }
-  .user-menu-dropdown {
-    position: absolute; top: calc(100% + 0.5rem); right: 0; min-width: 190px;
-    background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.4rem; display: none; flex-direction: column; gap: 0.1rem; z-index: 50;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-  }
-  .user-menu-dropdown.open { display: flex; }
-  .user-menu-name { font-family: var(--mono); font-size: 0.76rem; color: var(--text-dim); padding: 0.4rem 0.6rem 0.55rem; border-bottom: 1px solid var(--border); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
-  .user-menu-item {
-    display: block; text-align: left; width: 100%; background: none; border: none; cursor: pointer;
-    font-family: var(--sans); font-size: 0.85rem; color: var(--text); padding: 0.45rem 0.6rem; border-radius: 6px;
-    text-decoration: none; box-sizing: border-box;
-  }
-  .user-menu-item:hover { background: var(--ink); }
-  .user-menu-item.danger { color: var(--danger); }
-
-  main { padding: clamp(2.5rem, 6vw, 4rem) 0 5rem; }
+  main { --container: 720px; padding: clamp(2.5rem, 6vw, 4.5rem) 0 5rem; }
 
   .hero { margin-bottom: 2.5rem; max-width: 68ch; }
-  .eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem; }
   .hero h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 0.9rem; line-height: 1.2; }
   .hero p { color: var(--text-dim); font-size: 1.02rem; margin: 0; }
 
@@ -154,18 +36,9 @@
   footer.site-footer .footer-links a { color: var(--text-dim); }
   footer.site-footer .footer-links a:hover { color: var(--accent); }
 
-  .cookie-banner { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; background: var(--ink-raised); border-top: 1px solid var(--border); box-shadow: 0 -4px 20px rgba(0,0,0,0.25); display: none; }
-  .cookie-banner.show { display: block; }
-  .cookie-banner-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; padding: 1rem clamp(1.25rem, 4vw, 2rem); }
-  .cookie-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dim); max-width: 60ch; }
-  .cookie-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
-  .cookie-actions a { font-size: 0.82rem; color: var(--text-dim); }
-  .cookie-actions a:hover { color: var(--accent); }
-  .cookie-actions button { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; padding: 0.5rem 1rem; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 6px; cursor: pointer; }
-  .cookie-actions button:hover { opacity: 0.9; }
-
+  .roadmap-cols { display: flex; flex-direction: column; }
   .roadmap-col { margin-bottom: 2.5rem; }
-  .roadmap-col h2 { font-size: 1.05rem; margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .roadmap-col h2 { font-size: 1.05rem; margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem; font-family: var(--sans); font-weight: 700; letter-spacing: normal; }
   .roadmap-col .dot { width: 8px; height: 8px; border-radius: 50%; }
   .roadmap-col.now .dot { background: var(--ok); }
   .roadmap-col.next .dot { background: var(--accent); }
@@ -173,108 +46,101 @@
   .roadmap-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
   .roadmap-list li { background: var(--ink-raised); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.1rem; font-size: 0.92rem; }
   .roadmap-list code { font-family: var(--mono); background: var(--ink); border-radius: 4px; padding: 0.1rem 0.4rem; }
-
 </style>
 </head>
 <body>
 <a href="#main" class="skip-link">Skip to content</a>
 
-<header class="top">
+<header class="top glass" id="top-nav">
   <div class="wrap">
     <a href="/" class="wordmark">poly<span>&gt;</span></a>
     <nav class="top-links" id="top-links">
       <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
       <a href="docs" data-i18n="nav_docs">docs</a>
       <a href="community" data-i18n="nav_community">community</a>
+      <a href="apps" data-i18n="nav_apps">apps</a>
       <a href="integrations" data-i18n="nav_integrations">integrations</a>
       <a href="search" data-i18n="nav_search">search</a>
       <a href="account" data-i18n="nav_account">account</a>
     </nav>
     <div class="header-actions">
-    <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="notif-bell" id="notif-bell">
-      <button type="button" class="notif-bell-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span class="notif-count" id="notif-count">0</span>
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle color theme">
+        <svg data-lucide="moon" aria-hidden="true"></svg>
       </button>
-      <div class="notif-dropdown" id="notif-dropdown">
-        <div class="notif-dropdown-head">
-          <span class="title">Notifications</span>
-          <div class="head-actions">
-            <a class="notif-see-all" href="notifications">See all</a>
-            <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="top-links">
+        <svg data-lucide="menu" aria-hidden="true"></svg>
+      </button>
+      <div class="notif-bell" id="notif-bell">
+        <button type="button" class="icon-btn" id="notif-bell-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <svg data-lucide="bell" aria-hidden="true"></svg>
+          <span class="notif-count" id="notif-count">0</span>
+        </button>
+        <div class="dropdown-panel notif-dropdown" id="notif-dropdown">
+          <div class="notif-dropdown-head">
+            <span class="title">Notifications</span>
+            <div class="head-actions">
+              <a class="notif-see-all" href="notifications">See all</a>
+              <button type="button" class="notif-mark-all" id="notif-mark-all">Mark all read</button>
+            </div>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+          <div class="notif-staff-compose" id="notif-staff-compose">
+            <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
+            <button type="button" id="notif-staff-send">Send</button>
           </div>
         </div>
-        <div class="notif-list" id="notif-list"></div>
-        <div class="notif-staff-compose" id="notif-staff-compose">
-          <input type="text" id="notif-staff-input" placeholder="Broadcast to everyone...">
-          <button type="button" id="notif-staff-send">Send</button>
+      </div>
+      <div class="user-menu" id="user-menu" style="display:none">
+        <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="initial" id="user-menu-avatar">?</span>
+        </button>
+        <div class="dropdown-panel user-menu-dropdown" id="user-menu-dropdown">
+          <div class="user-menu-name" id="user-menu-name">…</div>
+          <a href="account" class="user-menu-item">Account</a>
+          <a href="community" class="user-menu-item">Community</a>
+          <a href="docs" class="user-menu-item">Docs</a>
+          <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
         </div>
       </div>
-    </div>
-    <div class="user-menu" id="user-menu" style="display:none">
-      <button type="button" class="user-menu-btn" id="user-menu-btn" aria-haspopup="true" aria-expanded="false">
-        <span class="initial" id="user-menu-avatar">?</span>
-      </button>
-      <div class="user-menu-dropdown" id="user-menu-dropdown">
-        <div class="user-menu-name" id="user-menu-name">…</div>
-        <a href="account" class="user-menu-item">Account</a>
-        <a href="community" class="user-menu-item">Community</a>
-        <a href="docs" class="user-menu-item">Docs</a>
-        <button type="button" class="user-menu-item danger" id="user-menu-signout">Sign out</button>
-      </div>
-    </div>
     </div>
   </div>
 </header>
 
-<script>
-(function () {
-  var toggle = document.getElementById('nav-toggle');
-  var links = document.getElementById('top-links');
-  if (!toggle || !links) return;
-  toggle.addEventListener('click', function () {
-    var open = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  });
-})();
-</script>
-
 <main id="main">
   <div class="wrap">
     <div class="hero">
-      <p class="eyebrow" data-i18n="eyebrow">Roadmap</p>
-      <h1 data-i18n="title">What's coming</h1>
-      <p data-i18n="lede">Publicly tracked, honestly labeled -- "later" means we haven't started, not that it's promised for a date.</p>
+      <p class="eyebrow reveal" data-i18n="eyebrow">Roadmap</p>
+      <h1 class="reveal" data-i18n="title">What's coming</h1>
+      <p class="reveal" data-i18n="lede">Publicly tracked, honestly labeled -- "later" means we haven't started, not that it's promised for a date.</p>
     </div>
 
-    <div class="roadmap-col now">
-      <h2><span class="dot"></span><span data-i18n="now_h">Shipped recently</span></h2>
-      <ul class="roadmap-list">
-        <li data-i18n="now_1"><code>poly add</code>/<code>poly remove</code>, <code>poly.lock</code>, <code>poly run</code>/<code>exec</code>, <code>poly audit</code>, <code>poly cache</code> -- see the <a href="changelog">changelog</a>.</li>
-        <li data-i18n="now_2">Integrations page: describe one, your connected AI assistant builds and publishes it.</li>
-        <li data-i18n="now_3">Clean URLs, package ratings, starring, version history, and this roadmap page.</li>
-      </ul>
-    </div>
+    <div class="roadmap-cols reveal-stagger">
+      <div class="roadmap-col now">
+        <h2><span class="dot"></span><span data-i18n="now_h">Shipped recently</span></h2>
+        <ul class="roadmap-list">
+          <li data-i18n="now_1"><code>poly add</code>/<code>poly remove</code>, <code>poly.lock</code>, <code>poly run</code>/<code>exec</code>, <code>poly audit</code>, <code>poly cache</code> -- see the <a href="changelog">changelog</a>.</li>
+          <li data-i18n="now_2">Integrations page: describe one, your connected AI assistant builds and publishes it.</li>
+          <li data-i18n="now_3">Clean URLs, package ratings, starring, version history, and this roadmap page.</li>
+        </ul>
+      </div>
 
-    <div class="roadmap-col next">
-      <h2><span class="dot"></span><span data-i18n="next_h">Next up</span></h2>
-      <ul class="roadmap-list">
-        <li data-i18n="next_1">Local file installs: <code>poly install ./pkg.whl</code>, <code>poly install package.tgz</code>.</li>
-        <li data-i18n="next_2">Quality-of-life CLI flags: <code>--json</code>, <code>--dry-run</code>, <code>--quiet</code>, <code>--yes</code>.</li>
-        <li data-i18n="next_3">A public changelog RSS feed.</li>
-      </ul>
-    </div>
+      <div class="roadmap-col next">
+        <h2><span class="dot"></span><span data-i18n="next_h">Next up</span></h2>
+        <ul class="roadmap-list">
+          <li data-i18n="next_1">Local file installs: <code>poly install ./pkg.whl</code>, <code>poly install package.tgz</code>.</li>
+          <li data-i18n="next_2">Quality-of-life CLI flags: <code>--json</code>, <code>--dry-run</code>, <code>--quiet</code>, <code>--yes</code>.</li>
+          <li data-i18n="next_3">A public changelog RSS feed.</li>
+        </ul>
+      </div>
 
-    <div class="roadmap-col later">
-      <h2><span class="dot"></span><span data-i18n="later_h">Later</span></h2>
-      <ul class="roadmap-list">
-        <li data-i18n="later_1">Workspaces: <code>poly install --workspace api</code>.</li>
-        <li data-i18n="later_2"><code>poly shell</code> -- a shell session with <code>~/.poly/bin</code> already on PATH.</li>
-        <li data-i18n="later_3"><code>poly config</code> and <code>poly export</code> (mirror installs to a brewfile/package.json-style export).</li>
-      </ul>
+      <div class="roadmap-col later">
+        <h2><span class="dot"></span><span data-i18n="later_h">Later</span></h2>
+        <ul class="roadmap-list">
+          <li data-i18n="later_1">Workspaces: <code>poly install --workspace api</code>.</li>
+          <li data-i18n="later_2"><code>poly shell</code> -- a shell session with <code>~/.poly/bin</code> already on PATH.</li>
+          <li data-i18n="later_3"><code>poly config</code> and <code>poly export</code> (mirror installs to a brewfile/package.json-style export).</li>
+        </ul>
+      </div>
     </div>
   </div>
 </main>
@@ -301,22 +167,9 @@
 </div>
 
 <script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-  const SUPABASE_URL = 'https://iuymslcbbrbahxbfuzrr.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_ocTnDk4vyMMGcyGBeB3bOg_0CMGkdaD';
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  function escapeHtml(s) {
-    const div = document.createElement('div');
-    div.textContent = s == null ? '' : String(s);
-    return div.innerHTML;
-  }
-
-
-
   const I18N = {
     en: {
-      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_integrations: "integrations", nav_search: "search", nav_account: "account",
+      nav_dependencies: "dependencies", nav_docs: "docs", nav_community: "community", nav_apps: "apps", nav_integrations: "integrations", nav_search: "search", nav_account: "account",
       footer_text: "Poly is open source, MIT licensed.", footer_terms: "Terms", footer_privacy: "Privacy", footer_security: "Security",
       cookie_text: "Poly only uses essential local storage for your session, theme, and language preference. No tracking, no ads, no third-party cookies.", cookie_learn: "Learn more", cookie_ok: "Got it",
       eyebrow: "Roadmap",
@@ -336,7 +189,7 @@
       later_3: "poly config and poly export (mirror installs to a brewfile/package.json-style export).",
     },
     fr: {
-      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_integrations: "intégrations", nav_search: "recherche", nav_account: "compte",
+      nav_dependencies: "dépendances", nav_docs: "doc", nav_community: "communauté", nav_apps: "apps", nav_integrations: "intégrations", nav_search: "recherche", nav_account: "compte",
       footer_text: "Poly est open source, sous licence MIT.", footer_terms: "Conditions", footer_privacy: "Confidentialité", footer_security: "Sécurité",
       cookie_text: "Poly n'utilise que du stockage local essentiel pour ta session, ton thème et ta langue. Pas de suivi, pas de pub, pas de cookies tiers.", cookie_learn: "En savoir plus", cookie_ok: "Compris",
       eyebrow: "Feuille de route",
@@ -357,8 +210,6 @@
     }
   };
 
-  function lang() { return document.documentElement.lang || 'en'; }
-  function t(key) { return (I18N[lang()] || I18N.en)[key] || key; }
   function applyLanguage(l) {
     if (!I18N[l]) l = 'en';
     document.documentElement.lang = l;
@@ -367,115 +218,12 @@
       if (I18N[l][key] !== undefined) node.innerHTML = I18N[l][key];
     });
     try { localStorage.setItem('poly-lang', l); } catch (e) {}
-
-  }
-
-  async function renderUserMenu(session) {
-    const menu = document.getElementById('user-menu');
-    if (!session) { menu.style.display = 'none'; return; }
-    const { data } = await supabase.from('profiles_public').select('username, avatar_url').eq('id', session.user.id).single();
-    const avatarSlot = document.getElementById('user-menu-avatar');
-    if (data && data.avatar_url) {
-      const img = document.createElement('img');
-      img.id = 'user-menu-avatar';
-      img.src = data.avatar_url;
-      img.alt = '';
-      avatarSlot.replaceWith(img);
-    } else {
-      avatarSlot.textContent = ((data && data.username) || session.user.email || '?').charAt(0).toUpperCase();
-    }
-    document.getElementById('user-menu-name').textContent = data && data.username ? '@' + data.username : session.user.email;
-    menu.style.display = 'block';
-  }
-
-  document.getElementById('user-menu-btn').addEventListener('click', () => {
-    document.getElementById('user-menu-dropdown').classList.toggle('open');
-  });
-  document.addEventListener('click', (e) => {
-    const menu = document.getElementById('user-menu');
-    if (!menu.contains(e.target)) document.getElementById('user-menu-dropdown').classList.remove('open');
-  });
-  document.getElementById('user-menu-signout').addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  });
-
-  async function checkBan(session) {
-    if (!session) return;
-    const { data } = await supabase.rpc('check_banned');
-    if (data && data[0] && data[0].banned) window.location.href = 'banned';
-  }
-
-  const ADMIN_ID = '7aeb0cc5-7188-46f3-8e12-4caa84573087';
-  let notifCache = [];
-  let notifPollInterval = null;
-  function timeAgo(iso) {
-    const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (diff < 60) return 'now';
-    if (diff < 3600) return Math.floor(diff / 60) + 'm';
-    if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-    return Math.floor(diff / 86400) + 'd';
-  }
-  async function loadNotifications() {
-    const { data } = await supabase.from('notifications').select('id, type, title, body_html, link_url, is_service, created_at, read_at').order('created_at', { ascending: false }).limit(30);
-    notifCache = data || [];
-    const list = document.getElementById('notif-list');
-    const countEl = document.getElementById('notif-count');
-    if (!notifCache.length) {
-      list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
-      countEl.style.display = 'none';
-      return;
-    }
-    const unread = notifCache.filter((n) => !n.read_at).length;
-    if (unread > 0) { countEl.textContent = unread > 9 ? '9+' : String(unread); countEl.style.display = 'flex'; } else { countEl.style.display = 'none'; }
-    list.innerHTML = notifCache.map((n) => `
-      <a class="notif-item ${n.read_at ? '' : 'unread'}" href="notifications?id=${encodeURIComponent(n.id)}">
-        <div class="n-title">${escapeHtml(n.title)}</div>
-        ${n.body_html ? `<div class="n-body">${n.body_html}</div>` : ''}
-        <div class="n-time">${timeAgo(n.created_at)}</div>
-      </a>
-    `).join('');
-  }
-  document.getElementById('notif-bell-btn').addEventListener('click', () => {
-    const dd = document.getElementById('notif-dropdown');
-    const open = dd.classList.toggle('open');
-    document.getElementById('notif-bell-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) loadNotifications();
-  });
-  document.addEventListener('click', (e) => {
-    const bell = document.getElementById('notif-bell');
-    if (bell && !bell.contains(e.target)) document.getElementById('notif-dropdown').classList.remove('open');
-  });
-  document.getElementById('notif-mark-all').addEventListener('click', async () => {
-    await supabase.rpc('mark_all_notifications_read');
-    loadNotifications();
-  });
-  document.getElementById('notif-staff-send').addEventListener('click', async () => {
-    const input = document.getElementById('notif-staff-input');
-    const title = input.value.trim();
-    if (!title) return;
-    const { error } = await supabase.rpc('send_broadcast_notification', { p_title: title, p_body_html: null, p_target_usernames: null });
-    if (!error) { input.value = ''; loadNotifications(); }
-  });
-  async function initNotifBell(session) {
-    const bell = document.getElementById('notif-bell');
-    clearInterval(notifPollInterval);
-    if (!session) { bell.style.display = 'none'; return; }
-    bell.style.display = 'block';
-    const { data: prof } = await supabase.from('profiles_public').select('badges').eq('id', session.user.id).maybeSingle();
-    const isStaff = !!(prof && prof.badges && prof.badges.includes('staff'));
-    document.getElementById('notif-staff-compose').style.display = (isStaff || session.user.id === ADMIN_ID) ? 'flex' : 'none';
-    loadNotifications();
-    notifPollInterval = setInterval(loadNotifications, 60000);
   }
 
   let saved = null;
   try { saved = localStorage.getItem('poly-lang'); } catch (e) {}
   const browserLang = (navigator.language || 'en').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
   applyLanguage(saved || browserLang);
-
-  supabase.auth.onAuthStateChange((_event, session) => { renderUserMenu(session); checkBan(session); initNotifBell(session);  });
-  supabase.auth.getSession().then(({ data }) => { renderUserMenu(data.session); checkBan(data.session); initNotifBell(data.session);  });
 
   (function () {
     var KEY = 'poly-cookie-notice-dismissed';
@@ -489,6 +237,9 @@
     });
   })();
 </script>
+
+<script type="module" src="js/session-nav.js?v=20260714c"></script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
 
 </body>
 </html>
