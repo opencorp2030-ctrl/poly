@@ -226,6 +226,10 @@
             <label data-i18n="f_description">Full description</label>
             <textarea id="f-description" rows="8"></textarea>
           </div>
+          <div class="field">
+            <label data-i18n="f_documentation">Documentation (setup, usage, configuration)</label>
+            <textarea id="f-documentation" rows="8"></textarea>
+          </div>
         </div>
 
         <div class="card" data-step="3">
@@ -342,7 +346,7 @@
       f_name: "App name", f_tagline: "Short tagline (max 80 characters)", f_category: "Category", f_content_rating: "Content rating",
       f_platforms: "Platforms", f_website: "Website (optional)", f_privacy: "Privacy policy URL (optional)", f_support: "Support email (optional)",
       f_icon: "App icon (square, recommended 512×512)", f_cover: "Feature graphic (optional)", f_screenshots: "Screenshots (up to 8)",
-      f_description: "Full description",
+      f_description: "Full description", f_documentation: "Documentation (setup, usage, configuration)",
       upload_icon: "Icon", upload_cover: "Cover", upload_add: "+ Add", upload_build: "Build file",
       f_pricing: "Pricing", pricing_free: "Free", pricing_paid: "Paid", f_price: "Price", f_currency: "Currency",
       f_contains_ads: "Contains ads", f_has_iap: "Has in-app purchases", f_permissions: "Permissions this app requests",
@@ -363,7 +367,7 @@
       f_name: "Nom de l'app", f_tagline: "Accroche courte (80 caractères max)", f_category: "Catégorie", f_content_rating: "Classification du contenu",
       f_platforms: "Plateformes", f_website: "Site web (optionnel)", f_privacy: "URL de politique de confidentialité (optionnel)", f_support: "Email de support (optionnel)",
       f_icon: "Icône de l'app (carrée, 512×512 recommandé)", f_cover: "Image de couverture (optionnel)", f_screenshots: "Captures d'écran (8 max)",
-      f_description: "Description complète",
+      f_description: "Description complète", f_documentation: "Documentation (installation, usage, configuration)",
       upload_icon: "Icône", upload_cover: "Cover", upload_add: "+ Ajouter", upload_build: "Fichier",
       f_pricing: "Tarification", pricing_free: "Gratuit", pricing_paid: "Payant", f_price: "Prix", f_currency: "Devise",
       f_contains_ads: "Contient des publicités", f_has_iap: "Contient des achats intégrés", f_permissions: "Permissions demandées par l'app",
@@ -551,6 +555,7 @@
       p_price_cents: isPaid ? Math.round(priceValue * 100) : 0,
       p_currency: document.getElementById('f-currency').value,
       p_status: status,
+      p_documentation_md: document.getElementById('f-documentation').value.trim() || null,
     });
 
     if (error) { setStatus(error.message || t('err_generic'), 'error'); nextBtn.disabled = false; return; }
@@ -583,6 +588,7 @@
     document.getElementById('f-name').value = data.name || '';
     document.getElementById('f-tagline').value = data.tagline || '';
     document.getElementById('f-description').value = data.description_md || '';
+    document.getElementById('f-documentation').value = data.documentation_md || '';
     document.getElementById('f-website').value = data.website_url || '';
     document.getElementById('f-privacy').value = data.privacy_policy_url || '';
     document.getElementById('f-support').value = data.support_email || '';

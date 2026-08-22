@@ -226,6 +226,11 @@
         <div class="desc-box" id="desc-box"></div>
       </div>
 
+      <div id="documentation-section" style="display:none">
+        <h2 class="section-h" data-i18n="documentation_h">Documentation</h2>
+        <div class="desc-box" id="documentation-box"></div>
+      </div>
+
       <h2 class="section-h" data-i18n="safety_h">Data safety</h2>
       <div class="safety-grid">
         <div class="safety-tile"><div class="s-label" data-i18n="ads_label">Ads</div><span id="ads-value">…</span></div>
@@ -295,7 +300,7 @@
       back: "← Back to apps", not_found: "No app with that name.",
       featured_label: "Featured", by_label: "by",
       stat_rating: "Rating", stat_installs: "Installs", stat_version: "Version", stat_updated: "Updated",
-      screenshots_h: "Screenshots", about_h: "About this app", safety_h: "Data safety",
+      screenshots_h: "Screenshots", about_h: "About this app", documentation_h: "Documentation", safety_h: "Data safety",
       ads_label: "Ads", iap_label: "In-app purchases", permissions_label: "Permissions requested",
       yes: "Yes", no: "No",
       ratings_h: "Ratings & reviews", review_placeholder: "Write a review (optional)...", review_submit: "Post review",
@@ -317,7 +322,7 @@
       back: "← Retour aux apps", not_found: "Aucune app avec ce nom.",
       featured_label: "En vedette", by_label: "par",
       stat_rating: "Note", stat_installs: "Installs", stat_version: "Version", stat_updated: "Mise à jour",
-      screenshots_h: "Captures d'écran", about_h: "À propos de cette app", safety_h: "Sécurité des données",
+      screenshots_h: "Captures d'écran", about_h: "À propos de cette app", documentation_h: "Documentation", safety_h: "Sécurité des données",
       ads_label: "Publicités", iap_label: "Achats intégrés", permissions_label: "Permissions demandées",
       yes: "Oui", no: "Non",
       ratings_h: "Notes et avis", review_placeholder: "Écris un avis (optionnel)...", review_submit: "Publier l'avis",
@@ -579,6 +584,10 @@
     if (app.description_md) {
       document.getElementById('description-section').style.display = 'block';
       document.getElementById('desc-box').textContent = app.description_md;
+    }
+    if (app.documentation_md) {
+      document.getElementById('documentation-section').style.display = 'block';
+      document.getElementById('documentation-box').textContent = app.documentation_md;
     }
 
     document.getElementById('ads-value').textContent = app.contains_ads ? t('yes') : t('no');

@@ -96,7 +96,10 @@ const TOOLS = [
       "`poly install community:<name>` -- e.g. a shell script that prints something, generates a " +
       "password, rolls a die, converts a file, etc. Do NOT build an HTML/CSS/JS web app, a styled " +
       "page, or anything meant to be opened in a browser -- that isn't installable or runnable via " +
-      "poly and isn't what this registry is for. Keep it simple: a short script is the norm.\n\n" +
+      "poly and isn't what this registry is for. Keep it simple: a short script is the norm. " +
+      "For a real end-user application (web app, desktop app, mobile app -- anything with its own " +
+      "icon, screenshots, and store listing that people browse and install/buy from poly.candygate.eu/apps), " +
+      "use publish_app instead.\n\n" +
       "If this is fulfilling a request submitted on poly.candygate.eu/integrations, set " +
       "category to \"integration\" so it's listed in the site's Integrations library.",
     inputSchema: {
@@ -173,6 +176,95 @@ const TOOLS = [
     name: "get_stats",
     description: "Get Poly's live public stats: total members and pro members. Mirrors the numbers shown on community.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+
+  // --- Apps store ---
+  {
+    name: "search_apps",
+    description: "Search Poly's Apps store by (partial) name or tagline. Use this before publish_app to check whether you already have an app by that name. Mirrors apps.",
+    inputSchema: {
+      type: "object",
+      properties: { query: { type: "string", description: "App name or partial name/tagline to search for" } },
+      required: ["query"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "get_app",
+    description: "Get full detail on one app in the store: tagline, description, category, content rating, platforms, pricing, rating, and publisher. Mirrors app.",
+    inputSchema: {
+      type: "object",
+      properties: { slug: { type: "string", description: "Exact app slug (from search_apps or list_own_apps)" } },
+      required: ["slug"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "list_own_apps",
+    description: "List every app published by this token's account, including unpublished drafts.",
+    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+  },
+  {
+    name: "publish_app",
+    description:
+      "Publish (or update) a real end-user application to Poly's Apps store under this token's account -- " +
+      "the same kind of listing you'd fill in on Google Play Console: category, content rating, platforms, " +
+      "screenshots, pricing (free or paid), ads/in-app-purchase/permission disclosures, and a release " +
+      "(version + how to get it). Unlike publish_package (a CLI script installed via `poly install " +
+      "community:<name>`), this is for a real application -- a web app, desktop app, mobile app, or any " +
+      "downloadable/launchable program with its own icon and store page. People find it on " +
+      "poly.candygate.eu/apps, rate and review it, and download or buy it (Stripe Checkout for paid apps).\n\n" +
+      "Publishing with a name that matches an app this token's account already owns updates it in place " +
+      "(adds a new version); a new name creates a new app. Provide either download_url (a link to where " +
+      "the app can be downloaded/opened -- most common) or file_base64 to host a small build file directly " +
+      "(capped at 20MB decoded; use download_url for anything bigger, e.g. a GitHub release asset). Set " +
+      "status to \"draft\" to save it without listing it publicly yet. Omitted optional fields (tagline, " +
+      "description, category, is_paid/price, contains_ads, has_iap, etc.) are left unchanged on an update " +
+      "-- pass an explicit value to change one.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "App name, 1-80 characters. Matching an existing app you own updates it." },
+        tagline: { type: "string", description: "Short one-line pitch, max 80 characters" },
+        description: { type: "string", description: "Full description shown on the app's page" },
+        documentation: { type: "string", description: "Longer-form docs (setup, usage, configuration) shown in a dedicated Documentation section on the app's page" },
+        category: {
+          type: "string",
+          enum: ["productivity", "developer-tools", "games", "social", "utilities", "education", "entertainment", "photo-video", "music-audio", "health-fitness", "business", "finance", "lifestyle", "news", "travel-local", "other"],
+        },
+        content_rating: { type: "string", enum: ["everyone", "teen", "mature", "adults"], description: "Default: everyone" },
+        platforms: { type: "array", items: { type: "string", enum: ["windows", "macos", "linux", "web", "android", "ios"] } },
+        permissions: { type: "array", items: { type: "string", enum: ["camera", "microphone", "location", "contacts", "storage", "network", "notifications", "calendar", "sms", "bluetooth"] }, description: "Permissions this app requests, disclosed on its data-safety section" },
+        website_url: { type: "string" },
+        privacy_policy_url: { type: "string" },
+        support_email: { type: "string" },
+        contains_ads: { type: "boolean" },
+        has_iap: { type: "boolean", description: "Whether the app has in-app purchases" },
+        is_paid: { type: "boolean", description: "false = free to get. true = requires price. Omit to leave pricing unchanged." },
+        price: { type: "number", description: "Price in major currency units (e.g. 4.99). Required if is_paid is true." },
+        currency: { type: "string", enum: ["usd", "eur", "gbp"], description: "Default: usd" },
+        icon_base64: { type: "string", description: "Optional. Base64-encoded PNG/JPEG icon, square, ~512x512 recommended (max ~2.6MB base64)" },
+        screenshots_base64: { type: "array", items: { type: "string" }, description: "Optional. Up to 8 base64-encoded PNG/JPEG screenshots (max ~2.6MB base64 each)" },
+        version: { type: "string", description: "Version string, e.g. 1.0.0. Required to publish a release." },
+        release_notes: { type: "string", description: "What's new in this version" },
+        download_url: { type: "string", description: "Link to where the app can be downloaded or opened. Provide this or file_base64." },
+        file_base64: { type: "string", description: "Optional. Base64-encoded build file to host directly (max ~27MB base64, 20MB decoded). Paid apps gate this download until purchase." },
+        file_name: { type: "string", description: "Original file name for file_base64, used to infer an extension" },
+        status: { type: "string", enum: ["draft", "published"], description: "Default: published" },
+      },
+      required: ["name"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "delete_app",
+    description: "Permanently delete an app this token's account published -- removes the database entry and any stored icon/screenshots/build file. Cannot be undone.",
+    inputSchema: {
+      type: "object",
+      properties: { slug: { type: "string", description: "Exact app slug (from search_apps or list_own_apps)" } },
+      required: ["slug"],
+      additionalProperties: false,
+    },
   },
 
   // --- Social ---
@@ -1050,6 +1142,231 @@ async function handleToolCall(name: string, args: Record<string, unknown>, token
       } catch (e) {
         return toolText((e as Error).message, true);
       }
+    }
+
+    // --- Apps store ---
+    case "search_apps": {
+      const q = String(args.query ?? "");
+      const url = `${SUPABASE_URL}/rest/v1/apps_public?or=(name.ilike.*${encodeURIComponent(q)}*,tagline.ilike.*${encodeURIComponent(q)}*)&select=slug,name,tagline,category,is_paid,price_cents,currency,avg_rating,rating_count,publisher_username&order=avg_rating.desc&limit=20`;
+      const resp = await fetch(url, { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } });
+      const rows = await resp.json();
+      if (!resp.ok) return toolText(`Search failed: ${JSON.stringify(rows)}`, true);
+      if (!rows.length) return toolText(`No apps match "${q}".`);
+      const lines = rows.map((r: any) => {
+        const price = r.is_paid ? `${(r.price_cents / 100).toFixed(2)} ${String(r.currency).toUpperCase()}` : "free";
+        const rating = r.rating_count > 0 ? `${Number(r.avg_rating).toFixed(1)}★ (${r.rating_count})` : "unrated";
+        return `- ${r.name} [${r.slug}] by @${r.publisher_username} — ${price} — ${rating}${r.tagline ? " — " + r.tagline : ""}`;
+      });
+      return toolText(lines.join("\n"));
+    }
+
+    case "get_app": {
+      const slug = String(args.slug ?? "");
+      if (!slug) return toolText("slug is required.", true);
+      const url = `${SUPABASE_URL}/rest/v1/apps_public?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`;
+      const resp = await fetch(url, { headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` } });
+      const rows = await resp.json();
+      if (!resp.ok) return toolText(`Lookup failed: ${JSON.stringify(rows)}`, true);
+      if (!rows?.length) return toolText(`No app with slug "${slug}".`, true);
+      const a = rows[0];
+      const price = a.is_paid ? `${(a.price_cents / 100).toFixed(2)} ${String(a.currency).toUpperCase()}` : "free";
+      const rating = a.rating_count > 0 ? `${Number(a.avg_rating).toFixed(1)}★ (${a.rating_count} ratings)` : "no ratings yet";
+      return toolText(
+        `${a.name} [${a.slug}]${a.is_official ? " (official ✓)" : ""}${a.is_featured ? " (featured)" : ""}\n` +
+        `${a.tagline || ""}\n` +
+        `${a.description_md || "(no description)"}\n` +
+        (a.documentation_md ? `\nDocumentation:\n${a.documentation_md}\n` : "") +
+        `Category: ${a.category || "-"} · Content rating: ${a.content_rating} · Platforms: ${(a.platforms || []).join(", ") || "-"}\n` +
+        `Price: ${price} · Rating: ${rating} · Installs: ${a.download_count} · Version: ${a.version}\n` +
+        `Published by @${a.publisher_username} · ${SUPABASE_URL.replace(".supabase.co", "")}\n` +
+        `Page: https://poly.candygate.eu/app?slug=${a.slug}`
+      );
+    }
+
+    case "list_own_apps": {
+      if (!token) return toolText("No token provided.", true);
+      const rows = await callRpc("mcp_list_own_apps", { p_token: token });
+      if (!rows?.length) return toolText("This account hasn't published any apps yet.");
+      const lines = rows.map((r: any) => {
+        const price = r.is_paid ? `${(r.price_cents / 100).toFixed(2)} ${String(r.currency).toUpperCase()}` : "free";
+        return `- ${r.name} [${r.slug}] v${r.version} — ${r.status}${r.blocked ? " (blocked)" : ""} — ${price} — ${r.download_count} installs`;
+      });
+      return toolText(lines.join("\n"));
+    }
+
+    case "publish_app": {
+      if (!token) return toolText("No token provided. Configure a Poly personal access token as this connector's Authorization header.", true);
+      const name = String(args.name ?? "").trim();
+      if (!name) return toolText("name is required.", true);
+
+      // Tri-state: omitted (undefined) means "leave pricing as-is" (a
+      // version-only republish shouldn't silently reset a paid app back
+      // to free) -- null flows through to Postgres, which coalesces it
+      // against the existing row. Only an explicit true/false changes it.
+      const isPaidProvided = args.is_paid !== undefined;
+      const isPaid: boolean | null = isPaidProvided ? Boolean(args.is_paid) : null;
+      const priceCents: number | null = isPaidProvided ? (isPaid ? Math.round(Number(args.price ?? 0) * 100) : 0) : null;
+      if (isPaid && (!priceCents || priceCents <= 0)) return toolText("is_paid is true but price is missing or zero.", true);
+
+      const who = await callRpc("mcp_whoami", { p_token: token });
+      if (!who?.length) return toolText("Invalid or revoked token.", true);
+      const userId = who[0].user_id;
+
+      // Reuse the existing app's id if this account already owns one with
+      // this exact name (case-insensitive) -- publishing again updates it
+      // in place instead of creating a duplicate.
+      let appId: string | null = null;
+      try {
+        const owned = await callRpc("mcp_list_own_apps", { p_token: token });
+        const match = (owned || []).find((a: any) => String(a.name).toLowerCase() === name.toLowerCase());
+        if (match) appId = match.id;
+      } catch {
+        // ignore -- fall through to creating a new app
+      }
+      if (!appId) appId = crypto.randomUUID();
+
+      function decodeBase64(b64: string): Uint8Array {
+        return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      }
+      function detectImageMime(bytes: Uint8Array): string {
+        if (bytes[0] === 0x89 && bytes[1] === 0x50) return "image/png";
+        if (bytes[0] === 0xff && bytes[1] === 0xd8) return "image/jpeg";
+        if (bytes[0] === 0x47 && bytes[1] === 0x49) return "image/gif";
+        if (bytes[0] === 0x52 && bytes[1] === 0x49) return "image/webp";
+        return "image/png";
+      }
+      async function uploadMedia(bytes: Uint8Array, label: string): Promise<string> {
+        const mime = detectImageMime(bytes);
+        const ext = mime.split("/")[1];
+        const path = `${userId}/${appId}/${label}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const resp = await fetch(`${SUPABASE_URL}/storage/v1/object/app-media/${path}`, {
+          method: "POST",
+          headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}`, "Content-Type": mime, "x-upsert": "true" },
+          body: bytes,
+        });
+        if (!resp.ok) throw new Error(`${label} upload failed: ${resp.status} ${await resp.text()}`);
+        return `${SUPABASE_URL}/storage/v1/object/public/app-media/${path}`;
+      }
+
+      let iconUrl: string | null = null;
+      try {
+        if (args.icon_base64) iconUrl = await uploadMedia(decodeBase64(String(args.icon_base64)), "icon");
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+
+      let screenshotUrls: string[] = [];
+      try {
+        const list = Array.isArray(args.screenshots_base64) ? (args.screenshots_base64 as unknown[]).slice(0, 8) : [];
+        for (const s of list) screenshotUrls.push(await uploadMedia(decodeBase64(String(s)), "screenshot"));
+      } catch (e) {
+        return toolText((e as Error).message, true);
+      }
+
+      const version = args.version ? String(args.version) : null;
+      let downloadUrl = args.download_url ? String(args.download_url) : null;
+      let storagePath: string | null = null;
+      let sizeBytes: number | null = null;
+
+      if (!downloadUrl && args.file_base64) {
+        try {
+          const bytes = decodeBase64(String(args.file_base64));
+          if (bytes.length > 20 * 1024 * 1024) return toolText("file_base64 exceeds the 20MB limit -- use download_url for larger builds.", true);
+          const fileName = args.file_name ? String(args.file_name) : "build.bin";
+          const dotIdx = fileName.lastIndexOf(".");
+          const ext = dotIdx > 0 ? fileName.slice(dotIdx) : ".bin";
+          storagePath = `${userId}/${appId}/build-${Date.now()}${ext}`;
+          const uploadResp = await fetch(`${SUPABASE_URL}/storage/v1/object/app-builds/${storagePath}`, {
+            method: "POST",
+            headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}`, "Content-Type": "application/octet-stream", "x-upsert": "true" },
+            body: bytes,
+          });
+          if (!uploadResp.ok) return toolText(`Build upload failed: ${uploadResp.status} ${await uploadResp.text()}`, true);
+          sizeBytes = bytes.length;
+        } catch {
+          return toolText("file_base64 is not valid base64.", true);
+        }
+      }
+
+      const status = args.status === "draft" ? "draft" : "published";
+      if (status === "published" && !version) return toolText("version is required to publish (or set status to \"draft\").", true);
+      if (status === "published" && !downloadUrl && !storagePath) return toolText("Provide download_url or file_base64 to publish a release (or set status to \"draft\").", true);
+
+      try {
+        const result = await callRpc("mcp_publish_app", {
+          p_token: token,
+          p_id: appId,
+          p_name: name,
+          p_tagline: args.tagline ? String(args.tagline) : null,
+          p_description_md: args.description ? String(args.description) : null,
+          p_category: args.category ? String(args.category) : null,
+          p_content_rating: args.content_rating ? String(args.content_rating) : "everyone",
+          p_icon_url: iconUrl,
+          p_cover_url: null,
+          p_screenshots: screenshotUrls,
+          p_platforms: Array.isArray(args.platforms) ? args.platforms : [],
+          p_permissions: Array.isArray(args.permissions) ? args.permissions : [],
+          p_website_url: args.website_url ? String(args.website_url) : null,
+          p_privacy_policy_url: args.privacy_policy_url ? String(args.privacy_policy_url) : null,
+          p_support_email: args.support_email ? String(args.support_email) : null,
+          p_contains_ads: args.contains_ads !== undefined ? Boolean(args.contains_ads) : null,
+          p_has_iap: args.has_iap !== undefined ? Boolean(args.has_iap) : null,
+          p_is_paid: isPaid,
+          p_price_cents: priceCents,
+          p_currency: args.currency ? String(args.currency) : null,
+          p_status: status,
+          p_version: version,
+          p_release_notes: args.release_notes ? String(args.release_notes) : null,
+          p_download_url: downloadUrl,
+          p_storage_path: storagePath,
+          p_size_bytes: sizeBytes,
+          p_documentation_md: args.documentation ? String(args.documentation) : null,
+        });
+        const price = result.is_paid ? `${(result.price_cents / 100).toFixed(2)} ${String(result.currency).toUpperCase()}` : "free";
+        const listedNote = status === "draft" ? "Saved as a draft (not listed yet)." : `Listed at https://poly.candygate.eu/app?slug=${result.slug} — ${price}.`;
+        return toolText(`${status === "draft" ? "Saved" : "Published"} "${result.name}" [${result.slug}]. ${listedNote}`);
+      } catch (e) {
+        return toolText(`Publish failed: ${(e as Error).message}`, true);
+      }
+    }
+
+    case "delete_app": {
+      if (!token) return toolText("No token provided.", true);
+      const slug = String(args.slug ?? "");
+      if (!slug) return toolText("slug is required.", true);
+
+      let media: { icon_url?: string; cover_url?: string; screenshots?: string[]; storage_path?: string } | undefined;
+      try {
+        const rows = await callRpc("mcp_delete_app", { p_token: token, p_slug: slug });
+        media = rows?.[0];
+      } catch (e) {
+        return toolText(`Delete failed: ${(e as Error).message}`, true);
+      }
+
+      function pathFromPublicUrl(url?: string): string | null {
+        if (!url) return null;
+        const marker = "/object/public/app-media/";
+        const idx = url.indexOf(marker);
+        return idx === -1 ? null : url.slice(idx + marker.length);
+      }
+
+      const mediaPaths = [media?.icon_url, media?.cover_url, ...(media?.screenshots || [])]
+        .map((u) => pathFromPublicUrl(u))
+        .filter((p): p is string => !!p);
+      if (mediaPaths.length) {
+        await fetch(`${SUPABASE_URL}/storage/v1/object/app-media`, {
+          method: "DELETE",
+          headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ prefixes: mediaPaths }),
+        }).catch(() => {});
+      }
+      if (media?.storage_path) {
+        await fetch(`${SUPABASE_URL}/storage/v1/object/app-builds/${media.storage_path}`, {
+          method: "DELETE",
+          headers: { apikey: SERVICE_ROLE_KEY, Authorization: `Bearer ${SERVICE_ROLE_KEY}` },
+        }).catch(() => {});
+      }
+      return toolText(`Deleted "${slug}". It's no longer listed on the Apps store.`);
     }
 
     default:
