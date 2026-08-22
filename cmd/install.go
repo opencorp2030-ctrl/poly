@@ -87,7 +87,30 @@ func planInstall(spec string) (installResult, error) {
 	return r, nil
 }
 
+// installJSONResult mirrors one package's outcome for the --json output.
+type installJSONResult struct {
+	Name      string `json:"name"`
+	Adapter   string `json:"adapter,omitempty"`
+	Version   string `json:"version,omitempty"`
+	Installed bool   `json:"installed"`
+	Error     string `json:"error,omitempty"`
+}
+
+func toJSONResult(r installResult) installJSONResult {
+	out := installJSONResult{Name: r.name, Version: r.installedVersion}
+	if r.a != nil {
+		out.Adapter = r.a.Name()
+	}
+	if r.err != nil {
+		out.Error = r.err.Error()
+	} else {
+		out.Installed = true
+	}
+	return out
+}
+
 var installDryRun bool
+var installJSON bool
 
 var installCmd = &cobra.Command{
 	Use:   "install [[adapter:]package[@version] ...]",
@@ -117,25 +140,45 @@ Examples:
 				return nil
 			}
 			args = f.Packages
-			fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installing %d package(s) from %s", len(args), lockfile.FileName)))
+			if !installJSON {
+				fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installing %d package(s) from %s", len(args), lockfile.FileName)))
+			}
 		}
 
 		if installDryRun {
 			var firstErr error
+			var jsonOut []installJSONResult
 			for _, spec := range args {
 				r, err := planInstall(spec)
 				if err != nil {
-					fmt.Println(ui.Red(fmt.Sprintf("would not be able to install %s: %v", spec, err)))
 					if firstErr == nil {
 						firstErr = err
+					}
+					if installJSON {
+						jsonOut = append(jsonOut, installJSONResult{Name: spec, Error: err.Error()})
+					} else {
+						fmt.Println(ui.Red(fmt.Sprintf("would not be able to install %s: %v", spec, err)))
 					}
 					continue
 				}
 				v := r.installedVersion
+				if installJSON {
+					jsonOut = append(jsonOut, installJSONResult{Name: r.name, Adapter: r.a.Name(), Version: v, Installed: false})
+					continue
+				}
 				if v == "" {
 					v = "latest"
 				}
 				fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("would install %s %s (via %s)", r.name, v, r.a.Name())))
+			}
+			if installJSON {
+				if jsonOut == nil {
+					jsonOut = []installJSONResult{}
+				}
+				if err := printJSON(jsonOut); err != nil {
+					return err
+				}
+				return firstErr
 			}
 			if firstErr == nil {
 				fmt.Println(ui.Dim("dry run: nothing was installed"))
@@ -146,11 +189,15 @@ Examples:
 		var results []installResult
 		if len(args) > 1 {
 			if account.IsPro() {
-				fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installing %d packages in parallel (pro)", len(args))))
+				if !installJSON {
+					fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("installing %d packages in parallel (pro)", len(args))))
+				}
 				results = installParallel(args)
 			} else {
 				results = installSequential(args)
-				fmt.Println(ui.Dim("note: poly pro installs multiple packages in parallel — see the site's Pro section"))
+				if !installJSON {
+					fmt.Println(ui.Dim("note: poly pro installs multiple packages in parallel — see the site's Pro section"))
+				}
 			}
 		} else {
 			results = installSequential(args)
@@ -160,7 +207,13 @@ Examples:
 		if err != nil {
 			return err
 		}
-		firstErr := recordResults(m, results, "installed")
+
+		var firstErr error
+		if installJSON {
+			firstErr = recordResultsQuiet(m, results)
+		} else {
+			firstErr = recordResults(m, results, "installed")
+		}
 
 		if err := m.Save(); err != nil {
 			return err
@@ -173,7 +226,7 @@ Examples:
 				break
 			}
 		}
-		if usedTap {
+		if usedTap && !installJSON {
 			binDir, err := adapters.BinDir()
 			if err == nil {
 				fmt.Println(ui.Dim(fmt.Sprintf("note: tap binaries are installed to %s — make sure it's on your PATH", binDir)))
@@ -182,6 +235,16 @@ Examples:
 
 		if err := updateLock(results); err != nil {
 			return err
+		}
+
+		if installJSON {
+			jsonOut := make([]installJSONResult, 0, len(results))
+			for _, r := range results {
+				jsonOut = append(jsonOut, toJSONResult(r))
+			}
+			if err := printJSON(jsonOut); err != nil {
+				return err
+			}
 		}
 
 		return firstErr
@@ -210,6 +273,28 @@ func recordResults(m *manifest.Manifest, results []installResult, verb string) e
 			InstalledAt: time.Now(),
 		})
 		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange(fmt.Sprintf("%s %s %s (via %s)", verb, r.name, r.installedVersion, r.a.Name())))
+	}
+	return firstErr
+}
+
+// recordResultsQuiet is recordResults without the human-facing prints,
+// for --json mode -- same manifest side effects, same first-error
+// semantics, output handled separately as JSON.
+func recordResultsQuiet(m *manifest.Manifest, results []installResult) error {
+	var firstErr error
+	for _, r := range results {
+		if r.err != nil {
+			if firstErr == nil {
+				firstErr = r.err
+			}
+			continue
+		}
+		m.Add(manifest.Entry{
+			Name:        r.name,
+			Adapter:     r.a.Name(),
+			Version:     r.installedVersion,
+			InstalledAt: time.Now(),
+		})
 	}
 	return firstErr
 }
@@ -249,5 +334,6 @@ func updateLock(results []installResult) error {
 
 func init() {
 	installCmd.Flags().BoolVar(&installDryRun, "dry-run", false, "show what would be installed without installing anything")
+	installCmd.Flags().BoolVar(&installJSON, "json", false, "output as JSON")
 	rootCmd.AddCommand(installCmd)
 }

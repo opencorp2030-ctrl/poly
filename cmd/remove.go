@@ -11,6 +11,14 @@ import (
 	"poly/internal/ui"
 )
 
+// removeJSONResult mirrors the outcome for the --json output.
+type removeJSONResult struct {
+	Name    string `json:"name"`
+	Removed bool   `json:"removed"`
+}
+
+var removeJSON bool
+
 var removeCmd = &cobra.Command{
 	Use:     "remove [package]",
 	Aliases: []string{"uninstall", "rm"},
@@ -45,6 +53,10 @@ var removeCmd = &cobra.Command{
 
 		if err := removeFromProjectFiles(name); err != nil {
 			return err
+		}
+
+		if removeJSON {
+			return printJSON(removeJSONResult{Name: name, Removed: true})
 		}
 
 		fmt.Printf("%s %s\n", ui.Arrow(), ui.Orange("removed "+name))
@@ -87,5 +99,6 @@ func removeFromProjectFiles(name string) error {
 }
 
 func init() {
+	removeCmd.Flags().BoolVar(&removeJSON, "json", false, "output as JSON")
 	rootCmd.AddCommand(removeCmd)
 }
