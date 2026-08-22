@@ -215,10 +215,9 @@ textarea { resize: vertical; }
 .wizard-step-pill.active { color: var(--accent-ink); background: var(--accent); border-color: transparent; }
 .wizard-step-pill.done { color: var(--text); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
 
-.card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.3rem; display: none; }
-.card.active { display: block; animation: fade-in 0.2s ease; }
+.card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.3rem; }
 [data-step] { display: none; }
-[data-step].active { display: block; }
+[data-step].active { display: block; animation: fade-in 0.2s ease; }
 
 .chip-select { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .chip-select label {
@@ -276,6 +275,23 @@ textarea { resize: vertical; }
 .store-preview-platforms { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
 .store-preview-shots { display: flex; gap: 0.4rem; overflow-x: auto; }
 .store-preview-shots img { height: 60px; border-radius: 6px; flex-shrink: 0; }
+
+/* --- Packages --- */
+.pkg-search-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; max-width: 620px; }
+.pkg-search-row input { flex: 1; }
+.section-h { font-size: 0.95rem; font-family: var(--mono); margin: 1.8rem 0 0.8rem; color: var(--text-dim); }
+.empty-hint { color: var(--text-dim); font-size: 0.84rem; }
+.pkg-list { display: flex; flex-direction: column; gap: 0.5rem; max-width: 680px; }
+.pkg-item {
+  display: flex; align-items: center; gap: 0.8rem; background: var(--ink-raised); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 0.7rem 0.9rem;
+}
+.pkg-item-main { flex: 1; min-width: 0; }
+.pkg-item-name { font-weight: 700; font-size: 0.88rem; }
+.pkg-item-name .pkg-version { color: var(--text-dim); font-weight: 400; font-family: var(--mono); font-size: 0.8rem; margin-left: 0.4rem; }
+.pkg-item-meta { font-size: 0.76rem; color: var(--text-dim); margin-top: 0.15rem; }
+.pkg-item-summary { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; }
+.pkg-item .btn { flex-shrink: 0; padding: 0.4rem 0.8rem; font-size: 0.78rem; }
 
 /* --- Settings --- */
 .settings-card { max-width: 460px; }

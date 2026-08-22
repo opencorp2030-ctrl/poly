@@ -5,6 +5,7 @@ const fs = require("fs");
 const session = require("./src/session");
 const api = require("./src/api");
 const localState = require("./src/localstate");
+const cli = require("./src/cli");
 
 let mainWindow = null;
 
@@ -101,6 +102,17 @@ ipcMain.handle("app:newAppId", async () => require("crypto").randomUUID());
 // --- Onboarding (local-only, unrelated to the CLI session file) ---
 ipcMain.handle("onboarding:hasSeen", async () => localState.hasOnboarded());
 ipcMain.handle("onboarding:markSeen", async () => localState.setOnboarded());
+
+// --- Language (local-only display preference) ---
+ipcMain.handle("state:getLang", async () => localState.getLang());
+ipcMain.handle("state:setLang", async (_e, lang) => localState.setLang(lang));
+
+// --- Poly CLI (search/list/install/remove) ---
+ipcMain.handle("cli:detect", async (_e, force) => cli.detect(!!force));
+ipcMain.handle("cli:search", async (_e, query) => cli.runJSON(["search", query, "--json"]));
+ipcMain.handle("cli:list", async () => cli.runJSON(["list", "--json"]));
+ipcMain.handle("cli:install", async (_e, spec) => cli.runJSON(["install", spec, "--json"], { timeoutMs: 180000 }));
+ipcMain.handle("cli:remove", async (_e, name) => cli.runJSON(["remove", name, "--json"]));
 
 // --- Custom titlebar window controls (frameless window) ---
 ipcMain.handle("window:minimize", () => mainWindow.minimize());

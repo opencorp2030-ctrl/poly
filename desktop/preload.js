@@ -35,6 +35,17 @@ contextBridge.exposeInMainWorld("poly", {
     hasSeen: () => ipcRenderer.invoke("onboarding:hasSeen"),
     markSeen: () => ipcRenderer.invoke("onboarding:markSeen"),
   },
+  state: {
+    getLang: () => ipcRenderer.invoke("state:getLang"),
+    setLang: (lang) => ipcRenderer.invoke("state:setLang", lang),
+  },
+  cli: {
+    detect: (force) => ipcRenderer.invoke("cli:detect", force),
+    search: (query) => ipcRenderer.invoke("cli:search", query),
+    list: () => ipcRenderer.invoke("cli:list"),
+    install: (spec) => ipcRenderer.invoke("cli:install", spec),
+    remove: (name) => ipcRenderer.invoke("cli:remove", name),
+  },
   win: {
     minimize: () => ipcRenderer.invoke("window:minimize"),
     toggleMaximize: () => ipcRenderer.invoke("window:toggleMaximize"),

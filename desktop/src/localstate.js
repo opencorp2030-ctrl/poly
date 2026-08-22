@@ -30,4 +30,12 @@ function setOnboarded() {
   save({ ...load(), onboarded: true });
 }
 
-module.exports = { hasOnboarded, setOnboarded };
+function getLang() {
+  return load().lang || null;
+}
+
+function setLang(lang) {
+  save({ ...load(), lang });
+}
+
+module.exports = { hasOnboarded, setOnboarded, getLang, setLang };

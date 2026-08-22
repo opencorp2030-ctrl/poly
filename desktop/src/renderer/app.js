@@ -1,20 +1,5 @@
 "use strict";
 
-const CATEGORIES = [
-  ["productivity", "Productivity"], ["developer-tools", "Developer tools"], ["games", "Games"],
-  ["social", "Social"], ["utilities", "Utilities"], ["education", "Education"], ["entertainment", "Entertainment"],
-  ["photo-video", "Photo & video"], ["music-audio", "Music & audio"], ["health-fitness", "Health & fitness"],
-  ["business", "Business"], ["finance", "Finance"], ["lifestyle", "Lifestyle"], ["news", "News"],
-  ["travel-local", "Travel & local"], ["other", "Other"],
-];
-const CONTENT_RATINGS = [["everyone", "Everyone"], ["teen", "Teen"], ["mature", "Mature 17+"], ["adults", "Adults only"]];
-const PLATFORMS = [["windows", "Windows"], ["macos", "macOS"], ["linux", "Linux"], ["web", "Web"], ["android", "Android"], ["ios", "iOS"]];
-const PERMISSIONS = [
-  ["camera", "Camera"], ["microphone", "Microphone"], ["location", "Location"], ["contacts", "Contacts"],
-  ["storage", "Storage"], ["network", "Network"], ["notifications", "Notifications"], ["calendar", "Calendar"],
-  ["sms", "SMS"], ["bluetooth", "Bluetooth"],
-];
-
 function $(id) { return document.getElementById(id); }
 function escapeHtml(s) {
   const div = document.createElement("div");
@@ -28,7 +13,28 @@ function showView(name) {
 function showPanel(name) {
   document.querySelectorAll(".panel").forEach((el) => el.classList.toggle("active", el.dataset.panel === name));
   document.querySelectorAll(".side-link[data-nav]").forEach((el) => el.classList.toggle("active", el.dataset.nav === name));
+  if (name === "packages") loadPackagesPanel();
 }
+
+// ---------------------------------------------------------------------
+// i18n
+// ---------------------------------------------------------------------
+
+async function applyLanguage(lang) {
+  setLang(lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll("#language-segmented .seg-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.lang === lang));
+  populateOptions();
+  if (appsCache.length || document.querySelector('[data-panel="apps"]').classList.contains("active")) renderApps();
+  if (document.querySelector('[data-panel="packages"]').classList.contains("active")) renderPackagesLists();
+  try { await window.poly.state.setLang(lang); } catch { /* non-fatal */ }
+}
+
+document.querySelectorAll("#language-segmented .seg-btn").forEach((btn) => {
+  btn.addEventListener("click", () => applyLanguage(btn.dataset.lang));
+});
 
 // ---------------------------------------------------------------------
 // Titlebar
@@ -52,7 +58,7 @@ function goToOnboardSlide(n) {
   onboardSlide = n;
   document.querySelectorAll(".onboard-slide").forEach((el) => el.classList.toggle("active", Number(el.dataset.slide) === n));
   document.querySelectorAll(".dot").forEach((el) => el.classList.toggle("active", Number(el.dataset.dot) === n));
-  $("onboard-next").textContent = n === ONBOARD_SLIDES - 1 ? "Sign in →" : "Continue →";
+  $("onboard-next").textContent = n === ONBOARD_SLIDES - 1 ? t("onboard_signin") : t("onboard_continue");
 }
 
 $("onboard-next").addEventListener("click", async () => {
@@ -69,6 +75,11 @@ $("onboard-next").addEventListener("click", async () => {
 // ---------------------------------------------------------------------
 
 async function boot() {
+  let savedLang = null;
+  try { savedLang = await window.poly.state.getLang(); } catch { /* ignore */ }
+  const browserLang = (navigator.language || "en").toLowerCase().startsWith("fr") ? "fr" : "en";
+  await applyLanguage(savedLang || browserLang);
+
   const [user, hasSeenOnboarding] = await Promise.all([
     window.poly.auth.resume(),
     window.poly.onboarding.hasSeen(),
@@ -143,7 +154,7 @@ async function loadProfile() {
     $("account-email").textContent = p.email;
     $("account-initial").textContent = (p.username || p.email || "?")[0].toUpperCase();
     $("settings-email").textContent = p.email;
-    $("settings-plan").textContent = p.plan === "pro" ? "Pro" : "Free";
+    $("settings-plan").textContent = p.plan === "pro" ? t("plan_pro") : t("plan_free");
   } catch {
     // non-fatal -- app list still works
   }
@@ -161,17 +172,20 @@ async function loadProfile() {
 let appsCache = [];
 
 async function loadApps() {
-  const grid = $("apps-grid");
-  grid.innerHTML = "";
   try {
     appsCache = await window.poly.apps.list();
   } catch (err) {
-    grid.innerHTML = `<p class="error-banner">${escapeHtml(err.message)}</p>`;
+    $("apps-grid").innerHTML = `<p class="error-banner">${escapeHtml(err.message)}</p>`;
     return;
   }
+  renderApps();
+}
+
+function renderApps() {
+  const grid = $("apps-grid");
   const published = appsCache.filter((a) => a.status === "published").length;
   $("apps-sub").textContent = appsCache.length
-    ? `${appsCache.length} app${appsCache.length === 1 ? "" : "s"} · ${published} published`
+    ? t("apps_summary", { n: appsCache.length, s: appsCache.length === 1 ? "" : "s", p: published })
     : "";
   $("apps-empty").style.display = appsCache.length ? "none" : "block";
   grid.innerHTML = appsCache.map(renderAppCard).join("");
@@ -191,7 +205,8 @@ function renderAppCard(a) {
   const icon = a.icon_url
     ? `<img class="app-icon" src="${escapeHtml(a.icon_url)}" alt="" />`
     : `<div class="app-icon-fallback">${escapeHtml((a.name || "?")[0].toUpperCase())}</div>`;
-  const price = a.is_paid ? `$${(a.price_cents / 100).toFixed(2)} ${String(a.currency).toUpperCase()}` : "Free";
+  const price = a.is_paid ? `$${(a.price_cents / 100).toFixed(2)} ${String(a.currency).toUpperCase()}` : t("free");
+  const statusText = a.status === "published" ? t("status_published") : t("status_draft");
   return `
     <div class="app-card">
       <div class="app-card-banner"></div>
@@ -200,16 +215,16 @@ function renderAppCard(a) {
         <div class="app-name-row">
           <div class="app-name">${escapeHtml(a.name)}</div>
         </div>
-        <div class="status-label"><span class="status-dot ${a.status}"></span>${a.status}</div>
+        <div class="status-label"><span class="status-dot ${a.status}"></span>${statusText}</div>
         <div class="app-stats">
           <span>${price}</span>
           <span>v${escapeHtml(a.version || "-")}</span>
-          <span>${a.download_count || 0} installs</span>
+          <span>${a.download_count || 0} ${t("installs")}</span>
         </div>
         <div class="app-card-actions">
-          <button class="btn" data-edit="${a.id}">Edit</button>
-          ${a.status === "published" ? `<button class="btn" data-open="${a.slug}">Open</button>` : ""}
-          <button class="btn danger" data-delete="${a.id}" data-name="${escapeHtml(a.name)}">Delete</button>
+          <button class="btn" data-edit="${a.id}">${t("btn_edit")}</button>
+          ${a.status === "published" ? `<button class="btn" data-open="${a.slug}">${t("btn_open")}</button>` : ""}
+          <button class="btn danger" data-delete="${a.id}" data-name="${escapeHtml(a.name)}">${t("btn_delete")}</button>
         </div>
       </div>
     </div>`;
@@ -218,8 +233,8 @@ function renderAppCard(a) {
 let pendingDeleteId = null;
 function confirmDeleteApp(id, name) {
   pendingDeleteId = id;
-  $("confirm-title").textContent = `Delete "${name}"?`;
-  $("confirm-body").textContent = "This removes the listing and its stored files. This can't be undone.";
+  $("confirm-title").textContent = t("confirm_delete_title", { name });
+  $("confirm-body").textContent = t("confirm_delete_body");
   $("confirm-modal").classList.add("active");
 }
 $("confirm-cancel").addEventListener("click", () => $("confirm-modal").classList.remove("active"));
@@ -242,6 +257,114 @@ $("apps-empty-new-btn").addEventListener("click", () => { openWizard(null); show
 $("publish-cancel-btn").addEventListener("click", () => showPanel("apps"));
 
 // ---------------------------------------------------------------------
+// Packages (drives the real Poly CLI)
+// ---------------------------------------------------------------------
+
+let cliAvailable = null;
+let installedCache = [];
+
+async function loadPackagesPanel() {
+  const found = await window.poly.cli.detect(false);
+  cliAvailable = !!found;
+  $("pkg-cli-missing").style.display = cliAvailable ? "none" : "block";
+  $("pkg-content").style.display = cliAvailable ? "block" : "none";
+  if (cliAvailable) await refreshInstalled();
+}
+
+$("pkg-cli-recheck-btn").addEventListener("click", async () => {
+  const found = await window.poly.cli.detect(true);
+  cliAvailable = !!found;
+  $("pkg-cli-missing").style.display = cliAvailable ? "none" : "block";
+  $("pkg-content").style.display = cliAvailable ? "block" : "none";
+  if (cliAvailable) await refreshInstalled();
+});
+$("pkg-cli-install-btn").addEventListener("click", () => window.poly.shell.openExternal("https://poly.candygate.eu/docs"));
+
+async function refreshInstalled() {
+  try {
+    installedCache = await window.poly.cli.list();
+  } catch (err) {
+    installedCache = [];
+  }
+  renderPackagesLists();
+}
+
+function renderPackagesLists() {
+  $("pkg-installed-empty").style.display = installedCache.length ? "none" : "block";
+  $("pkg-installed").innerHTML = installedCache.map((p) => `
+    <div class="pkg-item">
+      <div class="pkg-item-main">
+        <div class="pkg-item-name">${escapeHtml(p.name)}<span class="pkg-version">${escapeHtml(p.version || "")}</span></div>
+        <div class="pkg-item-meta">${escapeHtml(p.adapter)}</div>
+      </div>
+      <button class="btn danger" data-remove="${escapeHtml(p.name)}">${t("pkg_remove_btn")}</button>
+    </div>`).join("");
+
+  $("pkg-installed").querySelectorAll("[data-remove]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const name = btn.dataset.remove;
+      btn.disabled = true;
+      btn.textContent = t("pkg_removing");
+      try {
+        await window.poly.cli.remove(name);
+        await refreshInstalled();
+      } catch (err) {
+        $("pkg-error").textContent = err.message || t("err_generic");
+        btn.disabled = false;
+        btn.textContent = t("pkg_remove_btn");
+      }
+    });
+  });
+}
+
+async function runPackageSearch() {
+  const query = $("pkg-search-input").value.trim();
+  if (!query) return;
+  $("pkg-error").textContent = "";
+  $("pkg-results").innerHTML = "";
+  $("pkg-search-btn").disabled = true;
+  try {
+    const results = await window.poly.cli.search(query);
+    if (!results.length) {
+      $("pkg-results").innerHTML = `<p class="empty-hint">${t("pkg_results_empty")}</p>`;
+      return;
+    }
+    $("pkg-results").innerHTML = results.map((r) => `
+      <div class="pkg-item">
+        <div class="pkg-item-main">
+          <div class="pkg-item-name">${escapeHtml(r.name)}<span class="pkg-version">${escapeHtml(r.version || "")}</span></div>
+          <div class="pkg-item-meta">${escapeHtml(r.adapter)}</div>
+          ${r.summary ? `<div class="pkg-item-summary">${escapeHtml(r.summary)}</div>` : ""}
+        </div>
+        <button class="btn primary" data-install="${escapeHtml(r.adapter)}:${escapeHtml(r.name)}">${t("pkg_install_btn")}</button>
+      </div>`).join("");
+
+    $("pkg-results").querySelectorAll("[data-install]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const spec = btn.dataset.install;
+        btn.disabled = true;
+        btn.textContent = t("pkg_installing");
+        try {
+          await window.poly.cli.install(spec);
+          await refreshInstalled();
+          btn.textContent = t("pkg_install_btn");
+        } catch (err) {
+          $("pkg-error").textContent = err.message || t("err_generic");
+          btn.disabled = false;
+          btn.textContent = t("pkg_install_btn");
+        }
+      });
+    });
+  } catch (err) {
+    $("pkg-error").textContent = err.message || t("err_generic");
+  } finally {
+    $("pkg-search-btn").disabled = false;
+  }
+}
+$("pkg-search-btn").addEventListener("click", runPackageSearch);
+$("pkg-search-input").addEventListener("keydown", (e) => { if (e.key === "Enter") runPackageSearch(); });
+
+// ---------------------------------------------------------------------
 // Publish / edit wizard
 // ---------------------------------------------------------------------
 
@@ -254,12 +377,26 @@ let downloadMethod = "url";
 let formState = { icon_url: null, screenshots: [], storage_path: null, size_bytes: null };
 
 function populateOptions() {
-  $("f-category").innerHTML = CATEGORIES.map((c) => `<option value="${c[0]}">${escapeHtml(c[1])}</option>`).join("");
-  $("f-content-rating").innerHTML = CONTENT_RATINGS.map((c) => `<option value="${c[0]}">${escapeHtml(c[1])}</option>`).join("");
-  $("f-platforms").innerHTML = PLATFORMS.map((p) => `<label><input type="checkbox" value="${p[0]}" class="platform-check" /> ${escapeHtml(p[1])}</label>`).join("");
-  $("f-permissions").innerHTML = PERMISSIONS.map((p) => `<label><input type="checkbox" value="${p[0]}" class="perm-check" /> ${escapeHtml(p[1])}</label>`).join("");
+  const CATEGORIES_ORDER = ["productivity", "developer-tools", "games", "social", "utilities", "education", "entertainment", "photo-video", "music-audio", "health-fitness", "business", "finance", "lifestyle", "news", "travel-local", "other"];
+  const RATINGS_ORDER = ["everyone", "teen", "mature", "adults"];
+  const PLATFORMS_ORDER = ["windows", "macos", "linux", "web", "android", "ios"];
+  const PERMISSIONS_ORDER = ["camera", "microphone", "location", "contacts", "storage", "network", "notifications", "calendar", "sms", "bluetooth"];
+
+  const prevCategory = $("f-category").value;
+  const prevRating = $("f-content-rating").value;
+  const checkedPlatforms = Array.from(document.querySelectorAll(".platform-check:checked")).map((el) => el.value);
+  const checkedPerms = Array.from(document.querySelectorAll(".perm-check:checked")).map((el) => el.value);
+
+  $("f-category").innerHTML = CATEGORIES_ORDER.map((k) => `<option value="${k}">${escapeHtml(catLabel(k))}</option>`).join("");
+  $("f-content-rating").innerHTML = RATINGS_ORDER.map((k) => `<option value="${k}">${escapeHtml(ratingLabel(k))}</option>`).join("");
+  $("f-platforms").innerHTML = PLATFORMS_ORDER.map((k) => `<label><input type="checkbox" value="${k}" class="platform-check" /> ${escapeHtml(platformLabel(k))}</label>`).join("");
+  $("f-permissions").innerHTML = PERMISSIONS_ORDER.map((k) => `<label><input type="checkbox" value="${k}" class="perm-check" /> ${escapeHtml(permissionLabel(k))}</label>`).join("");
+
+  if (prevCategory) $("f-category").value = prevCategory;
+  if (prevRating) $("f-content-rating").value = prevRating;
+  checkedPlatforms.forEach((v) => { const el = document.querySelector(`.platform-check[value="${v}"]`); if (el) el.checked = true; });
+  checkedPerms.forEach((v) => { const el = document.querySelector(`.perm-check[value="${v}"]`); if (el) el.checked = true; });
 }
-populateOptions();
 
 function resetForm() {
   formState = { icon_url: null, screenshots: [], storage_path: null, size_bytes: null };
@@ -283,8 +420,8 @@ function resetForm() {
   setSegmented("download-method-segmented", "url", "method");
   $("f-download-url").style.display = "block";
   $("build-tile").style.display = "none";
-  $("icon-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">+</span><span>512×512 square</span></div>';
-  $("build-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">↥</span><span>Choose a build file</span></div>';
+  $("icon-tile").innerHTML = `<div class="dropzone-empty"><span class="dz-icon">+</span><span>${escapeHtml(t("f_icon_hint"))}</span></div>`;
+  $("build-tile").innerHTML = `<div class="dropzone-empty"><span class="dz-icon">↥</span><span>${escapeHtml(t("f_build_hint"))}</span></div>`;
   document.querySelectorAll(".platform-check, .perm-check").forEach((el) => (el.checked = false));
   renderScreenshots();
   updatePreview();
@@ -317,14 +454,13 @@ document.querySelectorAll("#download-method-segmented .seg-btn").forEach((btn) =
 function updatePreview() {
   const name = $("f-name").value.trim();
   const tagline = $("f-tagline").value.trim();
-  $("preview-name").textContent = name || "Your app name";
-  $("preview-tagline").textContent = tagline || "Your tagline shows up here";
-  const catLabel = (CATEGORIES.find((c) => c[0] === $("f-category").value) || [])[1] || "Category";
-  $("preview-category").textContent = catLabel;
-  const price = isPaidState ? `$${(parseFloat($("f-price").value) || 0).toFixed(2)}` : "Free";
+  $("preview-name").textContent = name || t("preview_name");
+  $("preview-tagline").textContent = tagline || t("preview_tagline");
+  $("preview-category").textContent = catLabel($("f-category").value);
+  const price = isPaidState ? `$${(parseFloat($("f-price").value) || 0).toFixed(2)}` : t("free");
   $("preview-price").textContent = price;
   const checkedPlatforms = Array.from(document.querySelectorAll(".platform-check:checked")).map((el) => el.value);
-  $("preview-platforms").innerHTML = checkedPlatforms.map((p) => `<span class="chip">${escapeHtml((PLATFORMS.find((x) => x[0] === p) || [])[1] || p)}</span>`).join("");
+  $("preview-platforms").innerHTML = checkedPlatforms.map((p) => `<span class="chip">${escapeHtml(platformLabel(p))}</span>`).join("");
   if (formState.icon_url) {
     $("preview-icon").innerHTML = `<img src="${escapeHtml(formState.icon_url)}" alt="" />`;
   } else {
@@ -345,7 +481,7 @@ async function openWizard(app) {
   resetForm();
   currentStep = 1;
   isEditMode = !!app;
-  $("publish-title").textContent = isEditMode ? `Edit "${app.name}"` : "Publish an app";
+  $("publish-title").textContent = isEditMode ? t("publish_h_edit", { name: app.name }) : t("publish_h_new");
   $("publish-error").textContent = "";
   $("publish-ok").textContent = "";
 
@@ -397,13 +533,13 @@ function updateStepButtons() {
     el.classList.toggle("done", n < currentStep);
   });
   $("prev-btn").style.visibility = currentStep === 1 ? "hidden" : "visible";
-  $("next-btn").textContent = currentStep === TOTAL_STEPS ? (isEditMode ? "Save changes" : "Publish") : "Next →";
+  $("next-btn").textContent = currentStep === TOTAL_STEPS ? (isEditMode ? t("btn_save") : t("btn_publish")) : t("btn_next");
 }
 
 $("prev-btn").addEventListener("click", () => { if (currentStep > 1) { currentStep--; updateStepButtons(); } });
 $("next-btn").addEventListener("click", async () => {
   if (currentStep === 1 && !$("f-name").value.trim()) {
-    $("publish-error").textContent = "Give your app a name first.";
+    $("publish-error").textContent = t("err_name_required");
     return;
   }
   if (currentStep < TOTAL_STEPS) { currentStep++; updateStepButtons(); $("publish-error").textContent = ""; return; }
@@ -422,8 +558,8 @@ $("icon-tile").addEventListener("click", async () => {
     $("icon-tile").innerHTML = `<img src="${escapeHtml(url)}" alt="" />`;
     updatePreview();
   } catch (err) {
-    $("publish-error").textContent = err.message || "Icon upload failed.";
-    $("icon-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">+</span><span>512×512 square</span></div>';
+    $("publish-error").textContent = err.message || t("err_generic");
+    $("icon-tile").innerHTML = `<div class="dropzone-empty"><span class="dz-icon">+</span><span>${escapeHtml(t("f_icon_hint"))}</span></div>`;
   }
 });
 
@@ -437,7 +573,7 @@ $("screenshot-add-tile").addEventListener("click", async () => {
     renderScreenshots();
     updatePreview();
   } catch (err) {
-    $("publish-error").textContent = err.message || "Screenshot upload failed.";
+    $("publish-error").textContent = err.message || t("err_generic");
   }
 });
 
@@ -472,14 +608,14 @@ $("build-tile").addEventListener("click", async () => {
     formState.size_bytes = result.size_bytes;
     $("build-tile").innerHTML = `<div class="dropzone-empty"><span>${escapeHtml(file.fileName)}</span></div>`;
   } catch (err) {
-    $("publish-error").textContent = err.message || "Build upload failed.";
-    $("build-tile").innerHTML = '<div class="dropzone-empty"><span class="dz-icon">↥</span><span>Choose a build file</span></div>';
+    $("publish-error").textContent = err.message || t("err_generic");
+    $("build-tile").innerHTML = `<div class="dropzone-empty"><span class="dz-icon">↥</span><span>${escapeHtml(t("f_build_hint"))}</span></div>`;
   }
 });
 
 async function submitApp(status) {
   const name = $("f-name").value.trim();
-  if (!name) { $("publish-error").textContent = "Give your app a name first."; return; }
+  if (!name) { $("publish-error").textContent = t("err_name_required"); return; }
 
   const platforms = Array.from(document.querySelectorAll(".platform-check:checked")).map((el) => el.value);
   const permissions = Array.from(document.querySelectorAll(".perm-check:checked")).map((el) => el.value);
@@ -530,11 +666,11 @@ async function submitApp(status) {
       });
     }
 
-    $("publish-ok").textContent = status === "draft" ? "Draft saved." : `Published! "${appRow.name}" is live.`;
+    $("publish-ok").textContent = status === "draft" ? t("draft_saved") : t("published_ok", { name: appRow.name });
     await loadApps();
     if (status === "published") setTimeout(() => showPanel("apps"), 900);
   } catch (err) {
-    $("publish-error").textContent = err.message || "Something went wrong. Try again.";
+    $("publish-error").textContent = err.message || t("err_generic");
   } finally {
     $("next-btn").disabled = false;
     $("save-draft-btn").disabled = false;
