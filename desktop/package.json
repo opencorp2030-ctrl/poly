@@ -1,0 +1,49 @@
+{
+  "name": "poly-desktop",
+  "version": "0.1.0",
+  "description": "Poly Desktop — manage and publish apps to the Poly Apps store.",
+  "main": "main.js",
+  "private": true,
+  "author": "Poly",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "ELECTRON_ENABLE_LOGGING=1 electron .",
+    "dist:win": "electron-builder --win nsis"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "eu.candygate.poly.desktop",
+    "productName": "Poly Desktop",
+    "asar": true,
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "poly-desktop-setup-${version}.${ext}"
+    }
+  }
+}

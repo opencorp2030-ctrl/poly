@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+<title>Poly Desktop</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Splash -->
+<section data-view="splash" class="view active">
+  <div class="splash-wrap">
+    <div class="wordmark-giant">poly<span>&gt;</span></div>
+    <div class="spinner" aria-hidden="true"></div>
+  </div>
+</section>
+
+<!-- Login / onboarding -->
+<section data-view="login" class="view">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="wordmark">poly<span>&gt;</span></div>
+      <h1>Sign in to Poly</h1>
+      <p class="lede">Manage and publish your apps to the Poly store.</p>
+
+      <form id="login-form">
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" autocomplete="current-password" required />
+        </div>
+        <p class="error-banner" id="login-error"></p>
+        <button type="submit" class="btn primary full" id="login-submit">Sign in</button>
+      </form>
+
+      <p class="login-footer">
+        No account yet? <a href="#" id="create-account-link">Create one on poly.candygate.eu →</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Main app shell -->
+<section data-view="shell" class="view">
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="wordmark small">poly<span>&gt;</span></div>
+      <nav class="side-nav">
+        <button class="side-link active" data-nav="apps">My apps</button>
+        <button class="side-link" data-nav="publish">Publish new app</button>
+        <button class="side-link" data-nav="settings">Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="account-chip" id="account-chip">
+          <span class="account-initial" id="account-initial">?</span>
+          <span class="account-email" id="account-email">…</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+
+      <!-- My apps -->
+      <div data-panel="apps" class="panel active">
+        <div class="panel-head">
+          <h1>My apps</h1>
+          <button class="btn primary" id="apps-new-btn">+ New app</button>
+        </div>
+        <div id="apps-empty" class="empty-state" style="display:none">
+          <p>You haven't published any apps yet.</p>
+          <button class="btn primary" id="apps-empty-new-btn">Publish your first app</button>
+        </div>
+        <div id="apps-grid" class="apps-grid"></div>
+      </div>
+
+      <!-- Publish / edit wizard -->
+      <div data-panel="publish" class="panel">
+        <div class="panel-head">
+          <h1 id="publish-title">Publish an app</h1>
+        </div>
+
+        <div class="wizard-steps">
+          <span class="wizard-step-pill active" data-step-pill="1">1. App info</span>
+          <span class="wizard-step-pill" data-step-pill="2">2. Store listing</span>
+          <span class="wizard-step-pill" data-step-pill="3">3. Pricing &amp; safety</span>
+          <span class="wizard-step-pill" data-step-pill="4">4. Release</span>
+        </div>
+
+        <p class="error-banner" id="publish-error"></p>
+        <p class="ok-banner" id="publish-ok"></p>
+
+        <div class="card" data-step="1">
+          <div class="field">
+            <label>App name</label>
+            <input type="text" id="f-name" maxlength="80" required />
+          </div>
+          <div class="field">
+            <label>Short tagline (max 80 characters)</label>
+            <input type="text" id="f-tagline" maxlength="80" />
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="f-category"></select>
+          </div>
+          <div class="field">
+            <label>Content rating</label>
+            <select id="f-content-rating"></select>
+          </div>
+          <div class="field">
+            <label>Platforms</label>
+            <div class="checkbox-grid" id="f-platforms"></div>
+          </div>
+          <div class="field">
+            <label>Website (optional)</label>
+            <input type="url" id="f-website" placeholder="https://..." />
+          </div>
+          <div class="field">
+            <label>Privacy policy URL (optional)</label>
+            <input type="url" id="f-privacy" placeholder="https://..." />
+          </div>
+          <div class="field">
+            <label>Support email (optional)</label>
+            <input type="email" id="f-support" />
+          </div>
+        </div>
+
+        <div class="card" data-step="2">
+          <div class="field">
+            <label>App icon (square, recommended 512×512)</label>
+            <div class="upload-row">
+              <div class="upload-tile" id="icon-tile">Icon</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Screenshots (up to 8)</label>
+            <div class="upload-row" id="screenshots-row">
+              <div class="upload-tile" id="screenshot-add-tile">+ Add</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Full description</label>
+            <textarea id="f-description" rows="6"></textarea>
+          </div>
+          <div class="field">
+            <label>Documentation <span class="field-hint-inline">(setup, usage, configuration)</span></label>
+            <div class="doc-editor">
+              <textarea id="f-documentation" rows="10" placeholder="## Setup&#10;&#10;...&#10;&#10;## Usage&#10;&#10;..."></textarea>
+              <div class="doc-preview" id="doc-preview"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-step="3">
+          <div class="field">
+            <label>Pricing</label>
+            <div class="radio-row">
+              <label><input type="radio" name="pricing" value="free" checked /> Free</label>
+              <label><input type="radio" name="pricing" value="paid" /> Paid</label>
+            </div>
+            <div class="price-fields" id="price-fields" style="display:none">
+              <div class="field">
+                <label>Price</label>
+                <input type="number" id="f-price" min="0.01" step="0.01" placeholder="4.99" />
+              </div>
+              <div class="field">
+                <label>Currency</label>
+                <select id="f-currency">
+                  <option value="usd">USD $</option>
+                  <option value="eur">EUR €</option>
+                  <option value="gbp">GBP £</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <label class="toggle-row"><input type="checkbox" id="f-ads" /> Contains ads</label>
+          <label class="toggle-row"><input type="checkbox" id="f-iap" /> Has in-app purchases</label>
+          <div class="field">
+            <label>Permissions this app requests</label>
+            <div class="checkbox-grid" id="f-permissions"></div>
+          </div>
+        </div>
+
+        <div class="card" data-step="4">
+          <div class="field">
+            <label>Version</label>
+            <input type="text" id="f-version" placeholder="1.0.0" />
+          </div>
+          <div class="field">
+            <label>What's new (release notes)</label>
+            <textarea id="f-release-notes" rows="4"></textarea>
+          </div>
+          <div class="field">
+            <label>How should people get this app?</label>
+            <div class="radio-row">
+              <label><input type="radio" name="download-method" value="url" checked /> External link</label>
+              <label><input type="radio" name="download-method" value="upload" /> Upload a build</label>
+            </div>
+            <input type="url" id="f-download-url" placeholder="https://..." />
+            <div class="upload-row" id="build-upload-row" style="display:none;margin-top:0.6rem">
+              <div class="upload-tile" id="build-tile">Build file</div>
+            </div>
+            <p class="field-hint">Uploaded builds are capped at 200 MB. Paid apps gate the download until purchase.</p>
+          </div>
+        </div>
+
+        <div class="wizard-actions">
+          <button type="button" class="btn" id="publish-cancel-btn">Cancel</button>
+          <div class="wizard-actions-right">
+            <button type="button" class="btn" id="prev-btn" style="visibility:hidden">← Back</button>
+            <button type="button" class="btn" id="save-draft-btn">Save draft</button>
+            <button type="button" class="btn primary" id="next-btn">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div data-panel="settings" class="panel">
+        <div class="panel-head"><h1>Settings</h1></div>
+        <div class="card">
+          <div class="settings-row">
+            <span class="s-label">Signed in as</span>
+            <span id="settings-email">…</span>
+          </div>
+          <div class="settings-row">
+            <span class="s-label">Plan</span>
+            <span id="settings-plan">…</span>
+          </div>
+          <div class="settings-row">
+            <span class="s-label">Poly Desktop</span>
+            <span id="settings-version">…</span>
+          </div>
+          <div class="settings-row">
+            <a href="#" id="settings-account-link">Manage account on poly.candygate.eu →</a>
+          </div>
+        </div>
+        <button class="btn danger" id="signout-btn">Sign out</button>
+      </div>
+
+    </main>
+  </div>
+</section>
+
+<!-- Confirm delete modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-card">
+    <h2 id="confirm-title">Delete this app?</h2>
+    <p id="confirm-body">This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn" id="confirm-cancel">Cancel</button>
+      <button class="btn danger" id="confirm-ok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
