@@ -15,6 +15,7 @@ function showPanel(name) {
   document.querySelectorAll(".side-link[data-nav]").forEach((el) => el.classList.toggle("active", el.dataset.nav === name));
   if (name === "packages") loadPackagesPanel();
   if (name === "appsstore" && !storeSearched) runStoreSearch();
+  if (name === "notifications") loadNotifications();
 }
 
 // ---------------------------------------------------------------------
@@ -124,8 +125,8 @@ async function boot() {
   let savedAccent = null;
   try { savedTheme = await window.poly.state.getTheme(); } catch { /* ignore */ }
   try { savedAccent = await window.poly.state.getAccent(); } catch { /* ignore */ }
-  applyTheme(savedTheme || "dark", { persist: false });
-  applyAccent(savedAccent || "amber", { persist: false });
+  applyTheme(savedTheme || "light", { persist: false });
+  applyAccent(savedAccent || "pink", { persist: false });
 
   const [user, hasSeenOnboarding] = await Promise.all([
     window.poly.auth.resume(),
@@ -915,5 +916,78 @@ async function runStoreSearch() {
 $("store-search-btn").addEventListener("click", runStoreSearch);
 $("store-search-input").addEventListener("keydown", (e) => { if (e.key === "Enter") runStoreSearch(); });
 $("store-sort-select").addEventListener("change", runStoreSearch);
+
+// ---------------------------------------------------------------------
+// Notifications
+// ---------------------------------------------------------------------
+
+function relativeTime(iso) {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "now";
+  if (mins < 60) return `${mins}m`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
+
+function setNotifBadge(count) {
+  const badge = $("notif-badge");
+  if (count > 0) {
+    badge.textContent = count > 99 ? "99+" : String(count);
+    badge.style.display = "flex";
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+window.poly.notifications.onUpdate(({ unread }) => setNotifBadge(unread));
+window.poly.notifications.onOpenRequest(() => { showPanel("notifications"); });
+
+async function loadNotifications() {
+  $("notif-error").textContent = "";
+  try {
+    const rows = await window.poly.notifications.list();
+    $("notif-empty").style.display = rows.length ? "none" : "block";
+    $("notif-list").innerHTML = rows.map((n) => `
+      <div class="notif-card ${n.read_at ? "" : "unread"}" data-notif-id="${n.id}">
+        <span class="notif-dot"></span>
+        <div class="notif-body">
+          <div class="notif-title">${escapeHtml(n.title)}</div>
+          ${n.body_html ? `<div class="notif-text">${escapeHtml(n.body_html.replace(/<[^>]*>/g, ""))}</div>` : ""}
+          <div class="notif-time">${relativeTime(n.created_at)}</div>
+        </div>
+      </div>`).join("");
+    setNotifBadge(rows.filter((n) => !n.read_at).length);
+
+    $("notif-list").querySelectorAll("[data-notif-id]").forEach((card) => {
+      card.addEventListener("click", async () => {
+        if (!card.classList.contains("unread")) return;
+        card.classList.remove("unread");
+        try {
+          await window.poly.notifications.markRead(card.dataset.notifId);
+          setNotifBadge(document.querySelectorAll(".notif-card.unread").length);
+        } catch {
+          card.classList.add("unread");
+        }
+      });
+    });
+  } catch (err) {
+    $("notif-error").textContent = err.message || t("err_generic");
+  }
+}
+
+$("notif-mark-all-btn").addEventListener("click", async () => {
+  $("notif-mark-all-btn").disabled = true;
+  try {
+    await window.poly.notifications.markAllRead();
+    await loadNotifications();
+  } catch (err) {
+    $("notif-error").textContent = err.message || t("err_generic");
+  } finally {
+    $("notif-mark-all-btn").disabled = false;
+  }
+});
 
 boot();

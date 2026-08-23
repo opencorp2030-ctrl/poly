@@ -185,6 +185,42 @@ async function uploadAppBuild(appId, buffer, fileName) {
   return { storage_path: path, size_bytes: buffer.length };
 }
 
+// --- Notifications ---
+
+async function listNotifications() {
+  const uid = requireUser();
+  const { data, error } = await session.supabase
+    .from("notifications")
+    .select("id,type,title,body_html,from_user_id,link_url,is_service,created_at,read_at")
+    .eq("user_id", uid)
+    .order("created_at", { ascending: false })
+    .limit(30);
+  if (error) throw error;
+  return data;
+}
+
+async function markNotificationRead(id) {
+  requireUser();
+  const { error } = await session.supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+  if (error) throw error;
+}
+
+async function markAllNotificationsRead() {
+  const uid = requireUser();
+  const { error } = await session.supabase
+    .from("notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("user_id", uid)
+    .is("read_at", null);
+  if (error) throw error;
+}
+
+async function deleteNotification(id) {
+  requireUser();
+  const { error } = await session.supabase.from("notifications").delete().eq("id", id);
+  if (error) throw error;
+}
+
 module.exports = {
   getProfile,
   updateProfile,
@@ -201,4 +237,8 @@ module.exports = {
   getFollowStatus,
   setFollow,
   searchApps,
+  listNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+  deleteNotification,
 };

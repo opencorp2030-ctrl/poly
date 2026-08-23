@@ -20,6 +20,14 @@ contextBridge.exposeInMainWorld("poly", {
   store: {
     search: (query, sort, page) => ipcRenderer.invoke("store:search", { query, sort, page }),
   },
+  notifications: {
+    list: () => ipcRenderer.invoke("notifications:list"),
+    markRead: (id) => ipcRenderer.invoke("notifications:markRead", id),
+    markAllRead: () => ipcRenderer.invoke("notifications:markAllRead"),
+    delete: (id) => ipcRenderer.invoke("notifications:delete", id),
+    onUpdate: (cb) => ipcRenderer.on("notifications:update", (_e, data) => cb(data)),
+    onOpenRequest: (cb) => ipcRenderer.on("notifications:open", () => cb()),
+  },
   apps: {
     list: () => ipcRenderer.invoke("apps:list"),
     get: (id) => ipcRenderer.invoke("apps:get", id),

@@ -18,6 +18,9 @@ const I18N = {
     login_no_account: "No account yet?", login_create: "Create one on poly.candygate.eu →",
 
     nav_apps: "My apps", nav_packages: "Packages", nav_publish: "Publish new app", nav_settings: "Settings",
+    nav_notifications: "Notifications",
+    notifications_h: "Notifications", notifications_sub: "Follows, downloads, friend requests, and announcements.",
+    notif_mark_all: "Mark all read", notif_empty: "No notifications yet.",
     nav_site_h: "Poly site", nav_home: "poly>", nav_install: "install", nav_how: "how it works", nav_commands: "commands",
     nav_dependencies: "dependencies", nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_apps_store: "apps store",
     nav_integrations: "integrations", nav_search: "search", nav_account: "account", nav_github: "github",
@@ -126,6 +129,9 @@ const I18N = {
     login_no_account: "Pas encore de compte ?", login_create: "Créer un compte sur poly.candygate.eu →",
 
     nav_apps: "Mes apps", nav_packages: "Packages", nav_publish: "Publier une app", nav_settings: "Paramètres",
+    nav_notifications: "Notifications",
+    notifications_h: "Notifications", notifications_sub: "Abonnés, téléchargements, demandes d'ami et annonces.",
+    notif_mark_all: "Tout marquer lu", notif_empty: "Aucune notification pour l'instant.",
     nav_site_h: "Site Poly", nav_home: "poly>", nav_install: "installer", nav_how: "fonctionnement", nav_commands: "commandes",
     nav_dependencies: "dépendances", nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_apps_store: "boutique d'apps",
     nav_integrations: "intégrations", nav_search: "recherche", nav_account: "compte", nav_github: "github",

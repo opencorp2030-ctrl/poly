@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell, Notification } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
@@ -10,12 +10,19 @@ const cli = require("./src/cli");
 let mainWindow = null;
 
 function createWindow() {
+  // Match the window's paint-before-content-loads color to the user's
+  // saved theme, so there's no flash of the wrong background while
+  // index.html/CSS load (default is light, matching the new default
+  // theme, unless a prior run saved "dark").
+  const savedTheme = localState.getTheme();
+  const bg = savedTheme === "dark" ? "#0c0e13" : "#f3f1ec";
+
   mainWindow = new BrowserWindow({
     width: 1220,
     height: 800,
     minWidth: 980,
     minHeight: 660,
-    backgroundColor: "#0c0e13",
+    backgroundColor: bg,
     frame: false,
     show: false,
     webPreferences: {
@@ -45,8 +52,15 @@ app.on("window-all-closed", () => {
 });
 
 // --- Auth ---
-ipcMain.handle("auth:resume", async () => session.resume());
-ipcMain.handle("auth:logout", async () => session.logout());
+ipcMain.handle("auth:resume", async () => {
+  const user = await session.resume();
+  if (user) startNotificationPolling();
+  return user;
+});
+ipcMain.handle("auth:logout", async () => {
+  stopNotificationPolling();
+  return session.logout();
+});
 
 // Opens a small "sign in with Poly" popup pointed at poly.candygate.eu,
 // the same OAuth-flavored pattern used to connect an AI assistant
@@ -84,6 +98,7 @@ function openConnectWindow() {
       ipcMain.removeListener("desktop-connect:complete", onComplete);
       try {
         const user = await session.loginWithTokens(sessionData.access_token, sessionData.refresh_token);
+        if (user) startNotificationPolling();
         resolve(user);
       } catch {
         resolve(null);
@@ -117,6 +132,63 @@ ipcMain.handle("community:setFollow", async (_e, { targetId, follow }) => api.se
 
 // --- Apps store (public browse) ---
 ipcMain.handle("store:search", async (_e, { query, sort, page }) => api.searchApps(query, sort, page));
+
+// --- Notifications: browse + poll-driven native OS delivery ---
+// Realtime isn't wired up on this Supabase project (notifications isn't
+// in the supabase_realtime publication), so this polls on an interval
+// instead of subscribing to Postgres changes -- simpler and doesn't
+// depend on infrastructure nothing else here uses yet.
+ipcMain.handle("notifications:list", async () => api.listNotifications());
+ipcMain.handle("notifications:markRead", async (_e, id) => api.markNotificationRead(id));
+ipcMain.handle("notifications:markAllRead", async () => api.markAllNotificationsRead());
+ipcMain.handle("notifications:delete", async (_e, id) => api.deleteNotification(id));
+
+const NOTIFY_POLL_MS = 45000;
+let notifyPollTimer = null;
+let lastNotifyCheck = new Date();
+
+function stripHtml(html) {
+  return String(html || "").replace(/<[^>]*>/g, "").trim();
+}
+
+function showNativeNotification(row) {
+  if (!Notification.isSupported()) return;
+  const n = new Notification({ title: row.title, body: stripHtml(row.body_html) || " " });
+  n.on("click", () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+      mainWindow.webContents.send("notifications:open");
+    }
+  });
+  n.show();
+}
+
+async function pollNotifications() {
+  try {
+    const rows = await api.listNotifications();
+    const fresh = rows.filter((r) => new Date(r.created_at) > lastNotifyCheck);
+    fresh.forEach(showNativeNotification);
+    lastNotifyCheck = new Date();
+    const unread = rows.filter((r) => !r.read_at).length;
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send("notifications:update", { unread });
+  } catch {
+    // offline or signed out mid-poll -- try again next tick
+  }
+}
+
+function startNotificationPolling() {
+  if (notifyPollTimer) return;
+  lastNotifyCheck = new Date();
+  pollNotifications();
+  notifyPollTimer = setInterval(pollNotifications, NOTIFY_POLL_MS);
+}
+
+function stopNotificationPolling() {
+  if (notifyPollTimer) clearInterval(notifyPollTimer);
+  notifyPollTimer = null;
+}
 
 // --- Apps ---
 ipcMain.handle("apps:list", async () => api.listOwnApps());
