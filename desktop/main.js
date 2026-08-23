@@ -2,6 +2,12 @@ const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
+// The two windows bleeding into each other (garbled text, JS source
+// visible as page content) is a known GPU-compositing glitch on some
+// Windows graphics drivers -- not a content bug (the popup's page is
+// byte-identical to what's deployed). Falls back to software rendering.
+app.disableHardwareAcceleration();
+
 const session = require("./src/session");
 const api = require("./src/api");
 const localState = require("./src/localstate");
