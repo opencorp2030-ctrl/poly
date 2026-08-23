@@ -287,6 +287,7 @@ textarea { resize: vertical; }
 /* --- Packages --- */
 .pkg-search-row { display: flex; gap: 0.6rem; margin-bottom: 1rem; max-width: 620px; }
 .pkg-search-row input { flex: 1; }
+.pkg-search-row select { flex: 0 0 auto; width: auto; }
 .section-h { font-size: 0.95rem; font-family: var(--mono); margin: 1.8rem 0 0.8rem; color: var(--text-dim); }
 .empty-hint { color: var(--text-dim); font-size: 0.84rem; }
 .pkg-list { display: flex; flex-direction: column; gap: 0.5rem; max-width: 680px; }
@@ -300,6 +301,42 @@ textarea { resize: vertical; }
 .pkg-item-meta { font-size: 0.76rem; color: var(--text-dim); margin-top: 0.15rem; }
 .pkg-item-summary { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; }
 .pkg-item .btn { flex-shrink: 0; padding: 0.4rem 0.8rem; font-size: 0.78rem; }
+
+/* --- Docs --- */
+.docs-layout { display: grid; grid-template-columns: 180px 1fr; gap: 2rem; align-items: start; }
+.docs-toc { position: sticky; top: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.doc-toc-link { font-size: 0.82rem; color: var(--text-dim); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); text-decoration: none; }
+.doc-toc-link:hover { color: var(--text); background: var(--ink-raised); text-decoration: none; }
+.docs-content { max-width: 720px; }
+.doc-section { margin-bottom: 2.4rem; scroll-margin-top: 1rem; }
+.doc-section h2 { font-family: var(--mono); font-size: 1.1rem; margin: 0 0 0.8rem; letter-spacing: -0.01em; }
+.doc-section h3 { font-size: 0.92rem; margin: 1.2rem 0 0.5rem; }
+.doc-section p { font-size: 0.86rem; line-height: 1.6; color: var(--text-dim); margin: 0 0 0.9rem; }
+.doc-section code { font-family: var(--mono); background: var(--ink-raised); padding: 0.05rem 0.35rem; border-radius: 4px; font-size: 0.82rem; color: var(--text); }
+.doc-code { font-family: var(--mono); font-size: 0.78rem; background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.9rem 1rem; white-space: pre-wrap; word-break: break-word; color: var(--text-dim); margin-bottom: 0.9rem; }
+.doc-note { font-size: 0.8rem; color: var(--text-dim); background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border)); border-radius: var(--radius-sm); padding: 0.6rem 0.8rem; }
+.doc-flow { font-family: var(--mono); font-size: 0.9rem; color: var(--accent); text-align: center; padding: 0.8rem; background: var(--ink-raised); border-radius: var(--radius-sm); margin-bottom: 0.9rem; }
+.doc-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 0.9rem; }
+.doc-table th { text-align: left; color: var(--text-dim); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); }
+.doc-table td { padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border-soft); vertical-align: top; color: var(--text-dim); }
+.doc-table td:first-child { white-space: nowrap; }
+.pro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.pro-item h3 { font-size: 0.88rem; margin: 0 0 0.3rem; }
+.pro-item p { font-size: 0.8rem; color: var(--text-dim); margin: 0; }
+
+/* --- Community --- */
+.member-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.8rem; }
+.member-card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 0.9rem; display: flex; gap: 0.7rem; align-items: center; }
+.member-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--ink-overlay); object-fit: cover; flex-shrink: 0; }
+.member-avatar-fallback { width: 40px; height: 40px; border-radius: 50%; background: var(--ink-overlay); display: flex; align-items: center; justify-content: center; font-family: var(--mono); color: var(--text-dim); flex-shrink: 0; }
+.member-info { flex: 1; min-width: 0; }
+.member-name { font-weight: 700; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.member-bio { font-size: 0.76rem; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.member-card .btn { flex-shrink: 0; padding: 0.35rem 0.7rem; font-size: 0.74rem; }
+
+/* --- Apps store cards --- */
+#store-results .app-card { cursor: default; }
+#store-results .app-stats span:last-child { flex: 1; text-align: right; }
 
 /* --- Settings --- */
 .settings-card { max-width: 460px; }

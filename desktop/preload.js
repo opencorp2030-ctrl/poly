@@ -8,6 +8,17 @@ contextBridge.exposeInMainWorld("poly", {
   },
   profile: {
     get: () => ipcRenderer.invoke("profile:get"),
+    update: (fields) => ipcRenderer.invoke("profile:update", fields),
+    updateNotificationPrefs: (prefs) => ipcRenderer.invoke("profile:updateNotificationPrefs", prefs),
+    uploadAvatar: (bytes, fileName) => ipcRenderer.invoke("profile:uploadAvatar", { bytes, fileName }),
+  },
+  community: {
+    search: (query, page) => ipcRenderer.invoke("community:search", { query, page }),
+    followStatus: (targetId) => ipcRenderer.invoke("community:followStatus", targetId),
+    setFollow: (targetId, follow) => ipcRenderer.invoke("community:setFollow", { targetId, follow }),
+  },
+  store: {
+    search: (query, sort, page) => ipcRenderer.invoke("store:search", { query, sort, page }),
   },
   apps: {
     list: () => ipcRenderer.invoke("apps:list"),

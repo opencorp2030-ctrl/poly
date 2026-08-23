@@ -132,35 +132,19 @@
             <svg class="side-icon" viewBox="0 0 20 20"><path d="M3 10l7-7 7 7M5 8v9h10V8"/></svg>
             <span data-i18n="nav_home">poly&gt;</span>
           </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/#install">
-            <svg class="side-icon" viewBox="0 0 20 20"><path d="M10 3v10M6 9l4 4 4-4M4 16h12"/></svg>
-            <span data-i18n="nav_install">install</span>
-          </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/#how">
-            <svg class="side-icon" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 2.5"/></svg>
-            <span data-i18n="nav_how">how it works</span>
-          </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/#commands">
-            <svg class="side-icon" viewBox="0 0 20 20"><path d="M4 5l4 5-4 5M11 15h5"/></svg>
-            <span data-i18n="nav_commands">commands</span>
+          <button class="side-link" data-nav="docs">
+            <svg class="side-icon" viewBox="0 0 20 20"><path d="M5 3h7l3 3v11H5z"/><path d="M12 3v3h3M7.5 11h5M7.5 14h5"/></svg>
+            <span data-i18n="nav_docs">docs</span>
           </button>
           <button class="side-link site-link" data-site-link="https://poly.candygate.eu/dependencies">
             <svg class="side-icon" viewBox="0 0 20 20"><circle cx="6" cy="6" r="2.5"/><circle cx="14" cy="6" r="2.5"/><circle cx="10" cy="15" r="2.5"/><path d="M8 7.5L9 12.5M12 7.5L11 12.5"/></svg>
             <span data-i18n="nav_dependencies">dependencies</span>
           </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/docs">
-            <svg class="side-icon" viewBox="0 0 20 20"><path d="M5 3h7l3 3v11H5z"/><path d="M12 3v3h3M7.5 11h5M7.5 14h5"/></svg>
-            <span data-i18n="nav_docs">docs</span>
-          </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/#pro">
-            <svg class="side-icon" viewBox="0 0 20 20"><path d="M10 2l2.2 4.8L17 7.6l-3.6 3.4.9 5-4.3-2.4-4.3 2.4.9-5L3 7.6l4.8-.8z"/></svg>
-            <span data-i18n="nav_pro">pro</span>
-          </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/community">
+          <button class="side-link" data-nav="community">
             <svg class="side-icon" viewBox="0 0 20 20"><circle cx="7" cy="7" r="2.5"/><circle cx="14" cy="8" r="2"/><path d="M2.5 16c0-2.8 2-4.5 4.5-4.5s4.5 1.7 4.5 4.5M13 12.2c1.8.3 3 1.6 3 3.8"/></svg>
             <span data-i18n="nav_community">community</span>
           </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/apps">
+          <button class="side-link" data-nav="appsstore">
             <svg class="side-icon" viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="3"/><path d="M10 7v6M7 10h6"/></svg>
             <span data-i18n="nav_apps_store">apps store</span>
           </button>
@@ -171,10 +155,6 @@
           <button class="side-link site-link" data-site-link="https://poly.candygate.eu/search">
             <svg class="side-icon" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5"/><path d="M17 17l-4-4"/></svg>
             <span data-i18n="nav_search">search</span>
-          </button>
-          <button class="side-link site-link" data-site-link="https://poly.candygate.eu/account">
-            <svg class="side-icon" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.2"/><path d="M3.5 17c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6"/></svg>
-            <span data-i18n="nav_account">account</span>
           </button>
           <button class="side-link site-link" data-site-link="https://github.com/opencorp2030-ctrl/poly">
             <svg class="side-icon" viewBox="0 0 20 20"><path d="M10 2a8 8 0 00-2.5 15.6c.4.08.55-.17.55-.38v-1.4c-2.23.48-2.7-1.08-2.7-1.08-.36-.93-.89-1.17-.89-1.17-.72-.5.06-.49.06-.49.8.06 1.22.83 1.22.83.72 1.2 1.87.86 2.33.66.07-.52.28-.86.5-1.06-1.78-.2-3.65-.89-3.65-3.96 0-.88.31-1.6.83-2.16-.08-.2-.36-1.02.08-2.13 0 0 .67-.22 2.2.83a7.6 7.6 0 014 0c1.53-1.05 2.2-.83 2.2-.83.44 1.11.16 1.93.08 2.13.52.56.83 1.28.83 2.16 0 3.08-1.88 3.76-3.67 3.96.29.25.54.73.54 1.48v2.2c0 .21.14.47.55.38A8 8 0 0010 2z"/></svg>
@@ -407,9 +387,202 @@
           </div>
         </div>
 
+        <!-- Docs -->
+        <div data-panel="docs" class="panel">
+          <div class="panel-head"><h1 data-i18n="docs_h">Docs</h1></div>
+          <div class="docs-layout">
+            <nav class="docs-toc">
+              <a href="#doc-install" class="doc-toc-link" data-i18n="doc_toc_install">Get poly</a>
+              <a href="#doc-how" class="doc-toc-link" data-i18n="doc_toc_how">How it works</a>
+              <a href="#doc-commands" class="doc-toc-link" data-i18n="doc_toc_commands">Commands</a>
+              <a href="#doc-adapters" class="doc-toc-link" data-i18n="doc_toc_adapters">Adapters</a>
+              <a href="#doc-lockfile" class="doc-toc-link" data-i18n="doc_toc_lockfile">poly.json</a>
+              <a href="#doc-taps" class="doc-toc-link" data-i18n="doc_toc_taps">Tap formulas</a>
+              <a href="#doc-registry" class="doc-toc-link" data-i18n="doc_toc_registry">Publishing</a>
+              <a href="#doc-pro" class="doc-toc-link" data-i18n="doc_toc_pro">Pro</a>
+            </nav>
+            <div class="docs-content">
+
+              <section class="doc-section" id="doc-install">
+                <h2 data-i18n="doc_install_h">Get poly</h2>
+                <p data-i18n="doc_install_p">You're already running Poly Desktop, but the CLI is a separate install (the Packages tab uses it). Native installers for macOS and Windows; both unsigned for now, so your OS will warn on first run.</p>
+                <div class="doc-code">git clone https://github.com/opencorp2030-ctrl/poly.git
+cd poly
+go build -o poly .
+./poly version</div>
+                <p class="doc-note" data-i18n="doc_install_note">Cross-compiling only needs GOOS/GOARCH, e.g. <code>GOOS=windows GOARCH=amd64 go build -o poly.exe .</code></p>
+              </section>
+
+              <section class="doc-section" id="doc-how">
+                <h2 data-i18n="doc_how_h">How a name resolves to an adapter</h2>
+                <p data-i18n="doc_how_p">Without a prefix, <code>poly install name</code> tries each adapter's search in this order and installs through the first hit:</p>
+                <div class="doc-flow">tap → brew → pip → npm → cargo → go</div>
+                <table class="doc-table">
+                  <thead><tr><th data-i18n="doc_th_command">Command</th><th data-i18n="doc_th_resolves">Resolves to</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>poly install ripgrep</code></td><td data-i18n="doc_how_row1">first match: tap → brew → pip → npm → cargo → go</td></tr>
+                    <tr><td><code>poly install tap:ripgrep</code></td><td data-i18n="doc_how_row2">forced binary download from the tap formula</td></tr>
+                    <tr><td><code>poly install pip:requests</code></td><td data-i18n="doc_how_row3">forced <code>pip install requests</code></td></tr>
+                    <tr><td><code>poly install npm:lodash</code></td><td data-i18n="doc_how_row4">forced <code>npm install -g lodash</code></td></tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section class="doc-section" id="doc-commands">
+                <h2 data-i18n="doc_commands_h">Commands</h2>
+                <table class="doc-table">
+                  <thead><tr><th data-i18n="doc_th_command">Command</th><th data-i18n="doc_th_does">Does</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>poly install [[adapter:]name[@version] ...]</code></td><td data-i18n="doc_cmd_install">Install one or more packages, auto-routed or forced. No args installs from poly.json.</td></tr>
+                    <tr><td><code>poly remove name</code></td><td data-i18n="doc_cmd_remove">Uninstall, via whichever adapter installed it.</td></tr>
+                    <tr><td><code>poly list</code></td><td data-i18n="doc_cmd_list">Show everything poly has installed.</td></tr>
+                    <tr><td><code>poly search [adapter:]name</code></td><td data-i18n="doc_cmd_search">Check existence and latest version.</td></tr>
+                    <tr><td><code>poly init [--force]</code></td><td data-i18n="doc_cmd_init">Write poly.json from what's currently installed.</td></tr>
+                    <tr><td><code>poly upgrade</code></td><td data-i18n="doc_cmd_upgrade">Update every installed package to its latest version.</td></tr>
+                    <tr><td><code>poly self-update</code></td><td data-i18n="doc_cmd_selfupdate">Update poly itself to the latest release.</td></tr>
+                    <tr><td><code>poly login</code> / <code>logout</code></td><td data-i18n="doc_cmd_login">Sign in/out. Credentials live in <code>~/.poly/credentials.json</code>.</td></tr>
+                    <tr><td><code>poly send name version path</code></td><td data-i18n="doc_cmd_send">Publish to the community registry.</td></tr>
+                    <tr><td><code>poly doctor</code></td><td data-i18n="doc_cmd_doctor">Check for common setup problems.</td></tr>
+                  </tbody>
+                </table>
+                <p class="doc-note" data-i18n="doc_commands_note">State lives in <code>~/.poly/manifest.json</code>. Tap binaries land in <code>~/.poly/bin</code> — make sure it's on your PATH.</p>
+              </section>
+
+              <section class="doc-section" id="doc-adapters">
+                <h2 data-i18n="doc_adapters_h">Adapters</h2>
+                <table class="doc-table">
+                  <thead><tr><th data-i18n="doc_th_adapter">Adapter</th><th data-i18n="doc_th_install">Install</th><th data-i18n="doc_th_search">Search source</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>tap</code></td><td data-i18n="doc_ad_tap">Direct binary download, SHA-256 verified, extracted to <code>~/.poly/bin</code></td><td data-i18n="doc_ad_tap_s">Embedded/local YAML formulas</td></tr>
+                    <tr><td><code>brew</code></td><td><code>brew install</code> / <code>upgrade</code></td><td><code>formulae.brew.sh</code></td></tr>
+                    <tr><td><code>pip</code></td><td><code>pip3 install --upgrade</code></td><td><code>pypi.org</code></td></tr>
+                    <tr><td><code>npm</code></td><td><code>npm install -g</code></td><td><code>registry.npmjs.org</code></td></tr>
+                    <tr><td><code>cargo</code></td><td><code>cargo install --force</code></td><td><code>crates.io</code></td></tr>
+                    <tr><td><code>go</code></td><td><code>go install &lt;module&gt;@version</code></td><td data-i18n="doc_ad_go_s">Go module proxy</td></tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section class="doc-section" id="doc-lockfile">
+                <h2 data-i18n="doc_lockfile_h">Reproducible installs: poly.json</h2>
+                <p data-i18n="doc_lockfile_p"><code>poly init</code> writes <code>poly.json</code> listing every installed package, pinned to its exact version:</p>
+                <div class="doc-code">{
+  "packages": [
+    "tap:ripgrep@15.1.0",
+    "npm:eslint@9.2.0",
+    "pip:requests@2.31.0"
+  ]
+}</div>
+                <p class="doc-note" data-i18n="doc_lockfile_p2">Commit it. Anyone reproduces the same environment with a plain <code>poly install</code>, no arguments needed.</p>
+              </section>
+
+              <section class="doc-section" id="doc-taps">
+                <h2 data-i18n="doc_taps_h">Writing a tap formula</h2>
+                <p data-i18n="doc_taps_p">Drop a YAML file into <code>~/.poly/taps/&lt;name&gt;.yaml</code>, overriding any built-in formula of the same name:</p>
+                <div class="doc-code">name: ripgrep
+version: "15.1.0"
+binary: rg
+artifacts:
+  windows_amd64: { url: "...", sha256: "..." }
+  darwin_arm64: { url: "...", sha256: "..." }
+  linux_amd64: { url: "...", sha256: "..." }</div>
+                <p class="doc-note" data-i18n="doc_taps_p2">Built-in formulas today, all free: ripgrep, fd, jq.</p>
+              </section>
+
+              <section class="doc-section" id="doc-registry">
+                <h2 data-i18n="doc_registry_h">Publishing your own package</h2>
+                <p data-i18n="doc_registry_p"><code>poly send name version path</code> uploads a file or directory to the community registry under your account.</p>
+                <div class="doc-code">poly login
+poly send hello-world 1.0.0 ./dist/hello-world
+poly install community:hello-world</div>
+                <p class="doc-note" data-i18n="doc_registry_note">No malware scanning — only install community packages you trust. Names are first-come-first-served.</p>
+              </section>
+
+              <section class="doc-section" id="doc-pro">
+                <h2 data-i18n="doc_pro_h">Poly Pro</h2>
+                <p data-i18n="doc_pro_p">Poly is and stays 100% free and open source. Pro is a small optional pack.</p>
+                <div class="pro-grid">
+                  <div class="pro-item"><h3 data-i18n="doc_pro1_h">Parallel installs</h3><p data-i18n="doc_pro1_p">Multi-package installs run concurrently instead of one at a time.</p></div>
+                  <div class="pro-item"><h3 data-i18n="doc_pro2_h">Automatic upgrades</h3><p data-i18n="doc_pro2_p"><code>poly upgrade</code> runs automatically in the background, throttled to ~once a day.</p></div>
+                  <div class="pro-item"><h3 data-i18n="doc_pro3_h">You fund development</h3><p data-i18n="doc_pro3_p">A supporter badge next to your name, and you directly fund what gets built next.</p></div>
+                  <div class="pro-item"><h3 data-i18n="doc_pro4_h">Priority support</h3><p data-i18n="doc_pro4_p">Pro accounts get answered first at open.corp.2030@gmail.com.</p></div>
+                </div>
+                <button class="btn primary" id="doc-pro-cta" data-i18n="doc_pro_cta" style="margin-top:1rem">Get Poly Pro (€0.99) →</button>
+              </section>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Community -->
+        <div data-panel="community" class="panel">
+          <div class="panel-head">
+            <div>
+              <h1 data-i18n="community_h">Community</h1>
+              <p class="panel-sub" data-i18n="community_sub">Find and follow other Poly members.</p>
+            </div>
+          </div>
+          <div class="pkg-search-row">
+            <input type="text" id="community-search-input" data-i18n-placeholder="community_search_placeholder" />
+            <button class="btn primary" id="community-search-btn" data-i18n="pkg_search_btn">Search</button>
+          </div>
+          <p class="error-banner" id="community-error"></p>
+          <div id="community-results" class="member-list"></div>
+        </div>
+
+        <!-- Apps store -->
+        <div data-panel="appsstore" class="panel">
+          <div class="panel-head">
+            <div>
+              <h1 data-i18n="store_h">Apps store</h1>
+              <p class="panel-sub" data-i18n="store_sub">Browse what the community has published — this is the public store, not just your own apps.</p>
+            </div>
+          </div>
+          <div class="pkg-search-row">
+            <input type="text" id="store-search-input" data-i18n-placeholder="store_search_placeholder" />
+            <select id="store-sort-select">
+              <option value="new" data-i18n="store_sort_new">Newest</option>
+              <option value="rating" data-i18n="store_sort_rating">Top rated</option>
+              <option value="downloads" data-i18n="store_sort_downloads">Most installed</option>
+            </select>
+            <button class="btn primary" id="store-search-btn" data-i18n="pkg_search_btn">Search</button>
+          </div>
+          <p class="error-banner" id="store-error"></p>
+          <div id="store-results" class="apps-grid"></div>
+        </div>
+
         <!-- Settings -->
         <div data-panel="settings" class="panel">
           <div class="panel-head"><h1 data-i18n="settings_h">Settings</h1></div>
+
+          <div class="card settings-card">
+            <h2 class="section-h" style="margin-top:0" data-i18n="account_profile_h">Profile</h2>
+            <div class="field">
+              <div class="dropzone" id="avatar-tile" style="border-radius:50%">
+                <div class="dropzone-empty"><span id="avatar-initial">?</span></div>
+              </div>
+            </div>
+            <div class="field">
+              <label data-i18n="account_username">Username</label>
+              <input type="text" id="account-username" maxlength="30" />
+            </div>
+            <div class="field">
+              <label data-i18n="account_bio">Bio</label>
+              <textarea id="account-bio" rows="3" maxlength="280"></textarea>
+            </div>
+            <p class="error-banner" id="account-profile-error"></p>
+            <p class="ok-banner" id="account-profile-ok"></p>
+            <button class="btn primary" id="account-save-profile-btn" data-i18n="account_save">Save profile</button>
+          </div>
+
+          <div class="card settings-card">
+            <h2 class="section-h" style="margin-top:0" data-i18n="account_notifications_h">Notifications</h2>
+            <label class="toggle-row"><input type="checkbox" id="notif-follow" /> <span data-i18n="notif_follow">New followers</span></label>
+            <label class="toggle-row"><input type="checkbox" id="notif-download" /> <span data-i18n="notif_download">Downloads of my packages/apps</span></label>
+            <label class="toggle-row"><input type="checkbox" id="notif-friend-request" /> <span data-i18n="notif_friend_request">Friend requests</span></label>
+            <label class="toggle-row"><input type="checkbox" id="notif-friend-accept" /> <span data-i18n="notif_friend_accept">Accepted friend requests</span></label>
+          </div>
+
           <div class="card settings-card">
             <div class="settings-row">
               <span class="s-label" data-i18n="settings_account">Signed in as</span>

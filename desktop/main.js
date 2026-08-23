@@ -29,20 +29,6 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, "src", "renderer", "index.html"));
   mainWindow.once("ready-to-show", () => mainWindow.show());
 
-  // TEMPORARY diagnostic: opens DevTools automatically so we can see
-  // the real console/network errors behind the Windows rendering bug
-  // instead of guessing. Remove once that's found.
-  mainWindow.webContents.openDevTools({ mode: "detach" });
-  mainWindow.webContents.on("console-message", (_e, level, message, line, sourceId) => {
-    console.log(`[renderer:${level}] ${message} (${sourceId}:${line})`);
-  });
-  mainWindow.webContents.on("render-process-gone", (_e, details) => {
-    console.log("[renderer crashed]", details);
-  });
-  mainWindow.webContents.on("did-fail-load", (_e, errorCode, errorDescription, validatedURL) => {
-    console.log("[did-fail-load]", errorCode, errorDescription, validatedURL);
-  });
-
   mainWindow.on("maximize", () => mainWindow.webContents.send("window:state", { maximized: true }));
   mainWindow.on("unmaximize", () => mainWindow.webContents.send("window:state", { maximized: false }));
 }
@@ -90,12 +76,6 @@ function openConnectWindow() {
     connectWin.setMenuBarVisibility(false);
     connectWin.loadURL("https://poly.candygate.eu/desktop-connect.html");
 
-    // TEMPORARY diagnostic -- see the note on the main window above.
-    connectWin.webContents.openDevTools({ mode: "detach" });
-    connectWin.webContents.on("did-fail-load", (_e, errorCode, errorDescription, validatedURL) => {
-      console.log("[connect did-fail-load]", errorCode, errorDescription, validatedURL);
-    });
-
     let settled = false;
 
     const onComplete = async (_e, sessionData) => {
@@ -126,6 +106,17 @@ ipcMain.handle("auth:connectPopup", async () => openConnectWindow());
 
 // --- Profile ---
 ipcMain.handle("profile:get", async () => api.getProfile());
+ipcMain.handle("profile:update", async (_e, fields) => api.updateProfile(fields));
+ipcMain.handle("profile:updateNotificationPrefs", async (_e, prefs) => api.updateNotificationPrefs(prefs));
+ipcMain.handle("profile:uploadAvatar", async (_e, { bytes, fileName }) => api.uploadAvatar(Buffer.from(bytes), fileName));
+
+// --- Community ---
+ipcMain.handle("community:search", async (_e, { query, page }) => api.searchMembers(query, page));
+ipcMain.handle("community:followStatus", async (_e, targetId) => api.getFollowStatus(targetId));
+ipcMain.handle("community:setFollow", async (_e, { targetId, follow }) => api.setFollow(targetId, follow));
+
+// --- Apps store (public browse) ---
+ipcMain.handle("store:search", async (_e, { query, sort, page }) => api.searchApps(query, sort, page));
 
 // --- Apps ---
 ipcMain.handle("apps:list", async () => api.listOwnApps());

@@ -14,6 +14,7 @@ function showPanel(name) {
   document.querySelectorAll(".panel").forEach((el) => el.classList.toggle("active", el.dataset.panel === name));
   document.querySelectorAll(".side-link[data-nav]").forEach((el) => el.classList.toggle("active", el.dataset.nav === name));
   if (name === "packages") loadPackagesPanel();
+  if (name === "appsstore" && !storeSearched) runStoreSearch();
 }
 
 // ---------------------------------------------------------------------
@@ -154,13 +155,29 @@ document.querySelectorAll(".side-link[data-site-link]").forEach((btn) => {
 // Profile
 // ---------------------------------------------------------------------
 
+let myProfile = null;
+
 async function loadProfile() {
   try {
     const p = await window.poly.profile.get();
+    myProfile = p;
     $("account-email").textContent = p.email;
     $("account-initial").textContent = (p.username || p.email || "?")[0].toUpperCase();
     $("settings-email").textContent = p.email;
     $("settings-plan").textContent = p.plan === "pro" ? t("plan_pro") : t("plan_free");
+
+    $("account-username").value = p.username || "";
+    $("account-bio").value = p.bio || "";
+    if (p.avatar_url) {
+      $("avatar-tile").innerHTML = `<img src="${escapeHtml(p.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />`;
+    } else {
+      $("avatar-tile").innerHTML = `<div class="dropzone-empty"><span id="avatar-initial">${escapeHtml((p.username || p.email || "?")[0].toUpperCase())}</span></div>`;
+    }
+    const prefs = p.notification_prefs || {};
+    $("notif-follow").checked = prefs.follow !== false;
+    $("notif-download").checked = prefs.download !== false;
+    $("notif-friend-request").checked = prefs.friend_request !== false;
+    $("notif-friend-accept").checked = prefs.friend_accept !== false;
   } catch {
     // non-fatal -- app list still works
   }
@@ -170,6 +187,47 @@ async function loadProfile() {
     $("settings-version").textContent = "";
   }
 }
+
+$("account-save-profile-btn").addEventListener("click", async () => {
+  $("account-profile-error").textContent = "";
+  $("account-profile-ok").textContent = "";
+  $("account-save-profile-btn").disabled = true;
+  try {
+    await window.poly.profile.update({ username: $("account-username").value.trim(), bio: $("account-bio").value.trim() });
+    $("account-profile-ok").textContent = t("account_saved");
+    await loadProfile();
+  } catch (err) {
+    $("account-profile-error").textContent = err.message || t("err_generic");
+  } finally {
+    $("account-save-profile-btn").disabled = false;
+  }
+});
+
+$("avatar-tile").addEventListener("click", async () => {
+  const file = await window.poly.files.pickImage();
+  if (!file) return;
+  try {
+    await window.poly.profile.uploadAvatar(file.bytes, file.fileName);
+    await loadProfile();
+  } catch (err) {
+    $("account-profile-error").textContent = err.message || t("err_generic");
+  }
+});
+
+["notif-follow", "notif-download", "notif-friend-request", "notif-friend-accept"].forEach((id) => {
+  $(id).addEventListener("change", async () => {
+    try {
+      await window.poly.profile.updateNotificationPrefs({
+        follow: $("notif-follow").checked,
+        download: $("notif-download").checked,
+        friend_request: $("notif-friend-request").checked,
+        friend_accept: $("notif-friend-accept").checked,
+      });
+    } catch {
+      // non-fatal
+    }
+  });
+});
 
 // ---------------------------------------------------------------------
 // My apps
@@ -682,5 +740,135 @@ async function submitApp(status) {
     $("save-draft-btn").disabled = false;
   }
 }
+
+// ---------------------------------------------------------------------
+// Docs
+// ---------------------------------------------------------------------
+
+document.querySelectorAll(".doc-toc-link").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    const target = document.getElementById(link.getAttribute("href").slice(1));
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+$("doc-pro-cta").addEventListener("click", () => window.poly.shell.openExternal("https://poly.candygate.eu/account"));
+
+// ---------------------------------------------------------------------
+// Community
+// ---------------------------------------------------------------------
+
+async function runCommunitySearch() {
+  const query = $("community-search-input").value.trim();
+  $("community-error").textContent = "";
+  $("community-search-btn").disabled = true;
+  try {
+    const { rows } = await window.poly.community.search(query, 1);
+    if (!rows.length) {
+      $("community-results").innerHTML = `<p class="empty-hint">${t("pkg_results_empty")}</p>`;
+      return;
+    }
+    $("community-results").innerHTML = rows.map((m) => {
+      const avatar = m.avatar_url
+        ? `<img class="member-avatar" src="${escapeHtml(m.avatar_url)}" alt="" />`
+        : `<div class="member-avatar-fallback">${escapeHtml((m.username || "?")[0].toUpperCase())}</div>`;
+      return `
+        <div class="member-card">
+          ${avatar}
+          <div class="member-info">
+            <div class="member-name">@${escapeHtml(m.username)}${m.is_official ? " ✓" : ""}</div>
+            <div class="member-bio">${escapeHtml(m.bio || "")}</div>
+          </div>
+          <button class="btn" data-follow-target="${m.id}">…</button>
+        </div>`;
+    }).join("");
+
+    for (const m of rows) {
+      const btn = document.querySelector(`[data-follow-target="${m.id}"]`);
+      if (!btn) continue;
+      try {
+        const { following } = await window.poly.community.followStatus(m.id);
+        btn.textContent = following ? t("unfollow_btn") : t("follow_btn");
+        btn.dataset.following = following ? "1" : "0";
+      } catch {
+        btn.textContent = t("follow_btn");
+        btn.dataset.following = "0";
+      }
+      btn.addEventListener("click", async () => {
+        const nowFollowing = btn.dataset.following === "1";
+        btn.disabled = true;
+        try {
+          await window.poly.community.setFollow(m.id, !nowFollowing);
+          btn.dataset.following = nowFollowing ? "0" : "1";
+          btn.textContent = nowFollowing ? t("follow_btn") : t("unfollow_btn");
+        } catch (err) {
+          $("community-error").textContent = err.message || t("err_generic");
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+  } catch (err) {
+    $("community-error").textContent = err.message || t("err_generic");
+  } finally {
+    $("community-search-btn").disabled = false;
+  }
+}
+$("community-search-btn").addEventListener("click", runCommunitySearch);
+$("community-search-input").addEventListener("keydown", (e) => { if (e.key === "Enter") runCommunitySearch(); });
+
+// ---------------------------------------------------------------------
+// Apps store (public browse)
+// ---------------------------------------------------------------------
+
+let storeSearched = false;
+
+async function runStoreSearch() {
+  storeSearched = true;
+  const query = $("store-search-input").value.trim();
+  const sort = $("store-sort-select").value;
+  $("store-error").textContent = "";
+  $("store-search-btn").disabled = true;
+  try {
+    const { rows } = await window.poly.store.search(query, sort, 1);
+    if (!rows.length) {
+      $("store-results").innerHTML = `<p class="empty-hint">${t("pkg_results_empty")}</p>`;
+      return;
+    }
+    $("store-results").innerHTML = rows.map((a) => {
+      const icon = a.icon_url
+        ? `<img class="app-icon" src="${escapeHtml(a.icon_url)}" alt="" />`
+        : `<div class="app-icon-fallback">${escapeHtml((a.name || "?")[0].toUpperCase())}</div>`;
+      const price = a.is_paid ? `$${(a.price_cents / 100).toFixed(2)} ${String(a.currency).toUpperCase()}` : t("free");
+      const rating = a.rating_count > 0 ? `${Number(a.avg_rating).toFixed(1)}★ (${a.rating_count})` : "—";
+      return `
+        <div class="app-card">
+          <div class="app-card-banner"></div>
+          <div class="app-card-body">
+            ${icon}
+            <div class="app-name-row"><div class="app-name">${escapeHtml(a.name)}</div></div>
+            <div class="app-stats">
+              <span>${price}</span>
+              <span>${rating}</span>
+              <span>${a.download_count || 0} ${t("installs")}</span>
+            </div>
+            <div class="app-card-actions">
+              <button class="btn" data-store-open="${a.slug}">${t("store_open_btn")}</button>
+            </div>
+          </div>
+        </div>`;
+    }).join("");
+    $("store-results").querySelectorAll("[data-store-open]").forEach((btn) =>
+      btn.addEventListener("click", () => window.poly.shell.openExternal(`https://poly.candygate.eu/app?slug=${encodeURIComponent(btn.dataset.storeOpen)}`))
+    );
+  } catch (err) {
+    $("store-error").textContent = err.message || t("err_generic");
+  } finally {
+    $("store-search-btn").disabled = false;
+  }
+}
+$("store-search-btn").addEventListener("click", runStoreSearch);
+$("store-search-input").addEventListener("keydown", (e) => { if (e.key === "Enter") runStoreSearch(); });
+$("store-sort-select").addEventListener("change", runStoreSearch);
 
 boot();

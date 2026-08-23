@@ -13,11 +13,97 @@ async function getProfile() {
   const uid = requireUser();
   const { data, error } = await session.supabase
     .from("profiles")
-    .select("email,username,bio,plan,created_at")
+    .select("email,username,bio,avatar_url,plan,is_official,notification_prefs,created_at")
     .eq("id", uid)
     .single();
   if (error) throw error;
   return data;
+}
+
+async function updateProfile({ username, bio }) {
+  const uid = requireUser();
+  const patch = {};
+  if (username !== undefined) patch.username = username;
+  if (bio !== undefined) patch.bio = bio;
+  const { error } = await session.supabase.from("profiles").update(patch).eq("id", uid);
+  if (error) throw error;
+}
+
+async function updateNotificationPrefs(prefs) {
+  const uid = requireUser();
+  const { error } = await session.supabase.from("profiles").update({ notification_prefs: prefs }).eq("id", uid);
+  if (error) throw error;
+}
+
+async function uploadAvatar(buffer, fileName) {
+  const uid = requireUser();
+  const dotIdx = fileName.lastIndexOf(".");
+  const ext = (dotIdx > 0 ? fileName.slice(dotIdx + 1) : "png").toLowerCase();
+  const path = `${uid}/avatar.${ext}`;
+  const { error: uploadError } = await session.supabase.storage.from("avatars").upload(path, buffer, {
+    upsert: true,
+    contentType: `image/${ext === "jpg" ? "jpeg" : ext}`,
+  });
+  if (uploadError) throw uploadError;
+  const { data: urlData } = session.supabase.storage.from("avatars").getPublicUrl(path);
+  const avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+  const { error: updateError } = await session.supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", uid);
+  if (updateError) throw updateError;
+  return avatarUrl;
+}
+
+// --- Community (search, follow) ---
+
+async function searchMembers(query, page = 1, pageSize = 20) {
+  const uid = requireUser();
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  let q = session.supabase.from("profiles_public").select("id,username,bio,avatar_url,plan,is_official", { count: "exact" });
+  if (query) q = q.ilike("username", `%${query}%`).neq("id", uid);
+  const { data, error, count } = await q
+    .order("plan", { ascending: false })
+    .order("username", { ascending: true })
+    .range(from, to);
+  if (error) throw error;
+  return { rows: data, count: count || 0 };
+}
+
+async function getFollowStatus(targetId) {
+  const uid = requireUser();
+  const { data, error } = await session.supabase
+    .from("follows")
+    .select("follower_id")
+    .eq("follower_id", uid)
+    .eq("followed_id", targetId)
+    .maybeSingle();
+  if (error) throw error;
+  return { following: !!data };
+}
+
+async function setFollow(targetId, follow) {
+  const uid = requireUser();
+  if (follow) {
+    const { error } = await session.supabase.from("follows").insert({ follower_id: uid, followed_id: targetId });
+    if (error) throw error;
+  } else {
+    const { error } = await session.supabase.from("follows").delete().eq("follower_id", uid).eq("followed_id", targetId);
+    if (error) throw error;
+  }
+}
+
+// --- Apps store (public browse) ---
+
+async function searchApps(query, sort = "new", page = 1, pageSize = 20) {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  let q = session.supabase.from("apps_public").select("*", { count: "exact" });
+  if (query) q = q.or(`name.ilike.%${query}%,tagline.ilike.%${query}%`);
+  if (sort === "rating") q = q.order("avg_rating", { ascending: false }).order("rating_count", { ascending: false });
+  else if (sort === "downloads") q = q.order("download_count", { ascending: false });
+  else q = q.order("created_at", { ascending: false });
+  const { data, error, count } = await q.range(from, to);
+  if (error) throw error;
+  return { rows: data, count: count || 0 };
 }
 
 async function listOwnApps() {
@@ -101,6 +187,9 @@ async function uploadAppBuild(appId, buffer, fileName) {
 
 module.exports = {
   getProfile,
+  updateProfile,
+  updateNotificationPrefs,
+  uploadAvatar,
   listOwnApps,
   getApp,
   upsertApp,
@@ -108,4 +197,8 @@ module.exports = {
   deleteApp,
   uploadAppMedia,
   uploadAppBuild,
+  searchMembers,
+  getFollowStatus,
+  setFollow,
+  searchApps,
 };
