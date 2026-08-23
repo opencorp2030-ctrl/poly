@@ -44,21 +44,22 @@ jobs:
     - name: Install NSIS
       shell: pwsh
       run: |
-        # Chocolatey's install location/PATH propagation has proven
-        # unreliable on this runner across three separate attempts (each
-        # left makensis.exe genuinely unfindable afterward). Sidestep the
-        # whole install-location guessing game: fetch the NSIS zip
-        # distribution directly and run it from a known, fixed path.
         $ErrorActionPreference = "Stop"
         $zip = "$env:RUNNER_TEMP\nsis.zip"
-        Invoke-WebRequest -Uri "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.10/nsis-3.10.zip" -OutFile $zip
+        
+        # Use curl to follow redirects properly and avoid downloading SourceForge HTML landing pages
+        curl.exe -sSL "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.10/nsis-3.10.zip" -o $zip
+        
         Expand-Archive -Path $zip -DestinationPath "$env:RUNNER_TEMP\nsis" -Force
         $makensis = Get-ChildItem -Path "$env:RUNNER_TEMP\nsis" -Filter makensis.exe -Recurse | Select-Object -First 1
         if (-not $makensis) {
           throw "makensis.exe not found inside the downloaded NSIS zip"
         }
-        Write-Host "makensis at $($makensis.FullName)"
-        Add-Content -Path $env:GITHUB_ENV -Value "MAKENSIS=$($makensis.FullName)"
+        
+        # Convert backslashes to forward slashes so Bash can evaluate $MAKENSIS without character escapes
+        $makensisPath = $makensis.FullName.Replace('\', '/')
+        Write-Host "makensis at $makensisPath"
+        Add-Content -Path $env:GITHUB_ENV -Value "MAKENSIS=$makensisPath"
 
     - name: Build setup
       shell: bash
@@ -87,13 +88,15 @@ jobs:
     - name: Build pkg
       shell: bash
       run: |
+        # Strip leading 'v' from version tag (pkgbuild expects valid numeric version x.y.z)
+        VERSION="${GITHUB_REF_NAME#v}"
         mkdir -p "$RUNNER_TEMP/pkgroot/usr/local/bin"
         lipo -create dist/poly-darwin-amd64 dist/poly-darwin-arm64 -output "$RUNNER_TEMP/pkgroot/usr/local/bin/poly"
         chmod 755 "$RUNNER_TEMP/pkgroot/usr/local/bin/poly"
         mkdir -p installers/macos
         pkgbuild --root "$RUNNER_TEMP/pkgroot" \
           --identifier eu.candygate.poly \
-          --version "${{ github.ref_name }}" \
+          --version "$VERSION" \
           --install-location / \
           "installers/macos/poly-macos-${{ github.ref_name }}.pkg"
 
@@ -147,13 +150,13 @@ jobs:
       shell: bash
       run: |
         cd assets
-        # Stable, version-free aliases alongside the versioned files, so
-        # .../releases/latest/download/poly-setup.exe (used by the READMEs
-        # and the site) keeps working release after release without
-        # editing a link every time.
         cp poly-setup-*.exe poly-setup.exe
         cp poly-macos-*.pkg poly-macos.pkg
         cp poly-desktop-setup-*.exe poly-desktop-setup.exe
+        
+        # Generate checksums file before attempting release creation
+        sha256sum poly-* > checksums.txt
+        
         gh release create "${{ github.ref_name }}" \
           poly-* checksums.txt \
           --generate-notes
