@@ -49,6 +49,10 @@ contextBridge.exposeInMainWorld("poly", {
   state: {
     getLang: () => ipcRenderer.invoke("state:getLang"),
     setLang: (lang) => ipcRenderer.invoke("state:setLang", lang),
+    getTheme: () => ipcRenderer.invoke("state:getTheme"),
+    setTheme: (theme) => ipcRenderer.invoke("state:setTheme", theme),
+    getAccent: () => ipcRenderer.invoke("state:getAccent"),
+    setAccent: (accent) => ipcRenderer.invoke("state:setAccent", accent),
   },
   cli: {
     detect: (force) => ipcRenderer.invoke("cli:detect", force),

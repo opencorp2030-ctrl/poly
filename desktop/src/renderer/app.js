@@ -38,6 +38,44 @@ document.querySelectorAll("#language-segmented .seg-btn").forEach((btn) => {
 });
 
 // ---------------------------------------------------------------------
+// Theme + accent color
+// ---------------------------------------------------------------------
+
+let currentTheme = "dark";
+let currentAccent = "amber";
+const systemDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+function resolveTheme(theme) {
+  if (theme === "system") return systemDarkQuery.matches ? "dark" : "light";
+  return theme === "light" ? "light" : "dark";
+}
+
+function applyTheme(theme, { persist = true } = {}) {
+  currentTheme = theme;
+  const resolved = resolveTheme(theme);
+  if (resolved === "light") document.documentElement.setAttribute("data-theme", "light");
+  else document.documentElement.removeAttribute("data-theme");
+  document.querySelectorAll("[data-theme-choice]").forEach((btn) => btn.classList.toggle("active", btn.dataset.themeChoice === theme));
+  if (persist) window.poly.state.setTheme(theme).catch(() => {});
+}
+systemDarkQuery.addEventListener("change", () => { if (currentTheme === "system") applyTheme("system", { persist: false }); });
+
+function applyAccent(accent, { persist = true } = {}) {
+  currentAccent = accent;
+  if (accent && accent !== "amber") document.documentElement.setAttribute("data-accent", accent);
+  else document.documentElement.removeAttribute("data-accent");
+  document.querySelectorAll("[data-accent-choice]").forEach((btn) => btn.classList.toggle("active", btn.dataset.accentChoice === accent));
+  if (persist) window.poly.state.setAccent(accent).catch(() => {});
+}
+
+document.querySelectorAll("[data-theme-choice]").forEach((btn) => {
+  btn.addEventListener("click", () => applyTheme(btn.dataset.themeChoice));
+});
+document.querySelectorAll("[data-accent-choice]").forEach((btn) => {
+  btn.addEventListener("click", () => applyAccent(btn.dataset.accentChoice));
+});
+
+// ---------------------------------------------------------------------
 // Titlebar
 // ---------------------------------------------------------------------
 
@@ -53,7 +91,7 @@ window.poly.win.onState(({ maximized }) => {
 // ---------------------------------------------------------------------
 
 let onboardSlide = 0;
-const ONBOARD_SLIDES = 3;
+const ONBOARD_SLIDES = 4;
 
 function goToOnboardSlide(n) {
   onboardSlide = n;
@@ -81,6 +119,13 @@ async function boot() {
   try { savedLang = await window.poly.state.getLang(); } catch { /* ignore */ }
   const browserLang = (navigator.language || "en").toLowerCase().startsWith("fr") ? "fr" : "en";
   await applyLanguage(savedLang || browserLang);
+
+  let savedTheme = null;
+  let savedAccent = null;
+  try { savedTheme = await window.poly.state.getTheme(); } catch { /* ignore */ }
+  try { savedAccent = await window.poly.state.getAccent(); } catch { /* ignore */ }
+  applyTheme(savedTheme || "dark", { persist: false });
+  applyAccent(savedAccent || "amber", { persist: false });
 
   const [user, hasSeenOnboarding] = await Promise.all([
     window.poly.auth.resume(),

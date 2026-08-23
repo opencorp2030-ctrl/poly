@@ -38,4 +38,20 @@ function setLang(lang) {
   save({ ...load(), lang });
 }
 
-module.exports = { hasOnboarded, setOnboarded, getLang, setLang };
+function getTheme() {
+  return load().theme || null; // "dark" | "light" | "system" | null (unset -> system)
+}
+
+function setTheme(theme) {
+  save({ ...load(), theme });
+}
+
+function getAccent() {
+  return load().accent || null;
+}
+
+function setAccent(accent) {
+  save({ ...load(), accent });
+}
+
+module.exports = { hasOnboarded, setOnboarded, getLang, setLang, getTheme, setTheme, getAccent, setAccent };

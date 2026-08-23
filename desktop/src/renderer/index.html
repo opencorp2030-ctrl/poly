@@ -64,6 +64,32 @@
         </div>
 
         <div class="onboard-slide" data-slide="2">
+          <div class="onboard-badge" data-i18n="onboard_badge2">MAKE IT YOURS</div>
+          <h1 class="onboard-h1" data-i18n="onboard_h2">Pick a look.</h1>
+          <div class="onboard-personalize">
+            <div class="personalize-row">
+              <span class="personalize-label" data-i18n="personalize_theme">Theme</span>
+              <div class="segmented" id="onboard-theme-segmented">
+                <button type="button" class="seg-btn" data-theme-choice="dark" data-i18n="theme_dark">Dark</button>
+                <button type="button" class="seg-btn" data-theme-choice="light" data-i18n="theme_light">Light</button>
+                <button type="button" class="seg-btn" data-theme-choice="system" data-i18n="theme_system">System</button>
+              </div>
+            </div>
+            <div class="personalize-row">
+              <span class="personalize-label" data-i18n="personalize_accent">Accent color</span>
+              <div class="accent-swatches" id="onboard-accent-swatches">
+                <button type="button" class="swatch swatch-amber" data-accent-choice="amber" title="Amber"></button>
+                <button type="button" class="swatch swatch-blue" data-accent-choice="blue" title="Blue"></button>
+                <button type="button" class="swatch swatch-green" data-accent-choice="green" title="Green"></button>
+                <button type="button" class="swatch swatch-purple" data-accent-choice="purple" title="Purple"></button>
+                <button type="button" class="swatch swatch-pink" data-accent-choice="pink" title="Pink"></button>
+                <button type="button" class="swatch swatch-red" data-accent-choice="red" title="Red"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboard-slide" data-slide="3">
           <div class="onboard-badge" data-i18n="onboard_badge3">READY</div>
           <h1 class="onboard-h1" data-i18n="onboard_h3">Let's sign you in.</h1>
           <p class="onboard-p" data-i18n="onboard_p3"></p>
@@ -76,6 +102,7 @@
           <span class="dot active" data-dot="0"></span>
           <span class="dot" data-dot="1"></span>
           <span class="dot" data-dot="2"></span>
+          <span class="dot" data-dot="3"></span>
         </div>
         <button class="btn primary" id="onboard-next" data-i18n="onboard_continue">Continue →</button>
       </div>
@@ -597,6 +624,25 @@ poly install community:hello-world</div>
               <div class="segmented" id="language-segmented">
                 <button type="button" class="seg-btn" data-lang="en">English</button>
                 <button type="button" class="seg-btn" data-lang="fr">Français</button>
+              </div>
+            </div>
+            <div class="settings-row">
+              <span class="s-label" data-i18n="settings_theme">Theme</span>
+              <div class="segmented" id="settings-theme-segmented">
+                <button type="button" class="seg-btn" data-theme-choice="dark" data-i18n="theme_dark">Dark</button>
+                <button type="button" class="seg-btn" data-theme-choice="light" data-i18n="theme_light">Light</button>
+                <button type="button" class="seg-btn" data-theme-choice="system" data-i18n="theme_system">System</button>
+              </div>
+            </div>
+            <div class="settings-row">
+              <span class="s-label" data-i18n="settings_accent">Accent color</span>
+              <div class="accent-swatches" id="settings-accent-swatches">
+                <button type="button" class="swatch swatch-amber" data-accent-choice="amber" title="Amber"></button>
+                <button type="button" class="swatch swatch-blue" data-accent-choice="blue" title="Blue"></button>
+                <button type="button" class="swatch swatch-green" data-accent-choice="green" title="Green"></button>
+                <button type="button" class="swatch swatch-purple" data-accent-choice="purple" title="Purple"></button>
+                <button type="button" class="swatch swatch-pink" data-accent-choice="pink" title="Pink"></button>
+                <button type="button" class="swatch swatch-red" data-accent-choice="red" title="Red"></button>
               </div>
             </div>
             <div class="settings-row">

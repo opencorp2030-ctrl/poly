@@ -20,6 +20,27 @@
   --titlebar-h: 38px;
 }
 
+:root[data-theme="light"] {
+  --ink: #f3f1ec;
+  --ink-raised: #ffffff;
+  --ink-overlay: #eae7df;
+  --ink-field: #ffffff;
+  --accent-ink: #14171d;
+  --text: #1b1e24;
+  --text-dim: #5b6270;
+  --border: #14171d1a;
+  --border-soft: #14171d0d;
+}
+
+/* Accent color presets, chosen in onboarding or Settings. Default
+   (no [data-accent], or [data-accent="amber"]) is the brand amber
+   already set on :root above. */
+:root[data-accent="blue"]   { --accent: #5b9dff; --accent-dim: #2f6fd1; }
+:root[data-accent="green"]  { --accent: #6fd88a; --accent-dim: #34a352; }
+:root[data-accent="purple"] { --accent: #b892ff; --accent-dim: #8a5aeb; }
+:root[data-accent="pink"]   { --accent: #ff8fc4; --accent-dim: #e0568f; }
+:root[data-accent="red"]    { --accent: #ff7a6b; --accent-dim: #d94530; }
+
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
 body {
@@ -337,6 +358,27 @@ textarea { resize: vertical; }
 /* --- Apps store cards --- */
 #store-results .app-card { cursor: default; }
 #store-results .app-stats span:last-child { flex: 1; text-align: right; }
+
+/* --- Theme / accent personalization --- */
+.accent-swatches { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.swatch {
+  width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;
+  padding: 0; position: relative; box-shadow: inset 0 0 0 1px var(--border-soft);
+}
+.swatch.active { border-color: var(--text); }
+.swatch.active::after {
+  content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: #14171d; font-size: 0.8rem; font-weight: 700;
+}
+.swatch-amber  { background: #f0a93e; }
+.swatch-blue   { background: #5b9dff; }
+.swatch-green  { background: #6fd88a; }
+.swatch-purple { background: #b892ff; }
+.swatch-pink   { background: #ff8fc4; }
+.swatch-red    { background: #ff7a6b; }
+.onboard-personalize { display: flex; flex-direction: column; align-items: center; gap: 1.6rem; }
+.personalize-row { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+.personalize-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
 
 /* --- Settings --- */
 .settings-card { max-width: 460px; }

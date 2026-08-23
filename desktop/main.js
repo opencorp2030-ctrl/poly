@@ -172,6 +172,10 @@ ipcMain.handle("onboarding:markSeen", async () => localState.setOnboarded());
 // --- Language (local-only display preference) ---
 ipcMain.handle("state:getLang", async () => localState.getLang());
 ipcMain.handle("state:setLang", async (_e, lang) => localState.setLang(lang));
+ipcMain.handle("state:getTheme", async () => localState.getTheme());
+ipcMain.handle("state:setTheme", async (_e, theme) => localState.setTheme(theme));
+ipcMain.handle("state:getAccent", async () => localState.getAccent());
+ipcMain.handle("state:setAccent", async (_e, accent) => localState.setAccent(accent));
 
 // --- Poly CLI (search/list/install/remove) ---
 ipcMain.handle("cli:detect", async (_e, force) => cli.detect(!!force));

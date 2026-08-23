@@ -7,6 +7,10 @@ const I18N = {
     tour1_h: "Publish in minutes", tour1_p: "Icon, screenshots, pricing and a release — one guided flow, with a live preview of your store listing as you type.",
     tour2_h: "Real documentation", tour2_p: "Give every app a proper docs page — setup, usage, configuration — right next to the listing, not bolted on after.",
     tour3_h: "One account, everywhere", tour3_p: "Signs in with the same account as poly login on the CLI. No separate password to manage.",
+    onboard_badge2: "MAKE IT YOURS", onboard_h2: "Pick a look.",
+    personalize_theme: "Theme", personalize_accent: "Accent color",
+    theme_dark: "Dark", theme_light: "Light", theme_system: "System",
+    settings_theme: "Theme", settings_accent: "Accent color",
     onboard_badge3: "READY", onboard_h3: "Let's sign you in.", onboard_p3: "Use your Poly account — the one you already have from poly.candygate.eu or the CLI.",
     onboard_continue: "Continue →", onboard_signin: "Sign in →",
 
@@ -111,6 +115,10 @@ const I18N = {
     tour1_h: "Publie en quelques minutes", tour1_p: "Icône, captures, prix et release — un seul parcours guidé, avec un aperçu live de ta fiche pendant que tu remplis.",
     tour2_h: "Une vraie documentation", tour2_p: "Donne à chaque app une vraie page de doc — installation, usage, configuration — juste à côté de la fiche, pas ajoutée après coup.",
     tour3_h: "Un seul compte, partout", tour3_p: "Connexion avec le même compte que poly login en CLI. Pas de mot de passe séparé à gérer.",
+    onboard_badge2: "PERSONNALISE", onboard_h2: "Choisis ton style.",
+    personalize_theme: "Thème", personalize_accent: "Couleur d'accent",
+    theme_dark: "Sombre", theme_light: "Clair", theme_system: "Système",
+    settings_theme: "Thème", settings_accent: "Couleur d'accent",
     onboard_badge3: "PRÊT", onboard_h3: "On te connecte.", onboard_p3: "Utilise ton compte Poly — celui que tu as déjà sur poly.candygate.eu ou en CLI.",
     onboard_continue: "Continuer →", onboard_signin: "Se connecter →",
 
