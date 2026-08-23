@@ -146,6 +146,10 @@ document.querySelectorAll(".side-link[data-nav]").forEach((btn) => {
   });
 });
 
+document.querySelectorAll(".side-link[data-site-link]").forEach((btn) => {
+  btn.addEventListener("click", () => window.poly.shell.openExternal(btn.dataset.siteLink));
+});
+
 // ---------------------------------------------------------------------
 // Profile
 // ---------------------------------------------------------------------

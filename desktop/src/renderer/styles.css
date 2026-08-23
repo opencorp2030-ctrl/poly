@@ -156,8 +156,15 @@ textarea { resize: vertical; }
 
 /* --- Shell layout --- */
 .shell { display: flex; height: 100%; }
-.sidebar { width: 210px; flex-shrink: 0; background: var(--ink); border-right: 1px solid var(--border-soft); display: flex; flex-direction: column; padding: 0.8rem 0; }
-.side-nav { display: flex; flex-direction: column; gap: 0.1rem; padding: 0 0.6rem; flex: 1; }
+.sidebar { width: 210px; flex-shrink: 0; background: var(--ink); border-right: 1px solid var(--border-soft); display: flex; flex-direction: column; padding: 0.8rem 0; overflow: hidden; }
+.side-nav { display: flex; flex-direction: column; gap: 0.1rem; padding: 0 0.6rem; flex: 1; overflow-y: auto; }
+.side-sep {
+  font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-dim);
+  padding: 0.9rem 0.65rem 0.3rem; opacity: 0.65;
+}
+.side-link.site-link { color: var(--text-dim); font-size: 0.82rem; padding: 0.42rem 0.65rem; }
+.side-link.site-link .side-icon { width: 14px; height: 14px; opacity: 0.85; }
+.side-link.site-link:hover { color: var(--text); }
 .side-link {
   text-align: left; background: none; border: none; color: var(--text-dim); padding: 0.55rem 0.65rem;
   border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; gap: 0.6rem;

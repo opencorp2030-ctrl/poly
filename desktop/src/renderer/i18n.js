@@ -14,6 +14,9 @@ const I18N = {
     login_no_account: "No account yet?", login_create: "Create one on poly.candygate.eu →",
 
     nav_apps: "My apps", nav_packages: "Packages", nav_publish: "Publish new app", nav_settings: "Settings",
+    nav_site_h: "Poly site", nav_home: "poly>", nav_install: "install", nav_how: "how it works", nav_commands: "commands",
+    nav_dependencies: "dependencies", nav_docs: "docs", nav_pro: "pro", nav_community: "community", nav_apps_store: "apps store",
+    nav_integrations: "integrations", nav_search: "search", nav_account: "account", nav_github: "github",
 
     apps_h: "My apps", apps_new: "+ New app", apps_empty: "You haven't published anything yet.", apps_empty_cta: "Publish your first app",
     apps_summary: "{n} app{s} · {p} published",
@@ -65,6 +68,9 @@ const I18N = {
     login_no_account: "Pas encore de compte ?", login_create: "Créer un compte sur poly.candygate.eu →",
 
     nav_apps: "Mes apps", nav_packages: "Packages", nav_publish: "Publier une app", nav_settings: "Paramètres",
+    nav_site_h: "Site Poly", nav_home: "poly>", nav_install: "installer", nav_how: "fonctionnement", nav_commands: "commandes",
+    nav_dependencies: "dépendances", nav_docs: "doc", nav_pro: "pro", nav_community: "communauté", nav_apps_store: "boutique d'apps",
+    nav_integrations: "intégrations", nav_search: "recherche", nav_account: "compte", nav_github: "github",
 
     apps_h: "Mes apps", apps_new: "+ Nouvelle app", apps_empty: "Tu n'as encore rien publié.", apps_empty_cta: "Publier ta première app",
     apps_summary: "{n} app{s} · {p} publiée{s}",
