@@ -44,46 +44,25 @@ jobs:
     - name: Install NSIS
       shell: pwsh
       run: |
-        choco install nsis -y
-        if ($LASTEXITCODE -ne 0) {
-          throw "choco install nsis failed with exit code $LASTEXITCODE"
+        # Chocolatey's install location/PATH propagation has proven
+        # unreliable on this runner across three separate attempts (each
+        # left makensis.exe genuinely unfindable afterward). Sidestep the
+        # whole install-location guessing game: fetch the NSIS zip
+        # distribution directly and run it from a known, fixed path.
+        $ErrorActionPreference = "Stop"
+        $zip = "$env:RUNNER_TEMP\nsis.zip"
+        Invoke-WebRequest -Uri "https://downloads.sourceforge.net/project/nsis/NSIS%203/3.10/nsis-3.10.zip" -OutFile $zip
+        Expand-Archive -Path $zip -DestinationPath "$env:RUNNER_TEMP\nsis" -Force
+        $makensis = Get-ChildItem -Path "$env:RUNNER_TEMP\nsis" -Filter makensis.exe -Recurse | Select-Object -First 1
+        if (-not $makensis) {
+          throw "makensis.exe not found inside the downloaded NSIS zip"
         }
-        # Chocolatey updates the machine PATH in the registry, but this
-        # process's environment block was already captured at job start
-        # and doesn't pick that up on its own. Re-import chocolatey's
-        # profile helper and refresh the current session's env so PATH
-        # (and MAKENSIS) are visible for the rest of *this* step and
-        # exported to later steps via GITHUB_PATH.
-        Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-        refreshenv
-        $nsisDir = "C:\Program Files (x86)\NSIS"
-        if (Test-Path "$nsisDir\makensis.exe") {
-          Add-Content -Path $env:GITHUB_PATH -Value $nsisDir
-        } else {
-          # Diagnostics for next time, in case the install location moved
-          # again: show what choco thinks got installed and search the
-          # whole disk so the actual error is visible in the log instead
-          # of a generic "not found" three steps later.
-          Write-Host "makensis.exe not at expected path $nsisDir, searching..."
-          choco list --local-only
-          Get-ChildItem -Path C:\ -Filter makensis.exe -Recurse -ErrorAction SilentlyContinue |
-            ForEach-Object { Write-Host "found: $($_.FullName)" }
-        }
+        Write-Host "makensis at $($makensis.FullName)"
+        Add-Content -Path $env:GITHUB_ENV -Value "MAKENSIS=$($makensis.FullName)"
 
     - name: Build setup
       shell: bash
       run: |
-        MAKENSIS=$(command -v makensis 2>/dev/null || true)
-        if [ -z "$MAKENSIS" ]; then
-          # Fall back to a direct filesystem search if PATH still didn't
-          # pick it up, rather than failing outright.
-          MAKENSIS=$(find "/c/Program Files (x86)" "/c/Program Files" "/c/ProgramData/chocolatey" -iname "makensis.exe" 2>/dev/null | head -1)
-        fi
-        if [ -z "$MAKENSIS" ]; then
-          echo "makensis.exe not found on PATH or anywhere under Program Files/chocolatey" >&2
-          exit 1
-        fi
-        echo "using $MAKENSIS"
         cd installers/windows
         "$MAKENSIS" -DVERSION="${{ github.ref_name }}" -DSOURCE_EXE="$GITHUB_WORKSPACE/dist/poly-windows-amd64.exe" poly-installer.nsi
 
