@@ -87,10 +87,38 @@ jobs:
         path: installers/macos/poly-macos-${{ github.ref_name }}.pkg
         if-no-files-found: error
 
+  installer-desktop-windows:
+    name: Poly Desktop (Windows)
+    runs-on: windows-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: npm
+        cache-dependency-path: desktop/package-lock.json
+
+    - name: Install dependencies
+      working-directory: desktop
+      run: npm ci
+
+    - name: Build Poly Desktop installer
+      working-directory: desktop
+      run: npm run dist:win
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: installer-desktop-windows
+        path: desktop/dist/poly-desktop-setup-*.exe
+        if-no-files-found: error
+
   release:
     name: Publish release
     runs-on: ubuntu-latest
-    needs: [ build, installer-windows, installer-macos ]
+    needs: [ build, installer-windows, installer-macos, installer-desktop-windows ]
     steps:
     - uses: actions/download-artifact@v4
       with:
@@ -103,6 +131,13 @@ jobs:
       shell: bash
       run: |
         cd assets
+        # Stable, version-free aliases alongside the versioned files, so
+        # .../releases/latest/download/poly-setup.exe (used by the READMEs
+        # and the site) keeps working release after release without
+        # editing a link every time.
+        cp poly-setup-*.exe poly-setup.exe
+        cp poly-macos-*.pkg poly-macos.pkg
+        cp poly-desktop-setup-*.exe poly-desktop-setup.exe
         gh release create "${{ github.ref_name }}" \
-          poly-* checksums.txt poly-setup-*.exe poly-macos-*.pkg \
+          poly-* checksums.txt \
           --generate-notes

@@ -192,6 +192,7 @@
     <div class="wordmark">poly<span>&gt;</span></div>
     <nav class="top-links" id="top-links">
       <a href="#install" data-i18n="nav_install">install</a>
+      <a href="#desktop" data-i18n="nav_desktop">desktop</a>
       <a href="#how" data-i18n="nav_how">how it works</a>
       <a href="#commands" data-i18n="nav_commands">commands</a>
       <a href="dependencies" data-i18n="nav_dependencies">dependencies</a>
@@ -401,6 +402,18 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
   </div>
 </section>
 
+<section id="desktop">
+  <div class="wrap">
+    <p class="eyebrow reveal" data-i18n="desktop_eyebrow">New</p>
+    <h2 class="reveal" data-i18n="desktop_title">Poly Desktop — now on Windows</h2>
+    <p class="section-lede reveal" data-i18n="desktop_lede">Manage your Poly account without a browser: publish and edit apps with a live store-listing preview, search/install/remove packages through the real CLI, browse the community and the public apps store, and get real notifications with native OS alerts.</p>
+    <div class="cta-row reveal">
+      <a class="btn primary" href="https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-desktop-setup.exe" data-i18n="desktop_download">⬇ Download Poly Desktop for Windows</a>
+    </div>
+    <p class="note-box reveal" data-i18n="desktop_note">macOS and Linux builds are coming very soon. Windows ships first because that's what's been tested end-to-end — the app itself is plain Electron/Node, so the other platforms are mostly a packaging step away.</p>
+  </div>
+</section>
+
 <section id="commands">
   <div class="wrap">
     <p class="eyebrow reveal" data-i18n="commands_eyebrow">Reference</p>
@@ -488,6 +501,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
     en: {
       scroll_hint: "Scroll",
       nav_install: "install",
+      nav_desktop: "desktop",
       nav_how: "how it works",
       nav_commands: "commands",
       nav_pro: "pro",
@@ -498,6 +512,11 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       nav_search: "search",
       nav_account: "account",
       nav_github: "github",
+      desktop_eyebrow: "New",
+      desktop_title: "Poly Desktop — now on Windows",
+      desktop_lede: "Manage your Poly account without a browser: publish and edit apps with a live store-listing preview, search/install/remove packages through the real CLI, browse the community and the public apps store, and get real notifications with native OS alerts.",
+      desktop_download: "⬇ Download Poly Desktop for Windows",
+      desktop_note: "macOS and Linux builds are coming very soon. Windows ships first because that's what's been tested end-to-end — the app itself is plain Electron/Node, so the other platforms are mostly a packaging step away.",
       hero_eyebrow: "Package manager · macOS · Linux · Windows",
       hero_title: "One command.<br>Every package manager.",
       hero_lede: "Poly installs from pip, npm, and checksum-verified binary releases behind a single unified command. No more remembering which tool owns which package.",
@@ -586,6 +605,7 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
     fr: {
       scroll_hint: "Défiler",
       nav_install: "installer",
+      nav_desktop: "bureau",
       nav_how: "fonctionnement",
       nav_commands: "commandes",
       nav_pro: "pro",
@@ -596,6 +616,11 @@ GOOS=windows GOARCH=amd64 go build -o poly.exe .</div>
       nav_search: "recherche",
       nav_account: "compte",
       nav_github: "github",
+      desktop_eyebrow: "Nouveau",
+      desktop_title: "Poly Desktop — disponible sur Windows",
+      desktop_lede: "Gère ton compte Poly sans navigateur : publier et modifier des apps avec un aperçu live de la fiche store, rechercher/installer/supprimer des packages via la vraie CLI, parcourir la communauté et la boutique publique d'apps, et de vraies notifications avec alertes système natives.",
+      desktop_download: "⬇ Télécharger Poly Desktop pour Windows",
+      desktop_note: "Les versions macOS et Linux arrivent très prochainement. Windows sort en premier car c'est ce qui a été testé de bout en bout — l'app elle-même est du pur Electron/Node, donc les autres plateformes ne sont plus qu'une étape de packaging.",
       hero_eyebrow: "Gestionnaire de paquets · macOS · Linux · Windows",
       hero_title: "Une commande.<br>Tous les gestionnaires de paquets.",
       hero_lede: "Poly installe depuis pip, npm et des binaires vérifiés par checksum, derrière une seule commande unifiée. Fini de retenir quel outil gère quel paquet.",

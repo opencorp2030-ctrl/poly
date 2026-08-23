@@ -70,6 +70,26 @@ Cross-compile pour un autre OS/architecture avec `GOOS`/`GOARCH`, ou
 lance `scripts/build-all.sh` pour builder les cinq cibles
 (darwin/linux/windows × amd64/arm64) dans `dist/`.
 
+## 🖥️ Poly Desktop — disponible sur Windows
+
+**[Poly Desktop](https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-desktop-setup.exe)**
+est une application de bureau native pour gérer ton compte Poly sans
+navigateur : publier et modifier des apps avec un aperçu live de la
+fiche store, rechercher/installer/supprimer des packages via la vraie
+CLI, parcourir la communauté et la boutique publique d'apps, de
+vraies notifications avec alertes système natives, et un choix
+complet de thème/couleur d'accent.
+
+**[⬇ Télécharger Poly Desktop pour Windows](https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-desktop-setup.exe)**
+— lance l'installeur, pas besoin des droits admin. Connexion avec le
+même compte que `poly login` en CLI.
+
+> **Les versions macOS et Linux arrivent très prochainement.** Windows
+> sort en premier car c'est ce qui a été testé de bout en bout ;
+> l'app elle-même est du pur Electron/Node, donc les autres
+> plateformes ne sont plus qu'une étape de packaging. Star/watch le
+> repo pour être prévenu quand elles arrivent.
+
 ## Comment la résolution de paquet fonctionne
 
 `poly install <name>` essaie la recherche (`Search`) de chaque adapter
