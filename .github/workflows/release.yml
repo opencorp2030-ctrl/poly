@@ -42,15 +42,24 @@ jobs:
         path: dist
 
     - name: Install NSIS
-      run: |
-        choco install nsis -y
-        echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      run: choco install nsis -y
 
     - name: Build setup
       shell: bash
       run: |
+        # choco's PATH update (registry-based) doesn't reliably reach this
+        # step's process even though it runs after "Install NSIS" in the
+        # same job -- rather than guess the exact install directory (which
+        # is version-dependent and already got it wrong once), find
+        # makensis.exe directly and use it by full path.
+        MAKENSIS=$(find "/c/Program Files (x86)" "/c/Program Files" "/c/ProgramData/chocolatey" -iname "makensis.exe" 2>/dev/null | head -1)
+        if [ -z "$MAKENSIS" ]; then
+          echo "makensis.exe not found anywhere under Program Files or the chocolatey install" >&2
+          exit 1
+        fi
+        echo "using $MAKENSIS"
         cd installers/windows
-        makensis -DVERSION="${{ github.ref_name }}" -DSOURCE_EXE="$GITHUB_WORKSPACE/dist/poly-windows-amd64.exe" poly-installer.nsi
+        "$MAKENSIS" -DVERSION="${{ github.ref_name }}" -DSOURCE_EXE="$GITHUB_WORKSPACE/dist/poly-windows-amd64.exe" poly-installer.nsi
 
     - uses: actions/upload-artifact@v4
       with:
