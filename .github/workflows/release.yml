@@ -42,19 +42,33 @@ jobs:
         path: dist
 
     - name: Install NSIS
-      run: choco install nsis -y
+      shell: pwsh
+      run: |
+        choco install nsis -y
+        # Chocolatey updates the machine PATH in the registry, but this
+        # process's environment block was already captured at job start
+        # and doesn't pick that up on its own. Re-import chocolatey's
+        # profile helper and refresh the current session's env so PATH
+        # (and MAKENSIS) are visible for the rest of *this* step and
+        # exported to later steps via GITHUB_PATH.
+        Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+        refreshenv
+        $nsisDir = "C:\Program Files (x86)\NSIS"
+        if (Test-Path "$nsisDir\makensis.exe") {
+          Add-Content -Path $env:GITHUB_PATH -Value $nsisDir
+        }
 
     - name: Build setup
       shell: bash
       run: |
-        # choco's PATH update (registry-based) doesn't reliably reach this
-        # step's process even though it runs after "Install NSIS" in the
-        # same job -- rather than guess the exact install directory (which
-        # is version-dependent and already got it wrong once), find
-        # makensis.exe directly and use it by full path.
-        MAKENSIS=$(find "/c/Program Files (x86)" "/c/Program Files" "/c/ProgramData/chocolatey" -iname "makensis.exe" 2>/dev/null | head -1)
+        MAKENSIS=$(command -v makensis 2>/dev/null || true)
         if [ -z "$MAKENSIS" ]; then
-          echo "makensis.exe not found anywhere under Program Files or the chocolatey install" >&2
+          # Fall back to a direct filesystem search if PATH still didn't
+          # pick it up, rather than failing outright.
+          MAKENSIS=$(find "/c/Program Files (x86)" "/c/Program Files" "/c/ProgramData/chocolatey" -iname "makensis.exe" 2>/dev/null | head -1)
+        fi
+        if [ -z "$MAKENSIS" ]; then
+          echo "makensis.exe not found on PATH or anywhere under Program Files/chocolatey" >&2
           exit 1
         fi
         echo "using $MAKENSIS"
