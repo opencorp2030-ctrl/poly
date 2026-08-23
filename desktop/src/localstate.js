@@ -54,4 +54,15 @@ function setAccent(accent) {
   save({ ...load(), accent });
 }
 
-module.exports = { hasOnboarded, setOnboarded, getLang, setLang, getTheme, setTheme, getAccent, setAccent };
+function hasToured() {
+  return !!load().toured;
+}
+
+function setToured() {
+  save({ ...load(), toured: true });
+}
+
+module.exports = {
+  hasOnboarded, setOnboarded, getLang, setLang, getTheme, setTheme, getAccent, setAccent,
+  hasToured, setToured,
+};

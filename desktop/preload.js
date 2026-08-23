@@ -54,6 +54,10 @@ contextBridge.exposeInMainWorld("poly", {
     hasSeen: () => ipcRenderer.invoke("onboarding:hasSeen"),
     markSeen: () => ipcRenderer.invoke("onboarding:markSeen"),
   },
+  tour: {
+    hasSeen: () => ipcRenderer.invoke("tour:hasSeen"),
+    markSeen: () => ipcRenderer.invoke("tour:markSeen"),
+  },
   state: {
     getLang: () => ipcRenderer.invoke("state:getLang"),
     setLang: (lang) => ipcRenderer.invoke("state:setLang", lang),

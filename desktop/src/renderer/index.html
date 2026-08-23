@@ -64,6 +64,26 @@
         </div>
 
         <div class="onboard-slide" data-slide="2">
+          <div class="tour-grid">
+            <div class="tour-item">
+              <div class="tour-icon">◆</div>
+              <h3 data-i18n="tour4_h"></h3>
+              <p data-i18n="tour4_p"></p>
+            </div>
+            <div class="tour-item">
+              <div class="tour-icon">◈</div>
+              <h3 data-i18n="tour5_h"></h3>
+              <p data-i18n="tour5_p"></p>
+            </div>
+            <div class="tour-item">
+              <div class="tour-icon">▤</div>
+              <h3 data-i18n="tour6_h"></h3>
+              <p data-i18n="tour6_p"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboard-slide" data-slide="3">
           <div class="onboard-badge" data-i18n="onboard_badge2">MAKE IT YOURS</div>
           <h1 class="onboard-h1" data-i18n="onboard_h2">Pick a look.</h1>
           <div class="onboard-personalize">
@@ -89,7 +109,7 @@
           </div>
         </div>
 
-        <div class="onboard-slide" data-slide="3">
+        <div class="onboard-slide" data-slide="4">
           <div class="onboard-badge" data-i18n="onboard_badge3">READY</div>
           <h1 class="onboard-h1" data-i18n="onboard_h3">Let's sign you in.</h1>
           <p class="onboard-p" data-i18n="onboard_p3"></p>
@@ -103,6 +123,7 @@
           <span class="dot" data-dot="1"></span>
           <span class="dot" data-dot="2"></span>
           <span class="dot" data-dot="3"></span>
+          <span class="dot" data-dot="4"></span>
         </div>
         <button class="btn primary" id="onboard-next" data-i18n="onboard_continue">Continue →</button>
       </div>
@@ -671,6 +692,9 @@ poly install community:hello-world</div>
             <div class="settings-row">
               <a href="#" id="settings-account-link" data-i18n="settings_manage">Manage account on poly.candygate.eu →</a>
             </div>
+            <div class="settings-row">
+              <button class="btn" id="settings-retour-btn" data-i18n="settings_retour">Take the tour again</button>
+            </div>
           </div>
           <button class="btn danger" id="signout-btn" data-i18n="settings_signout">Sign out</button>
         </div>
@@ -679,6 +703,19 @@ poly install community:hello-world</div>
     </div>
   </section>
 
+</div>
+
+<!-- Guided UI tour (highlights real sidebar items with an explanation) -->
+<div class="tour-overlay" id="tour-overlay">
+  <div class="tour-tooltip" id="tour-tooltip">
+    <div class="tour-tooltip-step" id="tour-step-count"></div>
+    <h3 id="tour-tooltip-title"></h3>
+    <p id="tour-tooltip-body"></p>
+    <div class="tour-tooltip-actions">
+      <button type="button" class="btn" id="tour-skip-btn" data-i18n="tour_skip">Skip</button>
+      <button type="button" class="btn primary" id="tour-next-btn" data-i18n="tour_next">Next →</button>
+    </div>
+  </div>
 </div>
 
 <!-- Confirm delete modal -->

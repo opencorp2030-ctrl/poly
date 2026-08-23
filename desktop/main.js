@@ -240,6 +240,8 @@ ipcMain.handle("app:newAppId", async () => require("crypto").randomUUID());
 // --- Onboarding (local-only, unrelated to the CLI session file) ---
 ipcMain.handle("onboarding:hasSeen", async () => localState.hasOnboarded());
 ipcMain.handle("onboarding:markSeen", async () => localState.setOnboarded());
+ipcMain.handle("tour:hasSeen", async () => localState.hasToured());
+ipcMain.handle("tour:markSeen", async () => localState.setToured());
 
 // --- Language (local-only display preference) ---
 ipcMain.handle("state:getLang", async () => localState.getLang());

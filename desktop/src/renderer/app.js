@@ -92,7 +92,7 @@ window.poly.win.onState(({ maximized }) => {
 // ---------------------------------------------------------------------
 
 let onboardSlide = 0;
-const ONBOARD_SLIDES = 4;
+const ONBOARD_SLIDES = 5;
 
 function goToOnboardSlide(n) {
   onboardSlide = n;
@@ -149,6 +149,11 @@ async function enterShell() {
   showPanel("apps");
   await loadProfile();
   await loadApps();
+
+  try {
+    const toured = await window.poly.tour.hasSeen();
+    if (!toured) setTimeout(() => startTour(), 700);
+  } catch { /* non-fatal */ }
 }
 
 // Opens the "sign in with Poly" popup (main process); the actual
@@ -989,5 +994,70 @@ $("notif-mark-all-btn").addEventListener("click", async () => {
     $("notif-mark-all-btn").disabled = false;
   }
 });
+
+// ---------------------------------------------------------------------
+// Guided UI tour -- spotlights each real sidebar item in turn with a
+// tooltip explaining what it does, navigating to it as it goes so the
+// explanation sits next to actual content, not an abstract slide.
+// ---------------------------------------------------------------------
+
+const TOUR_STEPS = [
+  { panel: "apps", titleKey: "tour_step_apps_h", bodyKey: "tour_step_apps_p" },
+  { panel: "notifications", titleKey: "tour_step_notifications_h", bodyKey: "tour_step_notifications_p" },
+  { panel: "packages", titleKey: "tour_step_packages_h", bodyKey: "tour_step_packages_p" },
+  { panel: "publish", titleKey: "tour_step_publish_h", bodyKey: "tour_step_publish_p" },
+  { panel: "docs", titleKey: "tour_step_docs_h", bodyKey: "tour_step_docs_p" },
+  { panel: "community", titleKey: "tour_step_community_h", bodyKey: "tour_step_community_p" },
+  { panel: "appsstore", titleKey: "tour_step_appsstore_h", bodyKey: "tour_step_appsstore_p" },
+  { panel: "settings", titleKey: "tour_step_settings_h", bodyKey: "tour_step_settings_p" },
+];
+let tourIndex = 0;
+
+function positionTourTooltip(target) {
+  const rect = target.getBoundingClientRect();
+  const tooltip = $("tour-tooltip");
+  const maxTop = window.innerHeight - 200;
+  const top = Math.min(Math.max(rect.top, 50), Math.max(50, maxTop));
+  tooltip.style.top = `${top}px`;
+  tooltip.style.left = `${rect.right + 16}px`;
+}
+
+function showTourStep(i) {
+  const step = TOUR_STEPS[i];
+  const btn = document.querySelector(`.side-link[data-nav="${step.panel}"]`);
+  document.querySelectorAll(".tour-spotlight").forEach((el) => el.classList.remove("tour-spotlight"));
+  if (!btn) return;
+  btn.click(); // navigate exactly as a real click would (opens the wizard for "publish", etc.)
+  btn.classList.add("tour-spotlight");
+  $("tour-step-count").textContent = `${i + 1}/${TOUR_STEPS.length}`;
+  $("tour-tooltip-title").textContent = t(step.titleKey);
+  $("tour-tooltip-body").textContent = t(step.bodyKey);
+  $("tour-next-btn").textContent = i === TOUR_STEPS.length - 1 ? t("tour_finish") : t("tour_next");
+  positionTourTooltip(btn);
+}
+
+function startTour() {
+  tourIndex = 0;
+  $("tour-overlay").classList.add("active");
+  showTourStep(0);
+}
+
+function endTour() {
+  $("tour-overlay").classList.remove("active");
+  document.querySelectorAll(".tour-spotlight").forEach((el) => el.classList.remove("tour-spotlight"));
+  window.poly.tour.markSeen().catch(() => {});
+}
+
+$("tour-next-btn").addEventListener("click", () => {
+  if (tourIndex < TOUR_STEPS.length - 1) {
+    tourIndex++;
+    showTourStep(tourIndex);
+  } else {
+    endTour();
+  }
+});
+$("tour-skip-btn").addEventListener("click", endTour);
+
+$("settings-retour-btn").addEventListener("click", () => startTour());
 
 boot();

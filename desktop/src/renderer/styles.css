@@ -405,6 +405,20 @@ textarea { resize: vertical; }
 .s-label { color: var(--text-dim); }
 #signout-btn { margin-top: 1rem; }
 
+/* --- Guided UI tour --- */
+.tour-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9000; }
+.tour-overlay.active { display: block; }
+.tour-spotlight { position: relative; z-index: 9001; background: var(--ink-overlay) !important; color: var(--text) !important; box-shadow: 0 0 0 3px var(--accent), 0 0 18px 2px color-mix(in srgb, var(--accent) 60%, transparent); border-radius: var(--radius-sm); }
+.tour-tooltip {
+  position: fixed; z-index: 9002; width: 280px; background: var(--ink-raised); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.1rem; box-shadow: 0 24px 60px -20px rgba(0,0,0,0.5);
+  animation: fade-in 0.2s ease;
+}
+.tour-tooltip-step { font-size: 0.68rem; font-family: var(--mono); color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+.tour-tooltip h3 { font-size: 0.94rem; margin: 0 0 0.4rem; }
+.tour-tooltip p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; margin: 0 0 1rem; }
+.tour-tooltip-actions { display: flex; justify-content: space-between; gap: 0.6rem; }
+
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); align-items: center; justify-content: center; z-index: 50; }
 .modal-overlay.active { display: flex; animation: fade-in 0.15s ease; }
 .modal-card { background: var(--ink-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.4rem; width: 340px; }
