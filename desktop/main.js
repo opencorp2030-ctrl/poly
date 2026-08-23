@@ -46,8 +46,63 @@ app.on("window-all-closed", () => {
 
 // --- Auth ---
 ipcMain.handle("auth:resume", async () => session.resume());
-ipcMain.handle("auth:login", async (_e, { email, password }) => session.login(email, password));
 ipcMain.handle("auth:logout", async () => session.logout());
+
+// Opens a small "sign in with Poly" popup pointed at poly.candygate.eu,
+// the same OAuth-flavored pattern used to connect an AI assistant
+// (see site/mcp-connect.html): the actual credentials form lives on the
+// hosted page, never in this app. Its window keeps its own persistent
+// session partition, so a returning user sees an account chooser
+// (backed by that page's own localStorage) instead of a blank form.
+function openConnectWindow() {
+  return new Promise((resolve) => {
+    const connectWin = new BrowserWindow({
+      width: 420,
+      height: 620,
+      parent: mainWindow,
+      modal: true,
+      resizable: false,
+      minimizable: false,
+      backgroundColor: "#0c0e13",
+      title: "Sign in to Poly",
+      webPreferences: {
+        preload: path.join(__dirname, "src", "renderer", "connect-preload.js"),
+        contextIsolation: true,
+        nodeIntegration: false,
+        sandbox: true,
+        partition: "persist:poly-connect",
+      },
+    });
+    connectWin.setMenuBarVisibility(false);
+    connectWin.loadURL("https://poly.candygate.eu/desktop-connect.html");
+
+    let settled = false;
+
+    const onComplete = async (_e, sessionData) => {
+      if (settled) return;
+      settled = true;
+      ipcMain.removeListener("desktop-connect:complete", onComplete);
+      try {
+        const user = await session.loginWithTokens(sessionData.access_token, sessionData.refresh_token);
+        resolve(user);
+      } catch {
+        resolve(null);
+      } finally {
+        if (!connectWin.isDestroyed()) connectWin.close();
+      }
+    };
+    ipcMain.on("desktop-connect:complete", onComplete);
+
+    connectWin.on("closed", () => {
+      if (settled) return;
+      settled = true;
+      ipcMain.removeListener("desktop-connect:complete", onComplete);
+      resolve(null);
+    });
+  });
+}
+
+ipcMain.handle("auth:connectPopup", async () => openConnectWindow());
 
 // --- Profile ---
 ipcMain.handle("profile:get", async () => api.getProfile());

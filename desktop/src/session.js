@@ -34,8 +34,14 @@ async function applySession(accessToken, refreshToken) {
   return currentUser;
 }
 
-async function login(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+// Applies a session handed back by the desktop-connect popup window
+// (already authenticated against poly.candygate.eu) and persists it the
+// same way the CLI's `poly login` does.
+async function loginWithTokens(accessToken, refreshToken) {
+  const { data, error } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  });
   if (error) throw error;
   currentUser = { id: data.user.id, email: data.user.email };
   creds.save({
@@ -87,4 +93,4 @@ function logout() {
   supabase.auth.signOut().catch(() => {});
 }
 
-module.exports = { supabase, login, resume, logout, currentUserId, get currentUser() { return currentUser; } };
+module.exports = { supabase, loginWithTokens, resume, logout, currentUserId, get currentUser() { return currentUser; } };

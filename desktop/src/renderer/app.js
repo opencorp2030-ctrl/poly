@@ -67,6 +67,7 @@ $("onboard-next").addEventListener("click", async () => {
   } else {
     await window.poly.onboarding.markSeen();
     showView("login");
+    connectAndEnter();
   }
 });
 
@@ -103,22 +104,25 @@ async function enterShell() {
   await loadApps();
 }
 
-$("login-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = $("login-email").value.trim();
-  const password = $("login-password").value;
+// Opens the "sign in with Poly" popup (main process); the actual
+// credentials form lives on poly.candygate.eu, same principle as
+// connecting an AI assistant. Resolves with the signed-in user, or null
+// if the popup was closed/cancelled before finishing.
+async function connectAndEnter() {
   $("login-error").textContent = "";
-  $("login-submit").disabled = true;
+  $("connect-btn").disabled = true;
   try {
-    await window.poly.auth.login(email, password);
+    const user = await window.poly.auth.connectPopup();
+    if (!user) return; // popup closed without completing -- stay on the login view
     await window.poly.onboarding.markSeen();
     await enterShell();
   } catch (err) {
     $("login-error").textContent = err.message || "Sign-in failed.";
   } finally {
-    $("login-submit").disabled = false;
+    $("connect-btn").disabled = false;
   }
-});
+}
+$("connect-btn").addEventListener("click", connectAndEnter);
 
 $("create-account-link").addEventListener("click", (e) => {
   e.preventDefault();
@@ -132,8 +136,6 @@ $("settings-account-link").addEventListener("click", (e) => {
 $("signout-btn").addEventListener("click", async () => {
   await window.poly.auth.logout();
   showView("login");
-  $("login-email").value = "";
-  $("login-password").value = "";
 });
 
 document.querySelectorAll(".side-link[data-nav]").forEach((btn) => {

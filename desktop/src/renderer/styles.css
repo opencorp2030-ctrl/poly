@@ -114,7 +114,8 @@ button { font-family: var(--sans); }
   box-shadow: 0 30px 70px -30px rgba(0,0,0,0.6); z-index: 1;
   animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.login-card h1 { font-size: 1.15rem; margin: 1rem 0 1.3rem; font-weight: 600; }
+.login-card h1 { font-size: 1.15rem; margin: 1rem 0 0.5rem; font-weight: 600; }
+.login-note { font-size: 0.85rem; color: var(--text-dim); margin: 0 0 1.3rem; }
 .login-footer { text-align: center; font-size: 0.8rem; color: var(--text-dim); margin: 1.2rem 0 0; }
 
 a { color: var(--accent); text-decoration: none; cursor: pointer; }

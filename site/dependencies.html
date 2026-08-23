@@ -224,6 +224,7 @@
       <input id="search-input" type="text" data-i18n-placeholder="search_placeholder" autocomplete="off" autofocus />
     </div>
     <p class="search-hint" data-i18n="search_hint">pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either), try the exact package name. The community lane matches partial names.</p>
+    <p class="search-hint"><a href="dependency_lookup" data-i18n="lookup_link">Prefer one result per registry, side by side? Try the dedicated dependency lookup →</a></p>
 
     <div class="source-lanes reveal-stagger">
       <div class="lane" data-lane="tap">
@@ -262,7 +263,7 @@
 <footer class="site-footer">
   <div class="wrap">
     <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
-    <nav class="footer-links">
+    <nav class="footer-links" style="flex-wrap:wrap;row-gap:0.5rem"><a href="changelog">Changelog</a><a href="roadmap">Roadmap</a><a href="status">Status</a><a href="leaderboard">Leaderboard</a><a href="badges">Badges</a><a href="compare">Compare</a><a href="press">Press</a><a href="contact">Contact</a>
       <a href="terms" data-i18n="footer_terms">Terms</a>
       <a href="privacy" data-i18n="footer_privacy">Privacy</a>
       <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>
@@ -284,6 +285,7 @@
       lede: "One box, five sources: pip, npm, crates.io, Homebrew, and packages the Poly community has published. Real-time, live against each registry's own API. Nothing cached or made up.",
       search_placeholder: "requests, lodash, ripgrep, serde…",
       search_hint: "pip/npm/crates.io/Homebrew are exact-name lookups (they don't offer public fuzzy search either), try the exact package name. The community lane matches partial names.",
+      lookup_link: "Prefer one result per registry, side by side? Try the dedicated dependency lookup →",
       lane_tap: "tap (built-in)", lane_community: "community", lane_idle: "Type to search…",
       lane_not_found: "Not found.", lane_error: "Lookup failed.",
       cta_p: "Published something of your own? Ship it to the community lane.",
@@ -301,6 +303,7 @@
       lede: "Une seule barre, cinq sources : pip, npm, crates.io, Homebrew, et les paquets publiés par la communauté Poly. En direct, contre l'API réelle de chaque registre. Rien n'est mis en cache ou inventé.",
       search_placeholder: "requests, lodash, ripgrep, serde…",
       search_hint: "pip/npm/crates.io/Homebrew sont des recherches par nom exact (ils n'offrent pas non plus de recherche floue publique), essaie le nom exact du paquet. La colonne communauté accepte les noms partiels.",
+      lookup_link: "Tu préfères un résultat par registre, côte à côte ? Essaie la recherche de dépendances dédiée →",
       lane_tap: "tap (intégré)", lane_community: "communauté", lane_idle: "Tape pour chercher…",
       lane_not_found: "Introuvable.", lane_error: "Échec de la recherche.",
       cta_p: "Tu as publié quelque chose ? Envoie-le dans la colonne communauté.",

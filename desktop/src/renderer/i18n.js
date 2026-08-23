@@ -10,7 +10,7 @@ const I18N = {
     onboard_badge3: "READY", onboard_h3: "Let's sign you in.", onboard_p3: "Use your Poly account — the one you already have from poly.candygate.eu or the CLI.",
     onboard_continue: "Continue →", onboard_signin: "Sign in →",
 
-    login_h: "Sign in", login_email: "Email", login_password: "Password", login_submit: "Sign in",
+    login_h: "Sign in", login_note: "Continue in a secure Poly sign-in window.", login_submit: "Continue with Poly",
     login_no_account: "No account yet?", login_create: "Create one on poly.candygate.eu →",
 
     nav_apps: "My apps", nav_packages: "Packages", nav_publish: "Publish new app", nav_settings: "Settings",
@@ -61,7 +61,7 @@ const I18N = {
     onboard_badge3: "PRÊT", onboard_h3: "On te connecte.", onboard_p3: "Utilise ton compte Poly — celui que tu as déjà sur poly.candygate.eu ou en CLI.",
     onboard_continue: "Continuer →", onboard_signin: "Se connecter →",
 
-    login_h: "Connexion", login_email: "Email", login_password: "Mot de passe", login_submit: "Se connecter",
+    login_h: "Connexion", login_note: "Continue dans une fenêtre de connexion Poly sécurisée.", login_submit: "Continuer avec Poly",
     login_no_account: "Pas encore de compte ?", login_create: "Créer un compte sur poly.candygate.eu →",
 
     nav_apps: "Mes apps", nav_packages: "Packages", nav_publish: "Publier une app", nav_settings: "Paramètres",

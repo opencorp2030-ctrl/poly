@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<script>try{var t=localStorage.getItem('poly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sign in to Poly</title>
+<link rel="icon" href="logo.png" />
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="css/site.css?v=20260714c" />
+<style>
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .connect-card { max-width: 380px; width: 100%; }
+  .wordmark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em; margin-bottom: 1.25rem; text-align: center; }
+  .wordmark span { color: var(--accent); }
+  h1 { font-size: 1.1rem; margin: 0 0 0.5rem; text-align: center; }
+  .sub { color: var(--text-dim); font-size: 0.85rem; line-height: 1.5; margin: 0 0 1.4rem; text-align: center; }
+  .err { color: var(--danger); font-size: 0.85rem; margin: -0.5rem 0 1rem; }
+  .field { margin-bottom: 1.1rem; }
+  .field label {
+    display: block; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em;
+    color: var(--text-dim); margin-bottom: 0.4rem; text-transform: uppercase;
+  }
+  .field input {
+    width: 100%; padding: 0.7rem 0.85rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--ink); color: var(--text); font-family: var(--sans); font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+  .field input:focus { border-color: var(--accent); outline: none; }
+  .missing, .done { text-align: center; padding: 1rem 0; }
+  [data-view] { display: none; }
+  [data-view].active { display: block; }
+
+  .acct-row {
+    display: flex; align-items: center; gap: 0.7rem; width: 100%;
+    padding: 0.65rem 0.7rem; margin-bottom: 0.5rem; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--ink); cursor: pointer; text-align: left; color: var(--text); font-family: var(--sans); font-size: 0.9rem;
+  }
+  .acct-row:hover { border-color: var(--accent); }
+  .acct-avatar {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+    display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700;
+    font-size: 0.85rem; flex-shrink: 0;
+  }
+  .acct-email { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .acct-remove {
+    flex-shrink: 0; color: var(--text-dim); background: none; border: none; cursor: pointer;
+    font-size: 1rem; line-height: 1; padding: 0.2rem 0.3rem;
+  }
+  .acct-remove:hover { color: var(--danger); }
+  .add-account-link { display: block; text-align: center; margin-top: 0.75rem; font-size: 0.85rem; }
+  .back-link { display: block; text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-dim); }
+  .spinner-inline {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: currentColor;
+    border-radius: 50%; display: inline-block; animation: spin 0.7s linear infinite; margin-right: 0.5rem; vertical-align: -3px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="card connect-card reveal">
+  <div class="wordmark">poly<span>&gt;</span></div>
+
+  <div data-view="chooser">
+    <h1 data-i18n="chooser_h">Choose an account</h1>
+    <p class="sub" data-i18n="chooser_p">Sign in to Poly Desktop.</p>
+    <div id="acct-list"></div>
+    <a href="#" class="add-account-link" id="add-account-link" data-i18n="add_account">+ Use another account</a>
+  </div>
+
+  <div data-view="form">
+    <h1 data-i18n="form_h">Sign in</h1>
+    <p class="sub" data-i18n="form_p">Use your Poly account — the one you already have from poly.candygate.eu or the CLI.</p>
+    <p class="err" id="err" style="display:none"></p>
+    <form id="login-form">
+      <div class="field">
+        <label for="email" data-i18n="field_email">Email</label>
+        <input id="email" type="email" required autocomplete="username" autofocus />
+      </div>
+      <div class="field">
+        <label for="password" data-i18n="field_password">Password</label>
+        <input id="password" type="password" required autocomplete="current-password" minlength="6" />
+      </div>
+      <button type="submit" class="btn primary full" id="submit-btn" data-i18n="btn_signin">Sign in</button>
+    </form>
+    <a href="#" class="back-link" id="back-link" data-i18n="back_link">← Back</a>
+  </div>
+
+  <div data-view="connecting" class="done">
+    <p><span class="spinner-inline"></span><span data-i18n="connecting">Connecting…</span></p>
+  </div>
+
+  <div data-view="done" class="done">
+    <p data-i18n="done_p">Connected. This window will close automatically.</p>
+  </div>
+
+  <div data-view="missing" class="missing">
+    <p>This page is opened by Poly Desktop during sign-in — there's nothing to do here directly. If you were sent here by mistake, go to <a href="account">your account page</a> instead.</p>
+  </div>
+</div>
+
+<script type="module">
+  import { supabase } from './js/supabase-client.js';
+
+  var I18N = {
+    en: {
+      chooser_h: "Choose an account", chooser_p: "Sign in to Poly Desktop.", add_account: "+ Use another account",
+      form_h: "Sign in", form_p: "Use your Poly account — the one you already have from poly.candygate.eu or the CLI.",
+      field_email: "Email", field_password: "Password", btn_signin: "Sign in", back_link: "← Back",
+      connecting: "Connecting…", done_p: "Connected. This window will close automatically.",
+      err_generic: "Sign-in failed.",
+    },
+    fr: {
+      chooser_h: "Choisir un compte", chooser_p: "Connecte-toi à Poly Desktop.", add_account: "+ Utiliser un autre compte",
+      form_h: "Connexion", form_p: "Utilise ton compte Poly — celui que tu as déjà sur poly.candygate.eu ou en CLI.",
+      field_email: "Email", field_password: "Mot de passe", btn_signin: "Se connecter", back_link: "← Retour",
+      connecting: "Connexion…", done_p: "Connecté·e. Cette fenêtre va se fermer automatiquement.",
+      err_generic: "Échec de la connexion.",
+    },
+  };
+  var lang = (navigator.language || 'en').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+  function t(key) { return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key; }
+  document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+  document.documentElement.lang = lang;
+
+  function showView(name) {
+    document.querySelectorAll('[data-view]').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-view') === name);
+    });
+  }
+
+  // Accounts remembered on this device, mirroring the account chooser
+  // pattern used by Google/Microsoft sign-in popups. Kept separate from
+  // Supabase's own single active-session key so more than one can be
+  // offered at once.
+  var STORAGE_KEY = 'poly_desktop_accounts';
+  function loadAccounts() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch (e) { return []; }
+  }
+  function saveAccounts(list) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, 5))); } catch (e) {}
+  }
+  function upsertAccount(account) {
+    var list = loadAccounts().filter(function (a) { return a.id !== account.id; });
+    list.unshift(account);
+    saveAccounts(list);
+  }
+  function removeAccount(id) {
+    saveAccounts(loadAccounts().filter(function (a) { return a.id !== id; }));
+  }
+
+  function renderChooser() {
+    var accounts = loadAccounts();
+    var list = document.getElementById('acct-list');
+    list.innerHTML = accounts.map(function (a) {
+      var initial = (a.email || '?')[0].toUpperCase();
+      return '<div class="acct-row" data-id="' + escapeHtml(a.id) + '">' +
+        '<span class="acct-avatar">' + escapeHtml(initial) + '</span>' +
+        '<span class="acct-email">' + escapeHtml(a.email) + '</span>' +
+        '<button type="button" class="acct-remove" data-remove="' + escapeHtml(a.id) + '" title="Remove" aria-label="Remove">&times;</button>' +
+        '</div>';
+    }).join('');
+
+    list.querySelectorAll('.acct-row').forEach(function (row) {
+      row.addEventListener('click', function (e) {
+        if (e.target.closest('[data-remove]')) return;
+        continueWithAccount(accounts.find(function (a) { return a.id === row.dataset.id; }));
+      });
+    });
+    list.querySelectorAll('[data-remove]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        removeAccount(btn.dataset.remove);
+        renderChooser();
+      });
+    });
+  }
+
+  function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s == null ? '' : String(s);
+    return div.innerHTML;
+  }
+
+  function complete(session, account) {
+    upsertAccount(account);
+    showView('done');
+    if (window.polyConnect && window.polyConnect.complete) {
+      window.polyConnect.complete(session);
+    }
+  }
+
+  async function continueWithAccount(account) {
+    if (!account) return;
+    showView('connecting');
+    var { data, error } = await supabase.auth.refreshSession({ refresh_token: account.refresh_token });
+    if (error || !data.session) {
+      // Stored session no longer valid -- drop it and fall back to a
+      // fresh sign-in for that address.
+      removeAccount(account.id);
+      document.getElementById('email').value = account.email;
+      showView('form');
+      return;
+    }
+    complete(
+      { access_token: data.session.access_token, refresh_token: data.session.refresh_token },
+      { id: data.user.id, email: data.user.email }
+    );
+  }
+
+  document.getElementById('login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+    var err = document.getElementById('err');
+    err.style.display = 'none';
+    document.getElementById('submit-btn').disabled = true;
+    try {
+      var { data, error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+      if (error) throw error;
+      complete(
+        { access_token: data.session.access_token, refresh_token: data.session.refresh_token },
+        { id: data.user.id, email: data.user.email }
+      );
+    } catch (err2) {
+      err.textContent = err2.message || t('err_generic');
+      err.style.display = 'block';
+      document.getElementById('submit-btn').disabled = false;
+    }
+  });
+
+  document.getElementById('add-account-link').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('login-form').reset();
+    showView('form');
+  });
+  document.getElementById('back-link').addEventListener('click', function (e) {
+    e.preventDefault();
+    showView(loadAccounts().length ? 'chooser' : 'form');
+  });
+
+  if (!window.polyConnect) {
+    showView('missing');
+  } else {
+    var accounts = loadAccounts();
+    if (accounts.length) {
+      renderChooser();
+      showView('chooser');
+    } else {
+      showView('form');
+    }
+  }
+</script>
+<script type="module" src="js/motion.js?v=20260714c"></script>
+
+</body>
+</html>

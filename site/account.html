@@ -221,7 +221,7 @@
   .inline-form input { flex: 1; min-width: 140px; padding: 0.5rem 0.7rem; background: var(--ink); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.85rem; }
   .session-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--text-dim); }
   .session-row:last-child { border-bottom: none; }
-  .session-row .s-agent { max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .session-row .s-agent { max-width: 60%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .switch-mode {
     text-align: center; margin-top: 1.2rem; font-size: 0.9rem; color: var(--text-dim);
@@ -706,7 +706,7 @@ window.addEventListener('unhandledrejection', function (e) {
 <footer class="site-footer">
   <div class="wrap">
     <span class="footer-brand"><span data-i18n="footer_text">Poly is open source, MIT licensed.</span> <a href="https://github.com/opencorp2030-ctrl/poly" target="_blank" rel="noopener">GitHub</a></span>
-    <nav class="footer-links">
+    <nav class="footer-links" style="flex-wrap:wrap;row-gap:0.5rem"><a href="changelog">Changelog</a><a href="roadmap">Roadmap</a><a href="status">Status</a><a href="leaderboard">Leaderboard</a><a href="badges">Badges</a><a href="compare">Compare</a><a href="press">Press</a><a href="contact">Contact</a>
       <a href="terms" data-i18n="footer_terms">Terms</a>
       <a href="privacy" data-i18n="footer_privacy">Privacy</a>
       <a href="/.well-known/security.txt" data-i18n="footer_security">Security</a>

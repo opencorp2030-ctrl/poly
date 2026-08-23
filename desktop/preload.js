@@ -3,7 +3,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("poly", {
   auth: {
     resume: () => ipcRenderer.invoke("auth:resume"),
-    login: (email, password) => ipcRenderer.invoke("auth:login", { email, password }),
+    connectPopup: () => ipcRenderer.invoke("auth:connectPopup"),
     logout: () => ipcRenderer.invoke("auth:logout"),
   },
   profile: {

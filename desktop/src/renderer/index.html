@@ -89,21 +89,12 @@
       <div class="login-card">
         <div class="wordmark">poly<span>&gt;</span></div>
         <h1 data-i18n="login_h">Sign in</h1>
+        <p class="login-note" data-i18n="login_note">Continue in a secure Poly sign-in window.</p>
 
-        <form id="login-form">
-          <div class="field">
-            <label for="login-email" data-i18n="login_email">Email</label>
-            <input id="login-email" type="email" autocomplete="username" required />
-          </div>
-          <div class="field">
-            <label for="login-password" data-i18n="login_password">Password</label>
-            <input id="login-password" type="password" autocomplete="current-password" required />
-          </div>
-          <p class="error-banner" id="login-error"></p>
-          <button type="submit" class="btn primary full" id="login-submit">
-            <span class="btn-label" data-i18n="login_submit">Sign in</span>
-          </button>
-        </form>
+        <p class="error-banner" id="login-error"></p>
+        <button type="button" class="btn primary full" id="connect-btn">
+          <span class="btn-label" data-i18n="login_submit">Continue with Poly</span>
+        </button>
 
         <p class="login-footer">
           <span data-i18n="login_no_account">No account yet?</span>
