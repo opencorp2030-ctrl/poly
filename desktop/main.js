@@ -5,7 +5,11 @@ const fs = require("fs");
 // The two windows bleeding into each other (garbled text, JS source
 // visible as page content) is a known GPU-compositing glitch on some
 // Windows graphics drivers -- not a content bug (the popup's page is
-// byte-identical to what's deployed). Falls back to software rendering.
+// byte-identical to what's deployed). Belt-and-suspenders: disable GPU
+// use as early and as thoroughly as possible, all before app is ready.
+app.commandLine.appendSwitch("disable-gpu");
+app.commandLine.appendSwitch("disable-gpu-compositing");
+app.commandLine.appendSwitch("disable-gpu-rasterization");
 app.disableHardwareAcceleration();
 
 const session = require("./src/session");
