@@ -45,6 +45,9 @@ jobs:
       shell: pwsh
       run: |
         choco install nsis -y
+        if ($LASTEXITCODE -ne 0) {
+          throw "choco install nsis failed with exit code $LASTEXITCODE"
+        }
         # Chocolatey updates the machine PATH in the registry, but this
         # process's environment block was already captured at job start
         # and doesn't pick that up on its own. Re-import chocolatey's
@@ -56,6 +59,15 @@ jobs:
         $nsisDir = "C:\Program Files (x86)\NSIS"
         if (Test-Path "$nsisDir\makensis.exe") {
           Add-Content -Path $env:GITHUB_PATH -Value $nsisDir
+        } else {
+          # Diagnostics for next time, in case the install location moved
+          # again: show what choco thinks got installed and search the
+          # whole disk so the actual error is visible in the log instead
+          # of a generic "not found" three steps later.
+          Write-Host "makensis.exe not at expected path $nsisDir, searching..."
+          choco list --local-only
+          Get-ChildItem -Path C:\ -Filter makensis.exe -Recurse -ErrorAction SilentlyContinue |
+            ForEach-Object { Write-Host "found: $($_.FullName)" }
         }
 
     - name: Build setup
