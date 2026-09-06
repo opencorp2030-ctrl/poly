@@ -71,6 +71,8 @@ amd64/arm64) into `dist/`.
 
 ## 🖥️ Poly Desktop — now available for Windows
 
+To download Poly Desktop, please visit the **[Releases tab](https://github.com/opencorp2030-ctrl/poly/releases)** and look at the latest version.
+
 **[Poly Desktop](https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-desktop-setup.exe)**
 is a native desktop app for managing your Poly account without a
 browser: publish and edit apps with a live store-listing preview,
