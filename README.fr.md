@@ -56,7 +56,7 @@ go build -o poly .
 ./poly version           # vérif rapide : lance le binaire sur place
 
 # mets-le sur le PATH, par exemple :
-cp poly /opt/homebrew/bin/poly   # macOS (bin de Homebrew, pas besoin de sudo)
+lp poly /opt/homebrew/bin/poly   # macOS (bin de Homebrew, pas besoin de sudo)
 # ou : sudo cp poly /usr/local/bin/poly       # macOS/Linux, besoin de sudo
 # ou : ajoute ce dossier à ton PATH toi-même
 
@@ -71,6 +71,8 @@ lance `scripts/build-all.sh` pour builder les cinq cibles
 (darwin/linux/windows × amd64/arm64) dans `dist/`.
 
 ## 🖥️ Poly Desktop — disponible sur Windows
+
+Pour télécharger Poly Desktop, veuillez consulter l'**[onglet Releases](https://github.com/opencorp2030-ctrl/poly/releases)** et regarder la dernière version.
 
 **[Poly Desktop](https://github.com/opencorp2030-ctrl/poly/releases/latest/download/poly-desktop-setup.exe)**
 est une application de bureau native pour gérer ton compte Poly sans
