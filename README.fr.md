@@ -213,8 +213,8 @@ de formule.
   Uniquement via le préfixe explicite `gem:`, comme `cargo`/`go`.
 - **apt** — appelle `apt-get install`/`apt-get remove` en local sur
   Debian/Ubuntu. La recherche lit la sortie locale de `apt-cache show`,
-  sans appel réseau. Uniquement via le préfixe explicite `apt:` —
-  résoudre un nom nu vers un paquet système surprendrait sur Linux.
+sans appel réseau. Uniquement via le préfixe explicite `apt:` —
+résoudre un nom nu vers un paquet système surprendrait sur Linux.
 - **dnf** — même principe sur Fedora/RHEL, via `dnf install`/`dnf
   remove` et `dnf info`. Uniquement via le préfixe explicite `dnf:`.
 - **pacman** — même principe sur Arch, via `pacman -S`/`pacman -R` et
