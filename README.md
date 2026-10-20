@@ -1,4 +1,4 @@
-# poly
+# NOT LONGER MAINTAINED poly
 
 **[English](README.md)** · [Français](README.fr.md)
 
